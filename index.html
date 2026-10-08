@@ -261,7 +261,7 @@ function mergeSave(a,b){ /* 合并两份存档：通关、物品、错词、场�
 async function initCloud(){ try{ if(!window.claude||!claude.use) return; const [user,db]=await Promise.all([claude.use("user"),claude.use("db")]); if(!user||!db) return; const uid=await user.id(); if(!uid) return;
   cloud.ref=db.doc("data/users/"+uid+"/save"); const snap=await cloud.ref.get();
   if(snap.exists){ const c=migrate(snap.data()); S=mergeSave((c.updatedAt||0)>=(S.updatedAt||0)?c:S,(c.updatedAt||0)>=(S.updatedAt||0)?S:c); try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
-  cloud.ready=true; pushCloud(); if(!E) home(); }catch(e){} }
+  cloud.ready=true; pushCloud(); if(!E&&$("bk")) home(); }catch(e){} }
 let E=null; /* 当前剧集 */ let LV=[]; /* 本集词汇 */
 function EP(){ return S.ep[E.key]||(S.ep[E.key]={}); }
 function isUnlocked(n){ return true; }
@@ -674,6 +674,6 @@ function talkWin(){ sceneDone("talk"); setScene(60,70,false); $("gapLbl").textCo
   stage.innerHTML=`${bubble("Lisa","Sehr gut! Aber zuerst …",`${K.right}/${K.qs.length} 轮一次说对。去打 Boss 之前，先上一堂小课。`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">Lisa 的小课堂 ›</button></div>`;
   $("go").onclick=grammar; $("back").onclick=()=>episode(E.key); }
 
-home(); initCloud();
+home(); if(new URLSearchParams(location.search).get("review")==="1") diary(); initCloud();
 </script>
 </body></html>
