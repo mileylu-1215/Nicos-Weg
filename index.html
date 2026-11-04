@@ -225,17 +225,102 @@ table.g td:first-child{color:var(--muted);white-space:nowrap}
 #town .t-hud{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;z-index:3}
 #town .t-pill{background:rgba(27,42,59,.8);color:#fff;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:800;box-shadow:none;border:0;white-space:nowrap}
 #town .t-hud .t-pill:not(button){overflow:hidden;text-overflow:ellipsis;min-width:0}
-#town .t-sheet{position:absolute;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--paper);color:var(--ink);border-radius:22px 22px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.25);z-index:3;transition:transform .3s}
-#town .t-sheet.min{transform:translateY(calc(100% - 92px))}
+#town .t-sheet{position:absolute;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--paper);color:var(--ink);border-radius:22px 22px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.25);z-index:3;transition:transform .3s;overscroll-behavior:contain}
+#town .t-sheet.min{transform:translateY(calc(100% - 92px));overflow:hidden}
 #town .t-sheet .t-head{display:flex;gap:12px;align-items:center;cursor:pointer}
 #town .t-sheet .t-head img{width:64px;height:64px;object-fit:contain;flex:none}
 #town .t-sheet .t-head b{display:block;font-family:var(--display);font-size:18px}
 #town .t-sheet .t-head span{font-size:12.5px;color:var(--muted)}
 #town .t-grip{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px;cursor:pointer}
+/* 画作底图模式（A1）：整张水彩城市图 + 街区云雾 + 固定大小的名牌（--inv 抵消地图缩放） */
+#town.bgm{background:linear-gradient(#8fc5ee 0 50%,#d9e7b8 50%)}
+#town.bgm .t-ground,#town.bgm #townTaxi{display:none}
+#townBg{position:absolute;left:0;top:0;display:none;pointer-events:none;-webkit-user-drag:none}
+#town.bgm #townBg{display:block}
+#townFog{position:absolute;inset:0;pointer-events:none}
+#town .t-fog{position:absolute;inset:0;transition:opacity 1.8s ease,transform 1.8s ease;transform-origin:center}
+#town .t-fog[data-st=fog]{opacity:.88}
+#town .t-fog[data-st=mist]{opacity:.4}
+#town .t-fog[data-st=clear]{opacity:0;transform:scale(1.12)}
+#town .t-fog i{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(250,247,240,.93) 0,rgba(246,243,236,.82) 50%,rgba(240,238,232,0) 100%);animation:tdrift 9s ease-in-out infinite alternate}
+#town .t-fog i:nth-child(2n){animation-duration:12s;animation-direction:alternate-reverse}
+@keyframes tdrift{from{translate:-14px 0}to{translate:14px -6px}}
+#town .t-hs{position:absolute;border-radius:28%;cursor:pointer;transition:box-shadow .4s}
+#town .t-hs.sel{box-shadow:0 0 0 4px rgba(255,255,255,.85),0 0 34px 10px rgba(255,200,80,.75)}
+#town .t-hs.glow{animation:tglow 1.1s ease-in-out 3}
+@keyframes tglow{50%{box-shadow:0 0 0 6px rgba(255,236,170,.95),0 0 60px 26px rgba(255,200,80,.9)}}
+#town .t-hs .t-tag{position:absolute;left:50%;top:0;transform:translate(-50%,-70%) scale(var(--inv,1));transform-origin:50% 100%;white-space:nowrap;background:#fffaf0;color:#22304A;border-radius:999px;padding:5px 11px 5px 7px;font-size:13px;font-weight:800;box-shadow:0 3px 10px rgba(34,48,74,.28);display:flex;align-items:center;gap:5px}
+#town .t-hs .t-tag em{font-style:normal;font-size:17px;line-height:1}
+#town .t-hs .t-tag small{font-size:11.5px;font-weight:700;opacity:.75}
+#town .t-hs.later .t-tag{background:rgba(255,255,255,.62);color:#56607a}
+#town .t-hs.done .t-tag{background:#fff2c9}
+#town .t-hs.cur .t-tag{background:var(--taxi);color:#2B1D00}
+#town .t-hs.cur .t-tag::before{content:"▼";position:absolute;left:50%;bottom:100%;transform:translateX(-50%);color:var(--taxi);font-size:20px;text-shadow:0 1px 2px rgba(0,0,0,.3);animation:tbob 1.2s ease-in-out infinite}
+#town.bgm #townNico{width:auto;transform:translate(-50%,-100%) scale(var(--inv,1));transform-origin:50% 100%}
+#townFox{display:none;width:44px;height:44px;border-radius:50%;background:#fffaf0;border:3px solid #E3B256;font-size:26px;line-height:38px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+#town.bgm #townFox{display:block}
+#town.bgm #townNico img{display:none}
+#town .t-thumb{flex:none;border-radius:14px;background-repeat:no-repeat;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+#town .t-modal{position:absolute;inset:0;z-index:5;background:rgba(34,48,74,.45);display:flex;align-items:center;justify-content:center;padding:20px;animation:tfade .35s ease}
+@keyframes tfade{from{opacity:0}}
+#town .t-card{width:min(340px,100%);background:#F3E6C8;color:#22304A;border-radius:18px;padding:16px;box-shadow:0 18px 40px rgba(0,0,0,.35);text-align:center;animation:tpop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes tpop{from{transform:scale(.7) rotate(-3deg);opacity:0}}
+#town .t-card .t-thumb{margin:0 auto 10px;border-radius:12px}
+#town .t-card h3{font-family:Georgia,"Noto Serif SC",serif;font-size:15px;color:#8a6a2a;letter-spacing:2px;margin-bottom:6px}
+#town .t-card .de{font-family:Georgia,"Noto Serif SC",serif;font-size:20px;font-weight:700;line-height:1.35}
+#town .t-card .zh{font-size:14px;color:#5b6474;margin:4px 0 12px}
+#town .t-card button{background:#fffaf0;color:#22304A}
+#town .t-card button.primary{background:#E3B256;color:#2B1D00}
+#town .t-life{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+#town .t-life b{display:block;font-family:Georgia,"Noto Serif SC",serif}
+#town .t-life span{font-size:12.5px;color:var(--muted)}
 .toast{z-index:60}
+/* ---------- 单集全屏场景（body.imm）：楼的画面铺满全屏，题目在可下滑收起的羊皮纸卡里 ---------- */
+:root{--parch:#F3E6C8;--pline:#E0CDA4;--pbub:#FBF5E6;--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .27  0 0 0 0 .18  0 0 0 .09 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--parch:#2B2720;--pline:#4A4336;--pbub:#363026} }
+:root[data-theme="dark"]{--parch:#2B2720;--pline:#4A4336;--pbub:#363026}
+#sceneBg{display:none}
+.sheet{flex:1;display:flex;flex-direction:column;min-height:0}
+.grip{display:none}
+body.imm{overflow:hidden;background:#22304A}
+body.imm .wrap{height:100vh;height:100dvh;min-height:0}
+body.imm #sceneBg{display:block;position:fixed;inset:0;z-index:0;background-color:#B9CDB4;background-repeat:no-repeat;transition:background-position .7s ease,background-size .7s ease}
+body.imm #sceneBg.nobg{display:none}
+#sceneBg::before,#sceneBg::after{content:"";position:absolute;inset:0;pointer-events:none}
+#sceneBg::after{background:radial-gradient(ellipse 115% 85% at 50% 38%,transparent 52%,rgba(34,48,74,.38)),var(--grain)}
+#sceneBg[data-t=morning]::before{background:linear-gradient(rgba(255,236,190,.22),transparent 70%);mix-blend-mode:screen}
+#sceneBg[data-t=dusk]::before{background:linear-gradient(rgba(255,160,90,.32),rgba(200,90,120,.28));mix-blend-mode:multiply}
+#sceneBg[data-t=night]::before{background:linear-gradient(rgba(14,27,70,.72),rgba(36,59,110,.55));mix-blend-mode:multiply}
+body:has(.scene.moving) #sceneBg{animation:bgpan 7s ease-in-out infinite alternate}
+@keyframes bgpan{from{transform:scale(1.06) translateX(1.6%)}to{transform:scale(1.06) translateX(-1.6%)}}
+body.imm .scene{position:fixed;left:0;right:0;top:0;margin:0 auto;max-width:480px;z-index:1;height:calc(100vh - var(--sh,320px));height:calc(100dvh - var(--sh,320px));transition:height .3s ease}
+body.imm .scene.hasbg{background:transparent}
+body.imm .scene.hasbg :is(.sun,.stars,.cloud,.hills,.skyline){display:none}
+body.imm .scene.hasbg .road{background:linear-gradient(#BFAA8C,#937F69);opacity:.93}
+body.imm .scene.hasbg .road::before{background:#DCCBA9}
+body.imm .scene.hasbg .road::after{background:repeating-linear-gradient(90deg,#F3E6C8 0 26px,transparent 26px 56px);opacity:.75}
+body.imm .gap{top:calc(10px + env(safe-area-inset-top,0px));background:rgba(34,48,74,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+body.imm .hearts{top:calc(16px + env(safe-area-inset-top,0px))}
+body.imm .homebtn{top:calc(10px + env(safe-area-inset-top,0px))}
+body.imm .timer{top:env(safe-area-inset-top,0px)}
+body.imm .sheet{flex:none;margin-top:auto;position:relative;z-index:2;background:var(--parch) var(--grain);box-shadow:0 -10px 26px rgba(34,48,74,.28);--line:var(--pline);--bubble:var(--pbub)}
+body.imm .sheet::before{content:"";position:absolute;left:0;right:0;top:-9px;height:10px;background:var(--parch);-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='10'><path d='M0 10V6Q4 2 9 5T19 3T29 6T38 2T48 5T57 3T64 5V10Z'/></svg>") repeat-x 0 0/64px 10px;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='10'><path d='M0 10V6Q4 2 9 5T19 3T29 6T38 2T48 5T57 3T64 5V10Z'/></svg>") repeat-x 0 0/64px 10px}
+body.imm .grip{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:38px;flex:none;padding:0;background:transparent;box-shadow:none;border-radius:0;touch-action:none;color:var(--muted);font-size:13px;font-weight:500}
+body.imm .grip:active{transform:none}
+body.imm .grip i{width:46px;height:5px;border-radius:3px;background:#C9B38A}
+body.imm .grip span{display:none}
+body.imm .sheet.min .grip{height:48px}
+body.imm .sheet.min .grip span{display:inline}
+body.imm .sheet.min{padding-bottom:env(safe-area-inset-bottom,0px)}
+body.imm .sheet.min .stage{display:none}
+body.imm .stage{flex:none;background:transparent;box-shadow:none;border-radius:0;padding-top:0;max-height:min(64vh,calc(100vh - 230px));max-height:min(64dvh,calc(100dvh - 230px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+body.imm .stage h2{font-family:Georgia,"Noto Serif SC","Songti SC",var(--display)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body.imm .grip i{background:#6A5F4B} }
+:root[data-theme="dark"] body.imm .grip i{background:#6A5F4B}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+<div id="sceneBg" aria-hidden="true"></div>
 <div class="wrap">
   <div class="scene" id="scene">
     <div class="timer" id="timer"><i id="tbar" style="width:0"></i></div>
@@ -253,10 +338,12 @@ table.g td:first-child{color:var(--muted);white-space:nowrap}
     <div class="combo" id="combo"></div>
     <button class="homebtn" id="homebtn" title="回到背包">🏠</button>
   </div>
-  <div class="stage" id="stage"><div id="loading" class="center" style="margin:auto"><div class="big">🚕</div><h2>加载中…</h2><div class="tap">第一次打开要下载约 2.5 MB，网络慢时请稍等</div></div></div>
+  <div class="sheet" id="sheet"><button class="grip" id="grip" aria-label="收起或展开题目" aria-expanded="true"><i></i><span>▲ 展开，继续答题 · 计时已暂停</span></button>
+  <div class="stage" id="stage"><div id="loading" class="center" style="margin:auto"><div class="big">🚕</div><h2>加载中…</h2><div class="tap">第一次打开要下载约 2.5 MB，网络慢时请稍等</div></div></div></div>
 </div>
 <div id="town" hidden>
   <div id="townWorld"><div id="townMap">
+    <img id="townBg" alt="" draggable="false">
     <svg class="t-ground" width="1400" height="1320" viewBox="0 0 1400 1320">
       <defs>
         <pattern id="t-grass" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#9ed58a"/><circle cx="8" cy="12" r="2" fill="#8fc97b"/><circle cx="28" cy="30" r="2.5" fill="#8fc97b"/><circle cx="20" cy="4" r="1.5" fill="#b4e3a2"/></pattern>
@@ -277,13 +364,15 @@ table.g td:first-child{color:var(--muted);white-space:nowrap}
       <use href="#t-tree" x="240" y="700"/><use href="#t-tree" x="1160" y="720"/><use href="#t-tree" x="560" y="1120"/><use href="#t-tree" x="840" y="1130"/>
       <use href="#t-tree" x="620" y="920"/><use href="#t-tree" x="790" y="930"/>
     </svg>
+    <div id="townFog"></div>
     <div id="townBuildings"></div>
     <img id="townTaxi" alt="" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><ellipse cx='35' cy='34' rx='30' ry='6' fill='black' opacity='.2'/><rect x='4' y='14' width='62' height='18' rx='7' fill='%23FFB300'/><path d='M14 15 q8 -12 22 -12 h10 q10 0 16 12z' fill='%23FFB300'/><path d='M18 14 q6 -8 18 -8 h8 q8 0 12 8z' fill='%23cfe9ff'/><rect x='28' y='-1' width='14' height='6' rx='2' fill='%231b2a3b'/><circle cx='18' cy='32' r='6' fill='%23222'/><circle cx='52' cy='32' r='6' fill='%23222'/></svg>">
-    <div id="townNico"><img src="assets/characters/nico.png" alt="" loading="lazy"></div>
+    <div id="townNico"><img src="assets/characters/nico.png" alt="" loading="lazy"><div id="townFox">🦊</div></div>
   </div></div>
   <div class="t-hud">
     <button class="t-pill" id="townBack">‹ 背包</button>
     <span class="t-pill" id="townTitle"></span>
+    <button class="t-pill" id="townJournal" hidden>📖 手记</button>
     <button class="t-pill" id="townList">☰ 全部集数</button>
   </div>
   <div class="t-sheet" id="townSheet"></div>
@@ -305,20 +394,30 @@ LEVELS.forEach(l=>{ let last=0; l.episodes.forEach(e=>{ if(e.ch&&e.ch.n!=null){ 
 const chapterName=(lv,n)=>{ const e=LEVELS.find(l=>l.id===lv).episodes.find(x=>x._ch===n&&x.ch); return e?e.ch.name:"第 "+n+" 章"; };
 /* 城市地图：每个地标负责哪些章节（ch 是章节号 0–18）。坐标沿用原 map.html；A2 暂时借用同一座岛，按章节顺序分配 */
 const TOWNS={
-  A1:{ size:[1400,1320], buildings:[
-    {id:"flughafen",   name:"Flughafen",    zh:"机场",     ch:[0,13],   x:700, y:260, w:230},
-    {id:"wg",          name:"WG",           zh:"合租公寓", ch:[3,5,6],  x:1060,y:470, w:200},
-    {id:"cafe",        name:"Café",         zh:"咖啡馆",   ch:[1,2],    x:1250,y:720, w:190},
-    {id:"sprachschule",name:"Sprachschule", zh:"语言学校", ch:[4],      x:1080,y:940, w:210},
-    {id:"baeckerei",   name:"Bäckerei",     zh:"面包店",   ch:[7],      x:760, y:1110,w:180},
-    {id:"supermarkt",  name:"Supermarkt",   zh:"超市",     ch:[11],     x:440, y:1050,w:210},
-    {id:"restaurant",  name:"Restaurant",   zh:"餐厅",     ch:[8,9],    x:250, y:880, w:200},
-    {id:"park",        name:"Park",         zh:"公园",     ch:[15,16],  x:300, y:560, w:220},
-    {id:"fahrrad",     name:"Fahrrad",      zh:"自行车店", ch:[12],     x:460, y:360, w:180},
-    {id:"bahnhof",     name:"Bahnhof",      zh:"火车站",   ch:[10],     x:980, y:300, w:200},
-    {id:"arztpraxis",  name:"Arztpraxis",   zh:"诊所",     ch:[17],     x:420, y:800, w:170},
-    {id:"boutique",    name:"Boutique",     zh:"服装店",   ch:[14],     x:980, y:760, w:170},
-    {id:"rathaus",     name:"Rathaus",      zh:"市政厅",   ch:[18],     x:700, y:720, w:260, center:true}
+  /* A1：v0.4 水彩城市图。x,y 是楼在底图上的中心（原图像素），w,h 是可点区域；d 是所属街区；life 是「新生活」卡（D36，待用户审） */
+  A1:{ size:[1024,1536], bg:"assets/city/a1-day.webp",
+    districts:[
+      {id:"air",   name:"机场区",     blobs:[[720,110,400,110],[380,115,260,80]]},
+      {id:"kiez",  name:"北岸 Kiez",  blobs:[[170,340,230,190],[340,250,180,210],[720,250,240,170],[530,300,160,130]]},
+      {id:"markt", name:"市场街",     blobs:[[140,590,180,160],[130,800,180,140],[100,970,160,120]]},
+      {id:"fluss", name:"河畔与车站", blobs:[[880,580,210,140],[850,790,190,160]]},
+      {id:"sued",  name:"南岸公园区", blobs:[[660,1070,190,180],[900,1120,180,180],[360,1370,270,190],[630,1300,190,150]]},
+      {id:"mitte", name:"城心",       blobs:[[512,590,240,240]], center:true}
+    ],
+    buildings:[
+    {id:"flughafen",   name:"Flughafen",    zh:"机场",     ch:[0,13],   x:747, y:107, w:405,h:100,d:"air",  ic:"✈️", life:["Ich bin in Berlin angekommen.","我到柏林了。"]},
+    {id:"wg",          name:"WG",           zh:"合租公寓", ch:[3,5,6],  x:336, y:261, w:181,h:288,d:"kiez", ic:"🛏️", life:["Ich wohne jetzt in einer WG.","我现在住在合租公寓里。"]},
+    {id:"cafe",        name:"Café",         zh:"咖啡馆",   ch:[1,2],    x:155, y:357, w:192,h:245,d:"kiez", ic:"☕", life:["Ich treffe meine Freunde im Café.","我在咖啡馆和朋友见面。"]},
+    {id:"sprachschule",name:"Sprachschule", zh:"语言学校", ch:[4],      x:722, y:251, w:261,h:203,d:"kiez", ic:"📚", life:["Ich lerne Deutsch in einer Sprachschule.","我在语言学校学德语。"]},
+    {id:"baeckerei",   name:"Bäckerei",     zh:"面包店",   ch:[7],      x:139, y:587, w:235,h:235,d:"markt",ic:"🥨", life:["Ich kaufe jeden Morgen Brötchen.","我每天早上买小面包。"]},
+    {id:"supermarkt",  name:"Supermarkt",   zh:"超市",     ch:[11],     x:91,  y:971, w:181,h:150,d:"markt",ic:"🛒", life:["Ich kaufe Obst und Gemüse.","我买水果和蔬菜。"]},
+    {id:"restaurant",  name:"Restaurant",   zh:"餐厅",     ch:[8,9],    x:128, y:800, w:256,h:192,d:"markt",ic:"🍽️", life:["Ich reserviere einen Tisch für zwei Personen.","我订了一张两人桌。"]},
+    {id:"park",        name:"Park",         zh:"公园",     ch:[15,16],  x:357, y:1376,w:309,h:245,d:"sued", ic:"🌳", life:["Am Sonntag jogge ich im Park.","星期天我在公园慢跑。"]},
+    {id:"fahrrad",     name:"Fahrrad",      zh:"自行车店", ch:[12],     x:848, y:789, w:203,h:267,d:"fluss",ic:"🚲", life:["Ich fahre mit dem Fahrrad zum Markt.","我骑自行车去市场。"]},
+    {id:"bahnhof",     name:"Bahnhof",      zh:"火车站",   ch:[10],     x:880, y:576, w:288,h:176,d:"fluss",ic:"🚆", life:["Ich finde den Weg zum Bahnhof.","我找到去火车站的路了。"]},
+    {id:"arztpraxis",  name:"Arztpraxis",   zh:"诊所",     ch:[17],     x:898, y:1120,w:251,h:256,d:"sued", ic:"⚕️", life:["Ich habe einen Termin beim Arzt.","我约了看医生。"]},
+    {id:"boutique",    name:"Boutique",     zh:"服装店",   ch:[14],     x:648, y:1072,w:240,h:267,d:"sued", ic:"👗", life:["Ich probiere eine Jacke an.","我试穿一件夹克。"]},
+    {id:"rathaus",     name:"Rathaus",      zh:"市政厅",   ch:[18],     x:512, y:587, w:341,h:363,d:"mitte",ic:"🕰️", life:["Berlin ist jetzt meine neue Heimat.","柏林现在是我的新家乡。"], center:true}
   ]},
   A2:{ size:[1400,1320], buildings:[
     {id:"flughafen",   name:"Flughafen",    zh:"机场",     ch:[0],      x:700, y:260, w:230},
@@ -354,7 +453,7 @@ for(const [lv,T] of Object.entries(TOWNS)){ if(!levelOf(lv)) continue; const all
 let CUR_LV=null;
 const V=id=>VOCAB.find(v=>v.id===id);
 const AV={Nico:"🧑",Emma:"👧",Lisa:"👩",Taxifahrer:"🧔",Mann:"👨",Frau:"👩‍🦰",Radio:"📻",Max:"🧑‍🦱",Jürgen:"👮",Mutter:"👩‍🦳",Anrufer:"📞",Moderatorin:"🎙️","Frau Schneider":"👩‍🦰"};
-const GAP=[0,1,3,7];
+const GAP=[0,1,3,7,14,30];   /* box 1-4 记得后隔几天再来；box 到 5 算掌握 */
 /* 填空题讲解：key 是 "剧集key#填空序号"（序号从 0 开始，对应 E.cloze 的顺序） */
 const WHY={
   "A1-1#0":"对陌生人用 Sie，“您呢？”是 Und Ihnen?（Ihnen 是 Sie 的第三格）",
@@ -370,7 +469,15 @@ try{ const r=localStorage.getItem(KEY)||localStorage.getItem("nicosweg-story-v2"
 let cloud={ref:null,ready:false,t:null,busy:false};
 function save(){ S.updatedAt=Date.now(); try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} pushCloud(); }
 function pushCloud(){ if(!cloud.ready) return; clearTimeout(cloud.t); cloud.t=setTimeout(async()=>{ if(cloud.busy){ pushCloud(); return; } cloud.busy=true; try{ await cloud.ref.set(JSON.parse(JSON.stringify(S))); }catch(e){} cloud.busy=false; },1000); }
-function mergeSave(a,b){ /* 合并两份存档：通关、物品、错词、场景进度取并集 */ const o=JSON.parse(JSON.stringify(a)); o.items=[...new Set([...(a.items||[]),...(b.items||[])])]; o.ep=Object.assign({},b.ep||{}); for(const [k,v] of Object.entries(a.ep||{})){ o.ep[k]=Object.assign({},b.ep&&b.ep[k]||{},v); if(b.ep&&b.ep[k]&&b.ep[k].won) o.ep[k].won=true; } o.mist=Object.assign({},b.mist||{},a.mist||{}); o.hard=!!(a.hard||b.hard); o.profile=Object.assign({},b.profile||{},a.profile||{}); o.mood=Object.assign({},b.mood||{},a.mood||{}); const seen=new Set(); o.book=[...(a.book||[]),...(b.book||[])].filter(x=>{ if(seen.has(x.de)) return false; seen.add(x.de); return true; }); return o; }
+function mergeEp(x,y){ const o=Object.assign({},y,x); ["won","s2","s3","c3","b3"].forEach(k=>{ if(x[k]||y[k]) o[k]=true; }); if(x.plays||y.plays) o.plays=Math.max(x.plays||0,y.plays||0);
+  if(x.ft||y.ft){ o.ft={}; ["sms","radio"].forEach(k=>{ o.ft[k]=Object.assign({},(y.ft||{})[k],(x.ft||{})[k]); }); } return o; }
+function mergeSave(a,b){ /* 合并两份存档：通关、星、物品、错词、场景进度取并集 */ const o=JSON.parse(JSON.stringify(a)); o.items=[...new Set([...(a.items||[]),...(b.items||[])])]; o.ep=Object.assign({},b.ep||{}); for(const [k,v] of Object.entries(a.ep||{})) o.ep[k]=mergeEp(v,b.ep&&b.ep[k]||{});
+  const ma=a.mist||{}, mb=b.mist||{}; o.mist=Object.assign({},mb,ma); for(const k in ma) if(mb[k]){ const p=ma[k],q=mb[k],w=(p.box||0)>=(q.box||0)?p:q; o.mist[k]=Object.assign({},w,{wrong:Math.max(p.wrong||0,q.wrong||0)}); }
+  const sa=a.streak||{}, sb=b.streak||{}; if(sa.n||sb.n) o.streak={n:Math.max(sa.n||0,sb.n||0),last:(sa.last||"")>(sb.last||"")?sa.last:sb.last}; o.hard=!!(a.hard||b.hard); o.profile=Object.assign({},b.profile||{},a.profile||{}); o.mood=Object.assign({},b.mood||{},a.mood||{}); const seen=new Set(); o.book=[...(a.book||[]),...(b.book||[])].filter(x=>{ if(seen.has(x.de)) return false; seen.add(x.de); return true; });
+  if(a.seen||b.seen){ const A=a.seen||{}, B=b.seen||{}, R=FOGR; o.seen={fog:Object.assign({},B.fog,A.fog),card:Object.assign({},B.card,A.card),lv:Object.assign({},B.lv,A.lv)};   /* 雾取更晴的一边；卡片取并集，时间取早的 */
+    for(const k in B.fog||{}) if((R[B.fog[k]]||0)>(R[o.seen.fog[k]]||0)) o.seen.fog[k]=B.fog[k];
+    for(const k in B.card||{}) if(A.card&&A.card[k]) o.seen.card[k]=Math.min(A.card[k],B.card[k]); }
+  return o; }
 async function initCloud(){ try{ if(!window.claude||!claude.use) return; const [user,db]=await Promise.all([claude.use("user"),claude.use("db")]); if(!user||!db) return; const uid=await user.id(); if(!uid) return;
   cloud.ref=db.doc("data/users/"+uid+"/save"); const snap=await cloud.ref.get();
   if(snap.exists){ const c=migrate(snap.data()); S=mergeSave((c.updatedAt||0)>=(S.updatedAt||0)?c:S,(c.updatedAt||0)>=(S.updatedAt||0)?S:c); try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
@@ -381,9 +488,38 @@ function isUnlocked(n){ return true; }
 function epState(e){ const ep=S.ep[e.key]||{}; return {won:!!ep.won,done:SCENES.filter(([k])=>ep[k]).length}; }
 function today(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function addDays(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-/* 学习记录：每个碰过的词都进 S.mist（沿用字段名），box 0=新学 → 1 → 2 → 3 掌握；due 是下次回顾日 */
+/* 学习记录：每个碰过的词都进 S.mist（沿用字段名），box 0=新学 → 1 … 5 掌握；due 是下次回顾日 */
 function touch(v){ if(!S.mist[v.id]){ S.mist[v.id]={box:0,due:addDays(1),wrong:0,done:false,first:today()}; } }
-function markWrong(v){ touch(v); const m=S.mist[v.id]; m.box=0; m.due=today(); m.wrong++; m.done=false; save(); }
+/* 本局错过的词（通关页用）：只记这次打开后在这一集里错的，不读历史 */
+let RUN={key:null,wrong:new Set()};
+function runWrong(v){ if(!E||!v) return; if(RUN.key!==E.key) RUN={key:E.key,wrong:new Set()}; RUN.wrong.add(v.id); }
+function markWrong(v){ touch(v); runWrong(v); const m=S.mist[v.id]; m.box=0; m.due=today(); m.wrong++; m.done=false; save(); }
+/* 星级：⭐1 通关；⭐2 写下来一次拼对 ≥90% 且听写一次听对 ≥70%（小集按"最多错几个"算）；⭐3 赶路一颗心没丢 + Boss 全对，挑战模式通关直接给。只升不降 */
+const starMiss=(N,th)=>Math.floor((1-th)*N+.5);
+function starInfo(e){ const ep=S.ep[e.key]||{}, ft=ep.ft||{}, ids=VOCAB.filter(v=>v.l===e.id).map(v=>v.id), N=ids.length;
+  const okS=ids.filter(i=>ft.sms&&ft.sms[i]).length, okR=ids.filter(i=>ft.radio&&ft.radio[i]).length;
+  return {N,okS,okR,needS:N-starMiss(N,.9),needR:N-starMiss(N,.7),s2:N-okS<=starMiss(N,.9)&&N-okR<=starMiss(N,.7),c3:!!ep.c3,b3:!!ep.b3}; }
+function updateStars(e){ const ep=S.ep[e.key]; if(!ep||!ep.won) return; const i=starInfo(e); if(i.s2) ep.s2=true; if(i.c3&&i.b3) ep.s3=true; }
+function starsOf(e){ const ep=S.ep[e.key]||{}; return ep.won?1+(ep.s2?1:0)+(ep.s3?1:0):0; }
+const starStr=n=>"★".repeat(n)+"☆".repeat(3-n);
+const starSum=eps=>eps.reduce((s,e)=>s+starsOf(e),0);
+function starHints(e){ const ep=S.ep[e.key]||{}; if(!ep.won) return ""; const i=starInfo(e), out=[];
+  if(!ep.s2) out.push(`⭐2：写下来一次拼对 ${i.okS}/${i.N}（要 ${i.needS}），听写一次听对 ${i.okR}/${i.N}（要 ${i.needR}）`);
+  if(!ep.s3) out.push(`⭐3：赶路一颗心都不丢 ${i.c3?"✓":"✗"}，Boss 全对 ${i.b3?"✓":"✗"}`);
+  return out.length?`<div class="tap" style="text-align:left">${out.join("<br>")}</div>`:""; }
+function ftSet(k,id){ const ep=EP(); ep.ft=ep.ft||{}; ep.ft[k]=ep.ft[k]||{}; ep.ft[k][id]=true; }
+/* 🔥 连续天数：当天完成今日回顾或任一场景算 1 天，断了只是从 1 重新数，不惩罚 */
+function bumpStreak(){ const t=today(), s=S.streak||{n:0,last:""}; if(s.last===t) return; s.n=s.last===addDays(-1)?(s.n||0)+1:1; s.last=t; S.streak=s; }
+const streakN=()=>{ const s=S.streak; return s&&(s.last===today()||s.last===addDays(-1))?s.n:0; };
+/* 答案卡：答对后自动念一遍，停 1.5–2 秒自动下一题，点空白处可提前；答错停下等手点。「总是手点」或系统减少动态效果时一律手点 */
+const RMQ=window.matchMedia?matchMedia("(prefers-reduced-motion: reduce)"):{matches:false};
+const manualNext=()=>!!(S.pref&&S.pref.manualNext)||RMQ.matches;
+function autoNext(go,sound,ok){ const t0=Date.now(), mark=stage.firstElementChild, auto=ok&&!manualNext(); let fired=false;
+  const off=()=>stage.removeEventListener("click",tap,true);
+  const fire=()=>{ if(fired) return; if(!mark||!mark.isConnected){ off(); return; } fired=true; off(); go(); };
+  const tap=e=>{ if(!mark||!mark.isConnected) return off(); if(e.target.closest("#sp,.spk,button,a,input,textarea")) return; fire(); };
+  sound(()=>{ if(auto) setTimeout(fire,Math.max(300,1500-(Date.now()-t0))); });
+  if(auto){ setTimeout(fire,2000); setTimeout(()=>stage.addEventListener("click",tap,true),50); } }
 function dueList(){ const t=today(); return Object.entries(S.mist).filter(([k,m])=>!m.done&&m.due<=t&&V(k)).sort((a,b)=>(b[1].wrong||0)-(a[1].wrong||0)||(a[1].due<b[1].due?-1:a[1].due>b[1].due?1:0)).map(([k,m])=>Object.assign({v:V(k)},m,{key:k})); }
 
 /* ---------- 工具 ---------- */
@@ -422,10 +558,42 @@ function cheer(){ const n=$("nico"); n.classList.remove("jump","stumble"); void 
 function stumble(){ const n=$("nico"); n.classList.remove("jump","stumble"); void n.offsetWidth; n.classList.add("stumble"); const p=$("puff"); p.style.left=n.style.left; p.classList.remove("go"); void p.offsetWidth; p.classList.add("go"); }
 function hearts(n,max){ $("hearts").innerHTML=n==null?"":Array.from({length:max||3},(_,k)=>`<span class="${k<n?'':'off'}">❤️</span>`).join(""); }
 function combo(txt){ const c=$("combo"); c.textContent=txt; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
-let tInt=null; function timer(sec,onEndT){ clearInterval(tInt); const bar=$("tbar"); let left=sec; bar.style.width="100%"; tInt=setInterval(()=>{ left-=.1; bar.style.width=Math.max(0,left/sec*100)+"%"; if(left<=0){ clearInterval(tInt); onEndT(); } },100); }
-function stopTimer(){ clearInterval(tInt); $("tbar").style.width="0"; }
+let tInt=null; function timer(sec,onEndT){ clearInterval(tInt); const bar=$("tbar"); let left=sec; bar.style.width="100%"; tInt=setInterval(()=>{ if(SHEET_MIN) return; left-=.1; bar.style.width=Math.max(0,left/sec*100)+"%"; if(left<=0){ clearInterval(tInt); onEndT(); } },100); }
+function stopTimer(){ clearInterval(tInt); tInt=null; $("tbar").style.width="0"; }
 function dots(n,total,states){ return `<div class="dots">${Array.from({length:total},(_,i)=>`<i class="${states&&states[i]?states[i]:(i<n?'on':'')}"></i>`).join("")}</div>`; }
 function bubble(who,de,zh){ return `<div class="dialog ${who==="Nico"?'me':''}"><div class="av">${AV[who]||"🙂"}</div><div class="bub"><div class="who">${esc(who)}</div><div class="de">${de}</div>${zh?`<div class="zh">${zh}</div>`:""}</div></div>`; }
+/* ---------- 单集全屏场景：在一集里（或今日回顾）时，场景铺满全屏、答题卡浮在上面；题目仍旧写进 stage，这里只管外框 ---------- */
+let DIARY=false, SHEET_MIN=false, IMM_BG=null, IMM_KEY=null;
+const sheetEl=$("sheet"), sceneBg=$("sceneBg");
+const immOn=()=>(!!E||DIARY)&&townEl().hidden;
+function sheetMin(on){ if(SHEET_MIN===on) return; SHEET_MIN=on; sheetEl.classList.toggle("min",on); $("grip").setAttribute("aria-expanded",String(!on));
+  if(on){ const a=document.activeElement; if(a&&stage.contains(a)) a.blur(); sheetEl.querySelector(".grip span").textContent=tInt?"▲ 展开，继续答题 · 计时已暂停":"▲ 展开，继续答题"; } immLayout(); }
+/* 背景：本集所在的楼（从城市水彩图里放大取景，室内图做好前先用它）；没有楼时取城市中部 */
+function immBgSpec(){ const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):null;
+  return b?{T,x:b.x,y:b.y,w:b.w}:{T,x:T.size[0]/2,y:T.size[1]*.42,w:T.size[0]*.7}; }
+function immLayout(){ if(!document.body.classList.contains("imm")) return; const sh=sheetEl.offsetHeight; scene.style.setProperty("--sh",sh+"px");
+  const s=IMM_BG; if(!s) return; const [iw,ih]=s.T.size, W=innerWidth, H=innerHeight;
+  const k=Math.max(W/iw,H/ih,Math.min(3,W*.75/s.w));
+  const px=Math.min(0,Math.max(W-iw*k,W/2-s.x*k)), py=Math.min(0,Math.max(H-ih*k,Math.max(80,(H-sh)*.42)-s.y*k));
+  sceneBg.style.backgroundSize=`${iw*k}px ${ih*k}px`; sceneBg.style.backgroundPosition=`${px}px ${py}px`; }
+function immSync(){ const on=immOn(); document.body.classList.toggle("imm",on);
+  if(!on){ IMM_BG=null; IMM_KEY=null; SHEET_MIN=false; sheetEl.classList.remove("min"); return; }
+  sheetMin(false); stage.scrollTop=0;
+  const s=immBgSpec(), key=s?s.T.bg+"@"+s.x+","+s.y:"";
+  if(key!==IMM_KEY){ IMM_KEY=key; IMM_BG=s; sceneBg.classList.toggle("nobg",!s); scene.classList.toggle("hasbg",!!s); if(s) sceneBg.style.backgroundImage=`url("${s.T.bg}")`; }
+  sceneBg.dataset.t=scene.dataset.t||"day"; immLayout(); }
+/* 整页换题时同步外框；只换了一部分（答题反馈等）时，把新内容滚进卡片可见区 */
+new MutationObserver(recs=>{ if(recs.some(r=>r.target===stage)) return immSync(); if(!document.body.classList.contains("imm")) return;
+  const r=recs.find(r=>r.addedNodes.length); if(r&&r.target.scrollIntoView) setTimeout(()=>{ if(r.target.isConnected) r.target.scrollIntoView({block:"nearest",behavior:"smooth"}); },40); }).observe(stage,{childList:true,subtree:true});
+if(window.ResizeObserver) new ResizeObserver(()=>immLayout()).observe(sheetEl);
+window.addEventListener("resize",immLayout);
+/* 收起 / 展开：点把手；在把手或卡片顶部下滑收起，在把手上滑展开 */
+(function(){ let y0=null,x0=0,fromStage=false;
+  sheetEl.addEventListener("touchstart",e=>{ y0=null; if(!document.body.classList.contains("imm")) return; const inStage=stage.contains(e.target);
+    if(inStage&&(stage.scrollTop>0||e.target.closest("input,textarea"))) return; const t=e.touches[0]; y0=t.clientY; x0=t.clientX; fromStage=inStage; },{passive:true});
+  sheetEl.addEventListener("touchend",e=>{ if(y0==null) return; const t=e.changedTouches[0], dy=t.clientY-y0, dx=t.clientX-x0; y0=null; if(Math.abs(dx)>Math.abs(dy)) return;
+    if(dy>(fromStage?70:40)) sheetMin(true); else if(dy<-30&&!fromStage) sheetMin(false); },{passive:true});
+  $("grip").onclick=()=>sheetMin(!SHEET_MIN); })();
 const SCENES=[["chase","🚕"],["sms","📱"],["radio","📻"],["talk","💬"],["boss","🧔"]];
 function sceneName(k){ const s=E.scene&&E.scene[k]; return s?s[0]:{chase:"🚶 赶路",sms:"📝 写下来",radio:"🎧 听写",boss:"🧔 Boss",talk:"💬 对话"}[k]; }
 function sceneText(k){ const d={chase:["🚶 赶路","每答对一题往前一步，答错或超时就落后一步。","出发！"],sms:["📝 写下来","把这一课的词拼出来：名词连冠词一起，短语写整句。","开始"],radio:["🎧 听写","只有声音，没有字。听到什么，打出来。","开始听"]}; return (E.scene&&E.scene[k])||d[k]; }
@@ -500,17 +668,17 @@ function askMood(){ E=null; theme(3); target(); setScene(6,70,false); $("gapLbl"
 
 /* ---------- 首页 ---------- */
 function home(){
-  townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; CUR_LV=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Weg"; hearts(null);
+  townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Weg"; hearts(null);
   const due=dueList(), mtotal=Object.values(S.mist).filter(m=>!m.done).length;
   stage.innerHTML=`<div class="brand">Nico 的背包</div>
     <div class="bag">${EPISODES.filter(e=>S.items.includes(e.key)).slice(-12).map(e=>`<span title="${esc(e.item.n)}">${e.item.e}</span>`).join("")||'<span class="off">👜</span>'}</div>
-    <div class="tap">${S.items.length?`已找回 ${S.items.length} 样`:"包被出租车带走了。每通一集，找回一样东西。"}</div>
+    <div class="tap">${S.items.length?`已找回 ${S.items.length} 样`:"包被出租车带走了。每通一集，找回一样东西。"}${streakN()?` · 🔥 连续 ${streakN()} 天`:""}</div>
     ${wonN()>bkWon()?`<button class="ep" id="bkup" style="border-color:var(--taxi);background:var(--part)"><span class="n">📋</span><span class="t"><b>备份一下进度</b><span>又通关了！点一下复制进度码，发到微信“文件传输助手”或备忘录存好，换手机、删图标都不怕</span></span><span class="go">复制 ›</span></button>`:""}
     ${moodToday()?"":`<button class="ep" id="mood" style="border-color:var(--taxi)"><span class="n">🙂</span><span class="t"><b>Wie geht’s dir?</b><span>Emma 问你今天怎么样，用德语答一句</span></span><span class="go">答 ›</span></button>`}
-    <button class="ep" id="diary" ${due.length?'':'disabled'} style="${due.length?'border-color:var(--taxi)':''}"><span class="n">☀️</span><span class="t"><b>今日回顾</b><span>${due.length?`${due.length} 个词到期，Emma 等着考你`:mtotal?`今天没有到期的词 · 已学 ${mtotal} 个，掌握 ${Object.values(S.mist).filter(m=>m.done).length} 个`:"学过的词会在 1 → 3 → 7 天后回来考你"}</span></span><span class="go">${due.length?'开始 ›':''}</span></button>
+    <button class="ep" id="diary" ${due.length?'':'disabled'} style="${due.length?'border-color:var(--taxi)':''}"><span class="n">☀️</span><span class="t"><b>今日回顾</b><span>${due.length?`${due.length} 个词到期，Emma 等着考你`:mtotal?`今天没有到期的词 · 已学 ${mtotal} 个，掌握 ${Object.values(S.mist).filter(m=>m.done).length} 个`:"学过的词会在 1 → 3 → 7 → 14 → 30 天后回来考你"}</span></span><span class="go">${due.length?'开始 ›':''}</span></button>
     <button class="ep" id="book"><span class="n">📔</span><span class="t"><b>我的小本子</b><span>${(S.book||[]).length?`${(S.book||[]).length} 句关于你自己的话`:"通关一集，攒下几句关于你自己的话"}</span></span><span class="go">${(S.profile||{}).name?"":"填档案 ›"}</span></button>
     <div class="brand" style="margin-top:6px">等级</div>
-    <div class="map">${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="lvcard" data-lv="${l.id}"><span class="big">${l.id}</span><span class="t" style="flex:1;min-width:0"><b>${esc(l.name)}</b><span>${l.episodes.length} 集 · 通关 ${won}</span><div class="bar"><i style="width:${l.episodes.length?won/l.episodes.length*100:0}%"></i></div></span><span class="go">›</span></button>`; }).join("")}</div>
+    <div class="map">${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="lvcard" data-lv="${l.id}"><span class="big">${l.id}</span><span class="t" style="flex:1;min-width:0"><b>${esc(l.name)}</b><span>${l.episodes.length} 集 · 通关 ${won} · ★${starSum(l.episodes)}/${l.episodes.length*3}</span><div class="bar"><i style="width:${l.episodes.length?won/l.episodes.length*100:0}%"></i></div></span><span class="go">›</span></button>`; }).join("")}</div>
     <p class="tap">词汇与原声：DW Nicos Weg 官方 Wortschatz · ${cloud.ready?"进度已同步到云端":"进度存在本机"} · <a href="#" id="bk" style="color:var(--taxi)">备份 / 恢复进度</a> · <a href="#" id="rl" style="color:var(--taxi)">🔄 刷新</a></p>`;
   $("bk").onclick=e=>{ e.preventDefault(); backupPage(); }; $("rl").onclick=e=>{ e.preventDefault(); location.reload(); };
   stage.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>townView(b.dataset.lv)); $("diary").onclick=()=>diary(false); $("book").onclick=bookPage; const mb=$("mood"); if(mb) mb.onclick=askMood;
@@ -549,48 +717,105 @@ function backupPage(){ E=null; theme(3); target(); setScene(6,70,false,"📦"); 
   $("restore").onclick=()=>{ try{ importCode($("paste").value); cheer(); toast("恢复成功"); setTimeout(home,600); }catch(e){ stumble(); toast("进度码不对，请检查是否复制完整"); } };
 }
 /* ---------- 城市地图视图：A1 / A2 卡片进来，点地标弹出这个地标的课时列表 ---------- */
-let TV={lv:null,sel:null,sc:.6,tx:0,ty:0,drag:null,pinch:null,raf:null};
+let TV={lv:null,sel:null,sc:.6,tx:0,ty:0,drag:null,pinch:null,raf:null,swiped:0};
 const townEl=()=>$("town");
 function townView(lv,selId){
   const T=TOWNS[lv], L=levelOf(lv); if(!T||!L) return levelMap(lv);
-  stopTimer(); E=null; CUR_LV=lv; TV.lv=lv;
-  townEl().hidden=false; document.body.style.overflow="hidden";
+  stopTimer(); E=null; DIARY=false; CUR_LV=lv; TV.lv=lv; const bg=!!T.bg; document.body.classList.remove("imm");
+  const tw=townEl(); tw.hidden=false; tw.classList.toggle("bgm",bg); document.body.style.overflow="hidden";
+  tw.querySelectorAll(".t-modal").forEach(x=>x.remove());
+  const m=$("townMap"); m.style.width=T.size[0]+"px"; m.style.height=T.size[1]+"px";
+  if(bg){ const im=$("townBg"); if(im.getAttribute("src")!==T.bg) im.src=T.bg; im.style.width=T.size[0]+"px"; im.style.height=T.size[1]+"px"; }
+  $("townFog").innerHTML=""; $("townJournal").hidden=!bg;
   const won=L.episodes.filter(e=>epState(e).won).length;
-  $("townTitle").textContent=`${L.name} · 通关 ${won}/${L.episodes.length}`;
+  $("townTitle").textContent=`${L.name} · 通关 ${won}/${L.episodes.length} · ★${starSum(L.episodes)}`;
   $("townBuildings").innerHTML=T.buildings.map(b=>{ const st=bState(lv,b); const eps=epsOfB(lv,b); const w=eps.filter(e=>epState(e).won).length;
+    if(bg){ const tag=st==="done"?`★${starSum(eps)}/${eps.length*3}`:st==="cur"?`▶ ${w}/${eps.length}`:`${w}/${eps.length}`;
+      return `<div class="t-hs ${st}" data-b="${b.id}" style="left:${b.x-b.w/2}px;top:${b.y-b.h/2}px;width:${b.w}px;height:${b.h}px"><span class="t-tag"><em>${b.ic||""}</em>${esc(b.name)} <small>${tag}</small></span></div>`; }
     const tag=st==="done"?"⭐ 全部通关":st==="cur"?`▶ ${w}/${eps.length}`:`${w}/${eps.length}`;
     return `<div class="t-b ${st}" data-b="${b.id}" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;z-index:${Math.round(b.y)}"><img src="assets/buildings/${b.id}.png" alt=""><span class="t-tag">${esc(b.name)} · ${tag}</span></div>`; }).join("");
-  $("townBuildings").querySelectorAll(".t-b").forEach(el=>el.onclick=()=>{ if(TV.drag&&TV.drag.moved) return; townSelect(el.dataset.b); });
+  $("townBuildings").querySelectorAll(".t-b,.t-hs").forEach(el=>el.onclick=()=>{ if(TV.drag&&TV.drag.moved) return; townSelect(el.dataset.b); });
   const cur=T.buildings.find(b=>b.id===selId)||T.buildings.find(b=>bState(lv,b)==="cur")||T.buildings[0];
-  TV.sc=Math.max(.42,Math.min(.75,townEl().clientWidth/900));
+  townScale(true);
   const n=$("townNico"); n.style.transition="none"; townSelect(cur.id,true); void n.offsetWidth; n.style.transition="";   /* 刚打开时 Nico 直接站好，不从角落走过来 */
-  townFocus(cur,false); townDrive();
+  townFocus(cur,false);
+  if(bg){ cancelAnimationFrame(TV.raf); townFogRun(lv); } else townDrive();
 }
-function townHide(){ const t=townEl(); if(!t||t.hidden) return; t.hidden=true; document.body.style.overflow=""; cancelAnimationFrame(TV.raf); }
+/* 缩放范围：画作底图模式下最小 = 刚好铺满屏幕（不露边），否则沿用旧值 */
+function townScale(reset){ const T=TOWNS[TV.lv], W=townEl().clientWidth, H=townEl().clientHeight;
+  if(T.bg){ TV.min=Math.max(W/T.size[0],H/T.size[1]); TV.max=Math.max(TV.min*2.2,1.2); TV.sc=reset?Math.min(TV.max,TV.min*1.15):Math.min(TV.max,Math.max(TV.min,TV.sc)); }
+  else { TV.min=.35; TV.max=1.3; if(reset) TV.sc=Math.max(.42,Math.min(.75,W/900)); } }
+/* 楼的缩略图：画作模式直接从底图裁出这栋楼 */
+function tThumb(b,size){ const T=TOWNS[TV.lv]; if(!T.bg) return `<img src="assets/buildings/${b.id}.png" alt="">`;
+  const k=size/Math.max(b.w,b.h), w=Math.round(b.w*k), h=Math.round(b.h*k);
+  return `<div class="t-thumb" style="width:${w}px;height:${h}px;background-image:url('${T.bg}');background-size:${(T.size[0]*k).toFixed(1)}px ${(T.size[1]*k).toFixed(1)}px;background-position:${(-(b.x-b.w/2)*k).toFixed(1)}px ${(-(b.y-b.h/2)*k).toFixed(1)}px"></div>`; }
+/* ---------- 云雾：fog 浓雾 / mist 薄雾 / clear 晴，全由存档推导；S.seen 只记"上次看到的状态"，用来决定要不要播散雾 ---------- */
+const FOGR={fog:0,mist:1,clear:2};
+function districtState(lv,d){ const T=TOWNS[lv], eps=T.buildings.filter(b=>b.d===d.id).flatMap(b=>epsOfB(lv,b)); if(!eps.length) return "clear";
+  if(eps.every(e=>epState(e).won)) return "clear";
+  if(eps.some(e=>{ const s=epState(e); return s.won||s.done; })) return "mist";
+  const nx=nextEpOf(lv); if(nx&&eps.includes(nx)) return "mist";   /* Nico 正要去的街区：至少认得路 */
+  if(d.center&&T.districts.filter(x=>!x.center).every(x=>districtState(lv,x)!=="fog")) return "mist";   /* 城心：五个街区都走进去过才变薄 */
+  return "fog"; }
+function townFogRun(lv){ const T=TOWNS[lv]; if(!T.districts) return;
+  S.seen=S.seen||{}; S.seen.fog=S.seen.fog||{}; S.seen.card=S.seen.card||{}; S.seen.lv=S.seen.lv||{};
+  const first=!S.seen.lv[lv], now={}, prev={};
+  T.districts.forEach(d=>{ now[d.id]=districtState(lv,d); const p=first?now[d.id]:(S.seen.fog[lv+":"+d.id]||"fog"); prev[d.id]=FOGR[p]>FOGR[now[d.id]]?now[d.id]:p; });
+  $("townFog").innerHTML=T.districts.map(d=>`<div class="t-fog" data-d="${d.id}" data-st="${prev[d.id]}">${d.blobs.map(([x,y,rx,ry])=>`<i style="left:${x-rx*1.25}px;top:${y-ry*1.25}px;width:${rx*2.5}px;height:${ry*2.5}px"></i>`).join("")}</div>`).join("");
+  const up=T.districts.filter(d=>prev[d.id]!==now[d.id]);
+  const cards=T.buildings.filter(b=>b.life&&!S.seen.card[b.id]&&epsOfB(lv,b).some(e=>epState(e).won));
+  T.districts.forEach(d=>S.seen.fog[lv+":"+d.id]=now[d.id]);
+  if(first){ cards.forEach(b=>S.seen.card[b.id]=1); S.seen.lv[lv]=1; save(); return; }   /* 老存档第一次进新版：直接显示现状，不连播动画 */
+  if(!up.length&&!cards.length) return;
+  cards.forEach(b=>S.seen.card[b.id]=Date.now()); save();
+  const tok=TV.fogT=(TV.fogT||0)+1, live=()=>TV.fogT===tok&&!townEl().hidden&&TV.lv===lv;
+  const glow=id=>{ const el=$("townBuildings").querySelector(`.t-hs[data-b="${id}"]`); if(!el) return; el.classList.remove("glow"); void el.offsetWidth; el.classList.add("glow"); };
+  setTimeout(()=>{ if(!live()) return;
+    up.forEach(d=>{ const el=$("townFog").querySelector(`[data-d="${d.id}"]`); if(el) el.dataset.st=now[d.id]; if(now[d.id]==="clear"){ toast(`${d.name}的雾散开了`); T.buildings.filter(b=>b.d===d.id).forEach(b=>glow(b.id)); } });
+    cards.forEach(b=>glow(b.id)); },500);
+  setTimeout(()=>{ if(live()) townCards(cards); },up.length?2500:1400);
+}
+/* 「新生活」卡：一栋楼第一集首次通关后，回到城市时弹出；收进旅途手记 */
+function townCards(list){ if(!list.length) return; const b=list[0], box=document.createElement("div"); box.className="t-modal";
+  box.innerHTML=`<div class="t-card"><h3>✦ 新生活 ✦</h3>${tThumb(b,220)}<div class="de">${esc(b.life[0])}</div><div class="zh">${esc(b.life[1])}</div><div class="row" style="justify-content:center"><button data-k="say">🔊 听</button><button class="primary" data-k="ok">收进手记</button></div></div>`;
+  townEl().appendChild(box); speakThen(b.life[0]);
+  box.querySelector("[data-k=say]").onclick=()=>speakThen(b.life[0]);
+  box.querySelector("[data-k=ok]").onclick=()=>{ box.remove(); townCards(list.slice(1)); }; }
+function townJournal(){ const T=TOWNS[TV.lv], seen=(S.seen&&S.seen.card)||{}, all=T.buildings.filter(b=>b.life), got=all.filter(b=>seen[b.id]).sort((a,b)=>seen[a.id]-seen[b.id]);
+  $("townBuildings").querySelectorAll(".sel").forEach(x=>x.classList.remove("sel"));
+  const sh=$("townSheet"); sh.classList.remove("min");
+  sh.innerHTML=`<div class="t-grip" id="townGrip"></div><div class="t-head" id="townHead"><div style="font-size:40px;width:64px;text-align:center">📖</div><div style="flex:1;min-width:0"><b>旅途手记</b><span>新生活 ${got.length}/${all.length} · 每栋楼第一次通关时收进一张</span></div></div>
+    ${got.length?got.map(b=>`<div class="t-life" data-say="${b.id}">${tThumb(b,56)}<div style="flex:1;min-width:0"><b>${esc(b.life[0])}</b><span>${esc(b.life[1])} · ${b.ic||""} ${esc(b.zh)}</span></div><span>🔊</span></div>`).join(""):`<div class="tap">还没有卡片。通关一栋楼的第一集，就会收到第一张「新生活」。</div>`}`;
+  sh.scrollTop=0; sh.querySelectorAll("[data-say]").forEach(x=>x.onclick=()=>speakThen(T.buildings.find(b=>b.id===x.dataset.say).life[0]));
+  $("townGrip").onclick=$("townHead").onclick=()=>townSheetMin(!sh.classList.contains("min")); }
+function townHide(){ const t=townEl(); if(!t||t.hidden) return; t.hidden=true; document.body.style.overflow=""; cancelAnimationFrame(TV.raf); t.querySelectorAll(".t-modal").forEach(x=>x.remove()); }
 function townSelect(id,quiet){
   const T=TOWNS[TV.lv], b=T.buildings.find(x=>x.id===id)||T.buildings[0]; TV.sel=b.id;
-  $("townBuildings").querySelectorAll(".t-b").forEach(el=>el.classList.toggle("sel",el.dataset.b===b.id));
-  const n=$("townNico"); n.style.left=(b.x+b.w*.42)+"px"; n.style.top=(b.y+16)+"px"; n.style.zIndex=b.y+1;
+  $("townBuildings").querySelectorAll(".t-b,.t-hs").forEach(el=>el.classList.toggle("sel",el.dataset.b===b.id));
+  const n=$("townNico"); if(T.bg){ n.style.left=(b.x-b.w*.32)+"px"; n.style.top=(b.y+b.h*.1)+"px"; n.style.zIndex=2; } else { n.style.left=(b.x+b.w*.42)+"px"; n.style.top=(b.y+16)+"px"; n.style.zIndex=b.y+1; }
   const eps=epsOfB(TV.lv,b), nx=nextEpOf(TV.lv);
   const groups=b.ch.map(c=>({c,name:chapterName(TV.lv,c),eps:eps.filter(e=>e._ch===c)})).filter(g=>g.eps.length);
-  const row=e=>{ const st=epState(e), isNext=nx&&nx.key===e.key; return `<button class="ep" data-ep="${e.key}" style="${isNext?'border-color:var(--taxi)':''}"><span class="cv">${coverOf(e)}</span><span class="t"><b>${e.n} · ${esc(e.name)}</b><span>${st.won?'★ 已通关':st.done?`进行中 ${st.done}/5`:esc(e.zh||"")}</span></span><span class="go">${st.won?'★':isNext?'▶':''}</span></button>`; };
+  const row=e=>{ const st=epState(e), isNext=nx&&nx.key===e.key; return `<button class="ep" data-ep="${e.key}" style="${isNext?'border-color:var(--taxi)':''}"><span class="cv">${coverOf(e)}</span><span class="t"><b>${e.n} · ${esc(e.name)}</b><span>${st.won?starStr(starsOf(e))+' 已通关':st.done?`进行中 ${st.done}/5`:esc(e.zh||"")}</span></span><span class="go">${st.won?'★':isNext?'▶':''}</span></button>`; };
   const sh=$("townSheet"); sh.classList.remove("min");
-  sh.innerHTML=`<div class="t-grip" id="townGrip"></div><div class="t-head" id="townHead"><img src="assets/buildings/${b.id}.png" alt=""><div style="flex:1;min-width:0"><b>${esc(b.zh)} ${esc(b.name)}</b><span>${eps.length} 集 · 通关 ${eps.filter(e=>epState(e).won).length}${bState(TV.lv,b)==="later"?" · 还没到这里，也可以先看看":""}</span></div></div>
+  sh.innerHTML=`<div class="t-grip" id="townGrip"></div><div class="t-head" id="townHead">${tThumb(b,64)}<div style="flex:1;min-width:0"><b>${esc(b.zh)} ${esc(b.name)}</b><span>${eps.length} 集 · 通关 ${eps.filter(e=>epState(e).won).length}${bState(TV.lv,b)==="later"?" · 还没到这里，也可以先看看":""}</span></div></div>
     ${groups.length?`<div class="eplist">${groups.map(g=>`<div class="chap"><b>${g.c===0?"起点":g.c}</b>${esc(g.name)}</div>`+g.eps.map(row).join("")).join("")}</div>`:`<div class="tap">这里还没有课</div>`}`;
   sh.scrollTop=0;
   sh.querySelectorAll("[data-ep]").forEach(x=>x.onclick=()=>{ townHide(); episode(x.dataset.ep); });
-  $("townGrip").onclick=$("townHead").onclick=()=>sh.classList.toggle("min");
+  $("townGrip").onclick=$("townHead").onclick=()=>townSheetMin(!sh.classList.contains("min"));
   if(!quiet) townFocus(b,true);
 }
-function townApply(){ const W=townEl().clientWidth,H=townEl().clientHeight,[mw,mh]=TOWNS[TV.lv].size.map(v=>v*TV.sc);
-  TV.tx=Math.min(40,Math.max(W-mw-40,TV.tx)); TV.ty=Math.min(40,Math.max(H-mh-40,TV.ty)); $("townMap").style.transform=`translate(${TV.tx}px,${TV.ty}px) scale(${TV.sc})`; }
-function townFocus(b,anim){ const W=townEl().clientWidth,H=townEl().clientHeight; TV.tx=W/2-b.x*TV.sc; TV.ty=H*.32-(b.y-60)*TV.sc;
+function townSheetMin(on){ const sh=$("townSheet"); if(on) sh.scrollTop=0; sh.classList.toggle("min",on); }
+function townApply(){ const T=TOWNS[TV.lv], W=townEl().clientWidth,H=townEl().clientHeight,[mw,mh]=T.size.map(v=>v*TV.sc);
+  if(T.bg){ TV.tx=Math.min(0,Math.max(W-mw,TV.tx)); TV.ty=Math.min(70,Math.max(H*.55-mh,TV.ty)); }   /* 顶部留出 HUD 的位置；底部多留一截，南边的楼能拖到列表上方 */
+  else { TV.tx=Math.min(40,Math.max(W-mw-40,TV.tx)); TV.ty=Math.min(40,Math.max(H-mh-40,TV.ty)); }
+  const m=$("townMap"); m.style.transform=`translate(${TV.tx}px,${TV.ty}px) scale(${TV.sc})`; m.style.setProperty("--inv",(1/TV.sc).toFixed(4)); }
+function townFocus(b,anim){ const T=TOWNS[TV.lv], W=townEl().clientWidth,H=townEl().clientHeight; TV.tx=W/2-b.x*TV.sc; TV.ty=T.bg?H*.36-b.y*TV.sc:H*.32-(b.y-60)*TV.sc;
   const m=$("townMap"); m.style.transition=anim?"transform .6s":""; townApply(); if(anim) setTimeout(()=>m.style.transition="",600); }
 function townDrive(){ cancelAnimationFrame(TV.raf); const pts=[[700,300],[1100,540],[700,1080],[300,540]]; let p=0,t=0; const taxi=$("townTaxi");
   const f=()=>{ const a=pts[p],b=pts[(p+1)%4]; t+=.004; if(t>=1){t=0;p=(p+1)%4;} const x=a[0]+(b[0]-a[0])*t,y=a[1]+(b[1]-a[1])*t;
     taxi.style.left=x+"px"; taxi.style.top=y+"px"; taxi.style.zIndex=Math.round(y); taxi.style.transform=`translate(-50%,-50%) scaleX(${b[0]>=a[0]?1:-1})`; TV.raf=requestAnimationFrame(f); }; f(); }
 function tdist(t){ return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY); }
-function townZoom(cx,cy,k){ const ns=Math.min(1.3,Math.max(.35,TV.sc*k)); k=ns/TV.sc; TV.tx=cx-(cx-TV.tx)*k; TV.ty=cy-(cy-TV.ty)*k; TV.sc=ns; townApply(); }
+function townZoom(cx,cy,k){ const ns=Math.min(TV.max||1.3,Math.max(TV.min||.35,TV.sc*k)); k=ns/TV.sc; TV.tx=cx-(cx-TV.tx)*k; TV.ty=cy-(cy-TV.ty)*k; TV.sc=ns; townApply(); }
 /* 拖动和缩放：不用 setPointerCapture（会让地标收不到点击），用 moved 区分拖动和点击。主脚本在 body 末尾，DOM 已就绪，直接绑定 */
 (function(){ const W=$("townWorld"); if(!W) return;
   W.addEventListener("pointerdown",e=>{ TV.drag={x:e.clientX,y:e.clientY,tx:TV.tx,ty:TV.ty,moved:false}; });
@@ -601,15 +826,29 @@ function townZoom(cx,cy,k){ const ns=Math.min(1.3,Math.max(.35,TV.sc*k)); k=ns/T
   W.addEventListener("touchmove",e=>{ if(TV.pinch&&e.touches.length===2){ e.preventDefault(); const k=(TV.pinch.sc*tdist(e.touches)/TV.pinch.d)/TV.sc; townZoom((e.touches[0].clientX+e.touches[1].clientX)/2,(e.touches[0].clientY+e.touches[1].clientY)/2,k); } },{passive:false});
   W.addEventListener("touchend",()=>{ if(TV.pinch){ TV.pinch=null; TV.drag=null; } });
   W.addEventListener("gesturestart",e=>e.preventDefault());   /* iOS：别把整页一起缩放 */
-  window.addEventListener("resize",()=>{ if(!townEl().hidden) townApply(); });
+  W.addEventListener("click",e=>{ if(TV.drag&&TV.drag.moved) return; if(e.target.closest(".t-b,.t-hs")) return; townSheetMin(true); });   /* 点地图空白处收起列表 */
+  /* 列表下滑收起、上滑展开：按住顶部（或列表已滚到最上面）往下拉就收起；收起后往上推就展开 */
+  const sh=$("townSheet"); let sw=null;
+  sh.addEventListener("touchstart",e=>{ if(e.touches.length!==1){ sw=null; return; } const t=e.touches[0];
+    sw={y:t.clientY,x:t.clientX,dy:0,on:null,head:!!e.target.closest(".t-grip,.t-head"),top:sh.scrollTop<=0,min:sh.classList.contains("min")}; },{passive:true});
+  sh.addEventListener("touchmove",e=>{ if(!sw||e.touches.length!==1) return; const t=e.touches[0], dy=t.clientY-sw.y, dx=t.clientX-sw.x;
+    if(sw.on===null){ if(!dy&&!dx) return; sw.on=Math.abs(dy)>=Math.abs(dx)&&(sw.min||(dy>0&&(sw.head||sw.top))); if(sw.on) sh.style.transition="none"; }
+    if(!sw.on) return; e.preventDefault(); sw.dy=dy; const lim=sh.offsetHeight-92;
+    sh.style.transform=`translateY(${Math.max(0,Math.min(lim,(sw.min?lim:0)+dy))}px)`; },{passive:false});
+  const swEnd=()=>{ if(!sw) return; if(sw.on){ if(Math.abs(sw.dy)>10) TV.swiped=Date.now(); sh.style.transition=""; sh.style.transform="";
+    if(sw.min?sw.dy<-40:sw.dy>50) townSheetMin(!sw.min); } sw=null; };
+  sh.addEventListener("touchend",swEnd); sh.addEventListener("touchcancel",swEnd);
+  sh.addEventListener("click",e=>{ if(Date.now()-TV.swiped<400){ e.stopPropagation(); e.preventDefault(); } },true);   /* 滑完不要误点到课 */
+  window.addEventListener("resize",()=>{ if(!townEl().hidden){ townScale(false); townApply(); } });
   $("townBack").onclick=()=>{ townHide(); home(); };
+  $("townJournal").onclick=townJournal;
   $("townList").onclick=()=>{ const lv=TV.lv; townHide(); levelMap(lv); };
 })();
 /* ---------- 全部集数（列表）：地图右上角「☰ 全部集数」进来 ---------- */
 function levelMap(lv,keep){
   const L=LEVELS.find(x=>x.id===lv); CUR_LV=lv; stopTimer(); E=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Weg "+lv; hearts(null);
   const cur=L.episodes.find(e=>!epState(e).won)||L.episodes[L.episodes.length-1];
-  const stOf=e=>{ const st=epState(e); return st.won?'★ 已通关':st.done?`进行中 ${st.done}/5`:esc(e.zh||""); };
+  const stOf=e=>{ const st=epState(e); return st.won?starStr(starsOf(e))+' 已通关':st.done?`进行中 ${st.done}/5`:esc(e.zh||""); };
   const row=e=>{ const st=epState(e), isCur=cur&&cur.key===e.key; return `<button class="ep" data-ep="${e.key}" style="${isCur?'border-color:var(--taxi)':''}"><span class="cv">${coverOf(e)}</span><span class="t"><b>${e.n} · ${esc(e.name)}</b><span>${stOf(e)}</span></span><span class="go">${st.won?'★':isCur?'▶':''}</span></button>`; };
   // 按章节分组（PDF 里的 "5 | 物品 | …"，缺失时沿用上一集）；整个等级都没有章节信息时每 4 集一组
   const hasCh=L.episodes.some(e=>e.ch);
@@ -628,13 +867,16 @@ function episode(key){
   stage.innerHTML=`<h2 class="center">第 ${E.n} 集 · ${esc(E.name)}</h2><div class="tap">${esc(E.zh)} · ${LV.length} 个词 · 5 个场景</div>${E.synopsis?`<div class="card" style="text-align:left;font-size:14px;line-height:1.7">📖 ${esc(E.synopsis)}</div>`:""}
     <div class="chips">${SCENES.map(([k],i)=>`<button class="chip ${ep[k]?'done':''}" data-s="${k}">${esc(sceneName(k))}${ep[k]?' ✓':''}</button>`).join("")}</div>
     <div class="row"><button class="ghost" id="back">‹ 地图</button><button class="primary" id="go">${done===0?"看剧情 ›":ep.won?"从头再玩":"继续 ›"}</button></div>
-    ${ep.won?`<div class="row"><button id="hard">${S.hard?"⚡ 挑战模式：开":"⚡ 挑战模式：关"}</button></div><div class="tap">挑战模式：时间减半，答错直接重来</div>`:""}`;
-  const cur=E; $("back").onclick=()=>{ const b=buildingOfEp(cur); townView(cur.lv,b&&b.id); }; $("go").onclick=()=>{ if(done===0||ep.won) intro(0); else run(SCENES.find(([k])=>!ep[k])[0]); };
+    ${ep.won?`<div class="center" style="font-size:24px;color:var(--taxi);letter-spacing:3px">${starStr(starsOf(E))}</div>${starHints(E)}`:""}
+    <div class="row"><button id="mn">${manualNext()?"👆 答对后：总是手点":"⏩ 答对后：自动下一题"}</button></div>${RMQ.matches?`<div class="tap">系统开了「减少动态效果」，一律手点</div>`:""}
+    ${ep.won?`<div class="row"><button id="hard">${S.hard?"⚡ 挑战模式：开":"⚡ 挑战模式：关"}</button></div><div class="tap">挑战模式：时间减半，答错直接重来；挑战模式通关直接拿 ⭐3</div>`:""}`;
+  const cur=E; $("back").onclick=()=>{ const b=buildingOfEp(cur); townView(cur.lv,b&&b.id); }; $("go").onclick=()=>{ if(done===0||ep.won){ RUN={key:E.key,wrong:new Set()}; intro(0); } else run(SCENES.find(([k])=>!ep[k])[0]); };
+  $("mn").onclick=()=>{ if(RMQ.matches) return toast("系统设置了减少动态效果"); S.pref=S.pref||{}; S.pref.manualNext=!S.pref.manualNext; save(); episode(key); };
   stage.querySelectorAll(".chip").forEach(b=>b.onclick=()=>run(b.dataset.s));
   const h=$("hard"); if(h) h.onclick=()=>{ S.hard=!S.hard; save(); episode(key); };
 }
 function run(k){ ({chase:chaseStart,sms:smsStart,radio:radioStart,talk:talkStart,boss:grammar})[k](); }
-function sceneDone(k){ EP()[k]=true; save(); }
+function sceneDone(k){ EP()[k]=true; bumpStreak(); updateStars(E); save(); }
 function prog(k,val){ const ep=EP(); ep.prog=ep.prog||{}; if(val===undefined) return ep.prog[k]||0; ep.prog[k]=val; save(); }
 
 /* ---------- 剧情 + 热身 ---------- */
@@ -659,7 +901,8 @@ function learn(k){
 let G=null;
 function chaseStart(){
   LV.forEach(touch); save();
-  const [title,desc,btn]=sceneText("chase"); const qs=[...LV.map(v=>({type:"v",v})),...E.cloze.map((c,i)=>({type:"c",ci:i,...c}))];
+  /* Boss 本身就是填空题时，赶路不再出同样的填空，避免同一题连做两遍 */
+  const [title,desc,btn]=sceneText("chase"); const qs=[...LV.map(v=>({type:"v",v})),...(E.boss&&E.boss.type==="cloze"?[]:E.cloze.map((c,i)=>({type:"c",ci:i,...c})))];
   /* 分段：每段最多 12 题，平均分配，避免最后一段只剩一两题 */
   const segs=Math.max(1,Math.ceil(qs.length/12)), segSize=Math.ceil(qs.length/segs); const saved=prog("chase");
   G={qs,n:0,seg:0,segs,segSize,end:0,nico:6,taxi:70,lives:3,max:3,streak:0,score:0,step:4};
@@ -667,7 +910,7 @@ function chaseStart(){
   stage.innerHTML=`${bubble("Lisa",title,`${esc(desc)}<br>${qs.length} 题${segs>1?`，分 ${segs} 段`:""}，每题 ${S.hard?5:10} 秒，${segs>1?"每段 ":""}3 颗心。连对 3 题有加速，${S.hard?2:3} 秒内答对跑得更远。${segs>1?"中途退出会记住进度。":""}`)}<div class="row"><button class="ghost" id="back">‹ 返回</button>${saved>0&&saved<segs?`<button id="cont">从第 ${saved+1} 段继续</button>`:""}<button class="primary" id="go">${esc(btn)}</button></div>`;
   $("go").onclick=()=>{ prog("chase",0); chaseSeg(0); }; $("back").onclick=()=>episode(E.key); const c=$("cont"); if(c) c.onclick=()=>chaseSeg(saved);
 }
-function chaseSeg(k){ G.seg=k; G.n=k*G.segSize; G.end=Math.min(G.qs.length,G.n+G.segSize); G.nico=6; G.taxi=70; G.lives=G.max=3; G.streak=0;
+function chaseSeg(k){ if(k===0){ EP().cf=true; } G.seg=k; G.n=k*G.segSize; G.end=Math.min(G.qs.length,G.n+G.segSize); G.nico=6; G.taxi=70; G.lives=G.max=3; G.streak=0;
   G.step=Math.max(4,Math.round(64/(G.end-G.n)*1.6)); prog("chase",k); hearts(3,3); setScene(6,70,false); chase(); }
 function chaseSegDone(){ stopTimer(); if(G.seg+1>=G.segs){ prog("chase",0); return chaseWin(); }
   prog("chase",G.seg+1); setScene(60,70,false); $("gapLbl").textContent=`第 ${G.seg+1}/${G.segs} 段完成`; hearts(null);
@@ -689,17 +932,17 @@ function chase(){
       if(fast){ step=Math.round(step*1.3); G.score+=5; }
       if(G.streak>=3){ step=Math.round(step*1.5); combo("⚡ 连击 ×"+G.streak); } else combo(fast?"⚡ 秒答":"+1");
       cheer(); G.nico=Math.min(G.taxi-4,G.nico+step); }
-    else { G.streak=0; G.lives-= S.hard?G.max:1; hearts(Math.max(0,G.lives),G.max); G.taxi=Math.min(88,G.taxi+5); combo("💨"); stumble(); if(q.type==="v") markWrong(q.v); }
+    else { G.streak=0; G.lives-= S.hard?G.max:1; hearts(Math.max(0,G.lives),G.max); G.taxi=Math.min(88,G.taxi+5); combo("💨"); stumble(); EP().cf=false; if(q.type==="v") markWrong(q.v); else save(); }
     setScene(G.nico,G.taxi,true);
     let adv=false; const go=()=>{ if(adv) return; adv=true; if(G.lives<=0) return lose("心用完了，没追上…",retry); if(G.nico>=G.taxi-5) return chaseSegDone(); chase(); };
     const v=q.type==="v"?q.v:null;
     $("cnt").insertAdjacentHTML("beforebegin",`${v?wordCard(v,ok?'<div class="ok">✓ 答对了</div>':(picked===null?'<div class="bad">⏱ 超时了</div>':'<div class="bad">✗ 不对</div>'),{noPic:true,noZh:true}):`<div class="card">${ok?'<div class="ok">✓</div>':'<div class="bad">✗ 应该是 '+esc(q.a)+'</div>'}${!ok&&whyOf(q)?`<div class="note">💡 ${esc(whyOf(q))}</div>`:""}<div class="word" style="font-size:22px">${esc(q.t.replace("___",q.a))}</div></div>`}<div class="row"><button class="primary" id="go">${G.lives<=0?"…":G.nico>=G.taxi-5?"到了！":"继续 ›"}</button></div>`);
-    if(v){ $("sp").onclick=()=>play(v); play(v,()=>{ if(ok) setTimeout(go,600); }); } else speakThen(q.t.replace("___",q.a),()=>{ if(ok) setTimeout(go,500); });
-    $("go").onclick=go; };
+    if(v) $("sp").onclick=()=>play(v);
+    $("go").onclick=go; autoNext(go,cb=>v?play(v,cb):speakThen(q.t.replace("___",q.a),cb),ok&&G.lives>0); };
   stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(b.dataset.a));
   timer(S.hard?5:10,()=>answer(null));
 }
-function chaseWin(){ stopTimer(); sceneDone("chase"); setScene(60,70,false); $("gapLbl").textContent="到了！"; hearts(null);
+function chaseWin(){ stopTimer(); const ep=EP(); if(ep.cf) ep.c3=true; sceneDone("chase"); setScene(60,70,false); $("gapLbl").textContent="到了！"; hearts(null);
   stage.innerHTML=`${bubble("Lisa","Geschafft!",`赶到了，得分 ${G.score}。接下来：${esc(sceneName("sms"))}`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">${esc(sceneName("sms"))} ›</button></div>`;
   $("go").onclick=smsStart; $("back").onclick=()=>episode(E.key); }
 
@@ -707,7 +950,7 @@ function chaseWin(){ stopTimer(); sceneDone("chase"); setScene(60,70,false); $("
 let M=null;
 function smsStart(){ const [title,desc,btn]=sceneText("sms"); const saved=prog("sms"); M={qs:LV.slice(),n:0,right:0,states:[]}; hearts(null); setScene(60,70,false,"📱"); $("gapLbl").textContent=title;
   stage.innerHTML=`${bubble("Lisa",title,`${esc(desc)}<br>${LV.length} 个词，拼错了照着正确写法再打一遍就能继续。中途退出会记住进度。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button>${saved>0&&saved<LV.length?`<button id="cont">从第 ${saved+1} 个继续</button>`:""}<button class="primary" id="go">${esc(btn)}</button></div>`;
-  $("go").onclick=()=>{ prog("sms",0); sms(); }; $("back").onclick=()=>episode(E.key); const c=$("cont"); if(c) c.onclick=()=>{ M.n=saved; sms(); }; }
+  $("go").onclick=()=>{ prog("smsR",0); prog("sms",0); sms(); }; $("back").onclick=()=>episode(E.key); const c=$("cont"); if(c) c.onclick=()=>{ M.n=saved; M.right=Math.min(saved,prog("smsR")); sms(); }; }
 function tilesFor(v){ const core=v.ans.replace(/^(der|die|das) /,"").replace(/\s*\(Plural\)$/,"").replace(/^\((etwas|jemandem|das)\) /,"").replace(/^(etwas|mit jemandem) /,"");
   let mode,need;
   if(/\s/.test(core)){ mode="word"; need=core.split(/\s+/); }
@@ -738,7 +981,7 @@ function sms(){ if(M.n>=M.qs.length) return smsWin(); const v=M.qs[M.n]; prog("s
   $("undo").onclick=()=>{ const last=picked.pop(); if(last){ const el=stage.querySelector(`.tile[data-i="${last.i}"]`); if(el) el.classList.remove("used"); } else if(art){ art=null; stage.querySelectorAll(".arts .opt").forEach(y=>y.classList.remove("right")); } render(); };
   const grade=()=>{ if(v.g&&!art){ toast("先选冠词"); return; } if(!picked.length){ toast("先把词拼出来"); return; }
     const typed=(art?art+" ":"")+picked.map(x=>x.t).join(T.mode==="word"?" ":""); const r=checkTyped(typed,v); const ok=r==="ok";
-    if(ok){ M.right++; M.states[M.n]="ok"; combo("📨"); cheer(); $("fb").innerHTML=wordCard(v,'<div class="ok">✓ 发送成功</div>',{noPic:true,noZh:true}); $("sp").onclick=()=>play(v); $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile,.arts .opt").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; M.n++; sms(); }; play(v,()=>setTimeout(go,600)); $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一条 ›</button></div>`); $("go").onclick=go; }
+    if(ok){ if(!M.states[M.n]){ M.right++; ftSet("sms",v.id); } M.states[M.n]="ok"; combo("📨"); cheer(); $("fb").innerHTML=wordCard(v,'<div class="ok">✓ 发送成功</div>',{noPic:true,noZh:true}); $("sp").onclick=()=>play(v); $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile,.arts .opt").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; M.n++; prog("smsR",M.right); sms(); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一条 ›</button></div>`); $("go").onclick=go; autoNext(go,cb=>play(v,cb),true); }
     else { if(!M.states[M.n]){ M.states[M.n]="bad"; markWrong(v); }
       const artWrong=v.g&&art!==v.g;
       $("fb").innerHTML=wordCard(v,`<div class="ans"><s>${esc(typed)}</s></div><div class="bad">${artWrong?"冠词不对，看颜色：应该是 "+v.g:"顺序不对，照着正确写法再拼一遍"}</div>`,{noPic:true,noZh:true}); $("sp").onclick=()=>play(v); play(v);
@@ -752,13 +995,13 @@ function smsWin(){ sceneDone("sms"); prog("sms",0); setScene(60,70,false,"📱")
 let R=null;
 function radioStart(){ const [title,desc,btn]=sceneText("radio"); const saved=prog("radio"); R={qs:LV.slice().reverse(),n:0,right:0,states:[]}; setScene(60,70,false,"📻"); $("gapLbl").textContent=title;
   stage.innerHTML=`<div class="radio"><div class="wave">▂▃▅▃▂▅▃▂</div><div>${esc(title)}</div></div>${bubble("Radio",title,`${esc(desc)}<br>${LV.length} 个词，可以反复听。中途退出会记住进度。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button>${saved>0&&saved<LV.length?`<button id="cont">从第 ${saved+1} 个继续</button>`:""}<button class="primary" id="go">${esc(btn)}</button></div>`;
-  $("go").onclick=()=>{ prog("radio",0); radio(); }; $("back").onclick=()=>episode(E.key); const c=$("cont"); if(c) c.onclick=()=>{ R.n=saved; radio(); }; }
+  $("go").onclick=()=>{ prog("radioR",0); prog("radio",0); radio(); }; $("back").onclick=()=>episode(E.key); const c=$("cont"); if(c) c.onclick=()=>{ R.n=saved; R.right=Math.min(saved,prog("radioR")); radio(); }; }
 function radio(){ if(R.n>=R.qs.length) return radioWin(); const v=R.qs[R.n]; prog("radio",R.n);
   stage.innerHTML=`${dots(R.n,R.qs.length,R.states)}<div class="radio"><div class="wave">▂▃▅▃▂▅▃▂</div><button id="sp" style="margin-top:6px;width:84px;height:84px;border-radius:50%;font-size:34px;padding:0">🔊</button></div>
     ${typedBox()}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button><button class="primary" id="chk">检查</button></div>`;
   const inp=wireKeys(); $("sp").onclick=()=>play(v); play(v); $("back").onclick=()=>episode(E.key);
   const grade=()=>{ const r=checkTyped(inp.value,v); if(r==="empty"){ inp.focus(); return; } const ok=r==="ok";
-    if(ok){ R.right++; R.states[R.n]="ok"; combo("📻"); cheer(); $("fb").innerHTML=wordCard(v,'<div class="ok">✓ 听对了</div>'); $("sp").onclick=()=>play(v); inp.disabled=true; $("chk").classList.add("hidden"); let adv=false; const go=()=>{ if(adv) return; adv=true; R.n++; radio(); }; setTimeout(go,500); $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一条 ›</button></div>`); $("go").onclick=go; }
+    if(ok){ if(!R.states[R.n]){ R.right++; ftSet("radio",v.id); } R.states[R.n]="ok"; combo("📻"); cheer(); $("fb").innerHTML=wordCard(v,'<div class="ok">✓ 听对了</div>'); $("sp").onclick=()=>play(v); inp.disabled=true; $("chk").classList.add("hidden"); let adv=false; const go=()=>{ if(adv) return; adv=true; R.n++; prog("radioR",R.right); radio(); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一条 ›</button></div>`); $("go").onclick=go; autoNext(go,cb=>play(v,cb),true); }
     else { if(!R.states[R.n]){ R.states[R.n]="bad"; markWrong(v); } $("fb").innerHTML=wordCard(v,`<div class="ans"><s>${esc(inp.value)}</s></div><div class="bad">${r==="article"?"冠词呢？听清楚 der / die / das":"再听一遍，照着正确写法打出来"}</div>`); $("sp").onclick=()=>play(v); play(v); inp.value=""; inp.focus(); } };
   $("chk").onclick=grade; inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); grade(); } }); }
 function radioWin(){ sceneDone("radio"); prog("radio",0); setScene(60,70,false); $("gapLbl").textContent="听完了";
@@ -779,7 +1022,7 @@ function buildBoss(){ stopTimer(); const items=E.talk.slice(0,6); const need=Mat
   stage.innerHTML=`${bubble("Lisa","Jetzt ohne Hilfe!",`不看提示，把回答拼出来。${items.length} 句，一次拼对 ${need} 句过关。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button><button class="primary" id="go">来吧</button></div>`;
   $("back").onclick=()=>episode(E.key);
   const pool=items.flatMap(x=>x.a.split(/\s+/));
-  const step=()=>{ if(n>=items.length) return right>=need?mySentences(win):lose(`一次拼对 ${need} 句才行`,buildBoss);
+  const step=()=>{ if(n>=items.length){ if(right>=need&&right===items.length){ EP().b3=true; save(); } return right>=need?mySentences(win):lose(`一次拼对 ${need} 句才行`,buildBoss); }
     const d=items[n]; let first=true; $("gapLbl").textContent=`Boss ${n+1}/${items.length}`;
     assemble({de:d.a,zh:d.azh},{head:dots(n,items.length)+bubble(d.w,esc(d.q),esc(d.qzh)),who:"你（Nico）",extraPool:pool,onExit:()=>episode(E.key),onWrong:()=>{ first=false; }},()=>{ if(first) right++; n++; step(); });
     speakThen(d.q); };
@@ -796,7 +1039,7 @@ function boss(){ stopTimer(); const b=E.boss; let items;
   setScene(60,70,false); $("gapLbl").textContent="Boss";
   stage.innerHTML=`${bubble(b.who,esc(b.de),`${esc(b.zh)}<br>${items.length} 题，答对 ${b.need} 题过关${b.type==="dial"?"":`，每题 ${B.sec} 秒`}。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button><button class="primary" id="go">来吧</button></div>`;
   $("go").onclick=bossQ; $("back").onclick=()=>episode(E.key); }
-function bossQ(){ const b=E.boss; if(B.n>=B.qs.length) return B.right>=b.need?mySentences(win):lose(`${b.who} 摇摇头…（答对 ${b.need} 题才行）`,boss); const it=B.qs[B.n];
+function bossQ(){ const b=E.boss; if(B.n>=B.qs.length){ if(B.right>=b.need&&B.right===B.qs.length){ EP().b3=true; save(); } return B.right>=b.need?mySentences(win):lose(`${b.who} 摇摇头…（答对 ${b.need} 题才行）`,boss); } const it=B.qs[B.n];
   let body,ans,check;
   if(b.type==="sort"){ body=`<div class="q"><div class="cloze">${esc(it.t)}</div></div><div class="opts"><button class="opt" data-a="informal" style="color:var(--taxi);border-color:var(--taxi)">du 非正式</button><button class="opt" data-a="formal" style="color:var(--der);border-color:var(--der)">Sie 正式</button></div>`; ans=it.k; }
   else if(b.type==="gender"){ body=`<div class="q">${pic(it)}<div class="hint">${esc(it.zh)}</div><div class="cloze" style="font-size:28px">${esc(it.ans.replace(/^(der|die|das) /,""))}</div></div><div class="opts three">${["der","die","das"].map(g=>`<button class="opt ${g}" data-a="${g}">${g}</button>`).join("")}</div>`; ans=it.g; }
@@ -814,36 +1057,45 @@ function bossQ(){ const b=E.boss; if(B.n>=B.qs.length) return B.right>=b.need?my
     else if(b.type==="pick"||b.type==="cloze") fb=`<div class="tap">${ok?"✓ 对":"✗ 应该是 "+esc(it.a)}</div>${!ok&&b.type==="cloze"&&whyOf(it)?`<div class="note">💡 ${esc(whyOf(it))}</div>`:""}`;
     else fb=`<div class="tap">${ok?"✓ 对":"✗ 应该是 "+esc(it.a)}</div>`;
     stage.insertAdjacentHTML("beforeend",fb+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go;
-    if(b.type==="gender"){ $("sp").onclick=()=>play(it); play(it,()=>{ if(ok) setTimeout(go,500); }); }
-    else if(b.type==="pick"){ const v=LV.find(x=>x.ans===it.a); if(v) play(v,()=>{ if(ok) setTimeout(go,500); }); else speakThen(it.a,()=>{ if(ok) setTimeout(go,500); }); }
-    else speakThen(b.type==="sort"?it.t:b.type==="cloze"?it.t.replace("___",it.a):it.say,()=>{ if(ok) setTimeout(go,500); });
+    const pv=b.type==="gender"?it:b.type==="pick"?LV.find(x=>x.ans===it.a):null;
+    if(!ok&&pv) markWrong(pv);
+    if(b.type==="gender") $("sp").onclick=()=>play(it);
+    autoNext(go,cb=>pv?play(pv,cb):speakThen(b.type==="sort"?it.t:b.type==="cloze"?it.t.replace("___",it.a):b.type==="pick"?it.a:it.say,cb),ok);
     combo(ok?"✓":"✗"); if(ok) cheer(); else stumble(); };
   if(b.type==="dial"){ let d=""; const say=()=>speakThen(it.say); $("sp").onclick=say; say();
     stage.querySelectorAll(".pad button").forEach(x=>x.onclick=()=>{ const k=x.dataset.d; if(k==="⌫") d=d.slice(0,-1); else if(k==="✓"){ if(d) finishQ(d); return; } else d+=k; $("dial").textContent=d||" "; }); timer(B.sec,()=>finishQ(d||null)); }
   else { stage.querySelectorAll(".opt").forEach(x=>x.onclick=()=>finishQ(x.dataset.a)); timer(B.sec,()=>finishQ(null)); } }
 
-function win(){ stopTimer(); sceneDone("boss"); const ep=EP(); ep.won=true; if(!S.items.includes(E.key)) S.items.push(E.key); save(); setScene(60,70,false,E.item.e); $("gapLbl").textContent="拿到了！";
-  const missed=LV.filter(v=>S.mist[v.id]&&S.mist[v.id].wrong>0).length; const next=EPISODES.find(e=>e.lv===E.lv&&e.n===E.n+1);
-  const nxB=next&&buildingOfEp(next), cuB=buildingOfEp(E);
+function win(){ stopTimer(); const ep=EP(), before=starsOf(E); ep.won=true; ep.plays=(ep.plays||0)+1; if(S.hard) ep.s3=true; sceneDone("boss"); if(!S.items.includes(E.key)) S.items.push(E.key); save(); setScene(60,70,false,E.item.e); $("gapLbl").textContent="拿到了！";
+  const runW=RUN.key===E.key?[...RUN.wrong].map(V).filter(Boolean):[]; RUN={key:null,wrong:new Set()};
+  const stars=starsOf(E), next=EPISODES.find(e=>e.lv===E.lv&&e.n===E.n+1);
+  const nxB=next&&buildingOfEp(next), cuB=buildingOfEp(E), nxT=next?`下一集：${esc(next.name)}`:`${E.lv} 全部通关！`;
   stage.innerHTML=`<div class="big">${E.item.e}</div><h2 class="center">${esc(E.item.n)} 放进背包</h2>
-    ${bubble("Emma","Super, Nico!",missed?`这一集有 ${missed} 个词错过。明天打开会先做「今日回顾」，把这集的词都考一遍。${next?`下一集：${esc(next.name)}`:`${E.lv} 全部通关！`}`:`一个词都没错。明天记得来做「今日回顾」。${next?`下一集：${esc(next.name)}`:`${E.lv} 全部通关！`}`)}
+    <div class="center" style="font-size:30px;color:var(--taxi);letter-spacing:4px">${starStr(stars)}</div>${stars>before&&before>0?`<div class="center tap">新拿到 ${stars-before} 颗星！</div>`:""}${starHints(E)}
+    ${bubble("Emma","Super, Nico!",runW.length?`这一局错过 ${runW.length} 个词，已经放进今天的「☀️ 今日回顾」，Emma 会再问你。${nxT}`:`这一局一个词都没错。明天记得来做「今日回顾」。${nxT}`)}
+    ${runW.length?`<div class="chips">${runW.map(v=>`<button class="chip" data-w="${esc(v.id)}">🔊 ${esc(v.ans)} · ${esc(v.zh)}</button>`).join("")}</div>`:""}
     ${nxB&&cuB&&nxB.id!==cuB.id?`<div class="tap">下一站：${esc(nxB.zh)} ${esc(nxB.name)} 🚕</div>`:""}
-    <div class="row">${next?`<button class="primary" id="next">下一集 ›</button>`:""}<button id="home" class="${next?"":"primary"}">回到背包</button></div><div class="row"><button class="ghost" id="ep">重玩这一集的场景</button></div>
+    <div class="row">${next?`<button class="primary" id="next">下一集 ›</button>`:""}<button id="toTown" class="${next?"":"primary"}">🏙️ 回城市</button><button id="home">回到背包</button></div><div class="row"><button class="ghost" id="ep">重玩这一集的场景</button></div>
     ${E.lk?`<div class="card" style="text-align:left"><div class="brand">Lisa 的小知识 · 风土人情</div><div class="grammar-html lk-fold" id="lk">${E.lk}</div><div class="row" style="margin-top:6px"><button class="ghost" id="lkmore">展开阅读 ▾</button></div></div>`:""}`;
   $("ep").onclick=()=>episode(E.key); const nb=$("next"); if(nb) nb.onclick=()=>episode(next.key); $("home").onclick=home;
+  const wE=E; $("toTown").onclick=()=>townView(wE.lv,cuB&&cuB.id);
+  stage.querySelectorAll("[data-w]").forEach(x=>x.onclick=()=>play(V(x.dataset.w)));
   const lm=$("lkmore"); if(lm) lm.onclick=()=>{ const el=$("lk"); const open=el.classList.toggle("lk-fold"); lm.textContent=open?"展开阅读 ▾":"收起 ▴"; if(!open) el.scrollIntoView({block:"start",behavior:"smooth"}); }; }
 function lose(msg,retry){ stopTimer(); setScene(6,88,false); $("gapLbl").textContent="没成功"; hearts(null);
   stage.innerHTML=`<div class="big">💨</div><h2 class="center">${esc(msg)}</h2><div class="center tap">没关系，Lisa 说再来一次就行。</div>
     <div class="row"><button id="learn">再看一遍新词</button><button class="primary" id="again">再来一次</button></div><div class="row"><button class="ghost" id="back">‹ 场景</button></div>`;
   $("again").onclick=retry; $("learn").onclick=()=>learn(0); $("back").onclick=()=>episode(E.key); }
 
-/* ---------- 今日回顾：所有学过的词按 1 → 3 → 7 天回来，两种题型交替 ---------- */
-function diary(){ let qs=dueList().slice(0,40); if(!qs.length){ toast("今天没有要复习的"); return; } let n=0,got=0; const total=qs.length; const missed=[];
-  E=null; theme(3); target(); setScene(6,70,false,"☀️"); $("gapLbl").textContent="今日回顾"; hearts(null);
+/* ---------- 今日回顾：学过的词按 1 → 3 → 7 → 14 → 30 天回来，两种题型交替 ---------- */
+/* 稀客：box 3-4 还没到期的词，今天到期的不满 40 个时提前请回来几个（最多占两成） */
+function guestList(reg){ if(!reg||reg>=40) return []; const t=today(), ids=new Set(dueList().map(m=>m.key));
+  return Object.entries(S.mist).filter(([k,m])=>!m.done&&(m.box||0)>=3&&m.due>t&&!ids.has(k)&&V(k)).sort((a,b)=>a[1].due<b[1].due?-1:1).slice(0,Math.min(40-reg,Math.max(1,Math.floor(reg/4)))).map(([k,m])=>Object.assign({v:V(k),guest:true},m,{key:k})); }
+function diary(){ let qs=dueList().slice(0,40); if(!qs.length){ toast("今天没有要复习的"); return; } qs=qs.concat(guestList(qs.length)); let n=0,got=0; const total=qs.length; const missed=[];
+  E=null; DIARY=true; theme(3); target(); setScene(6,70,false,"☀️"); $("gapLbl").textContent="今日回顾"; hearts(null);
   const bookQ=(S.book||[]).slice().sort((x,y)=>x.date<y.date?-1:1).slice(0,2); let bn=0;
   const bookStep=()=>{ if(bn>=bookQ.length) return finishReview(); const it=bookQ[bn]; setScene(6,70,false,"📔"); $("gapLbl").textContent="我的句子";
     assemble(it,{head:bubble("Emma","Und du?","用德语说说你自己"),extraPool:(S.book||[]).flatMap(x=>x.de.split(/\s+/)),onExit:home},()=>{ bn++; bookStep(); }); };
-  const finishReview=()=>{ save(); stage.innerHTML=`<div class="big">☀️</div><h2 class="center">回顾完成</h2><div class="center tap">记得 ${got}/${total} · 记得的下次在 ${GAP.slice(1).join(" / ")} 天后再来，三次都记得就算掌握；没记住的明天再来</div>${missed.length?`<div class="card" style="text-align:left">${missed.map(w=>`<div>❌ ${w.deh} — ${esc(w.zh)}</div>`).join("")}<div class="note">这些词明天会优先出现</div></div>`:""}<div class="row"><button class="primary" id="home">回到背包</button></div>`; $("home").onclick=home; };
+  const finishReview=()=>{ bumpStreak(); save(); stage.innerHTML=`<div class="big">☀️</div><h2 class="center">回顾完成</h2><div class="center tap">记得 ${got}/${total} · 记得的会隔 ${GAP.slice(1).join(" → ")} 天再来，连续记得 5 次就算掌握；没记住的明天再来</div>${streakN()>1?`<div class="center tap">🔥 连续 ${streakN()} 天</div>`:""}${missed.length?`<div class="card" style="text-align:left">${missed.map(w=>`<div>❌ ${w.deh} — ${esc(w.zh)}</div>`).join("")}<div class="note">这些词明天会优先出现</div></div>`:""}<div class="row"><button class="primary" id="home">回到背包</button></div>`; $("home").onclick=home; };
   const step=()=>{ if(n>=qs.length) return bookStep();
     const m=qs[n], v=m.v; const lv=VOCAB.filter(x=>x.l===v.l); const listen=n%2===1;
     const opts=rot([v,...(()=>{ const k=zkey(v.zh), i=VOCAB.indexOf(v); const pool=lv.filter(x=>x!==v&&zkey(x.zh)!==k); const out=[]; for(let j=0;out.length<3&&j<pool.length*2;j++){ const c=pool[(j*7+i)%pool.length]; if(!out.includes(c)) out.push(c); } return out; })()],n);
@@ -852,10 +1104,10 @@ function diary(){ let qs=dueList().slice(0,40); if(!qs.length){ toast("今天没
       <div class="opts">${opts.map(o=>`<button class="opt" data-a="${esc(o.id)}">${esc(listen?o.zh:o.ans)}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
     $("back").onclick=home; if(listen){ $("sp").onclick=()=>play(v); play(v); }
     stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const ok=b.dataset.a===v.id; stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===v.id) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); });
-      const e=S.mist[m.key]; if(ok){ got++; e.box=(e.box||0)+1; if(e.box>=3){ e.done=true; } else e.due=addDays(GAP[e.box]); cheer(); } else { e.box=0; e.due=addDays(1); e.wrong++; stumble(); missed.push(v); } save();
+      const e=S.mist[m.key]; if(ok){ got++; e.box=Math.min(5,(e.box||0)+1); if(e.box>=5){ e.done=true; } else e.due=addDays(GAP[e.box]); cheer(); } else { e.box=m.guest?Math.max(1,(e.box||0)-2):0; e.due=addDays(1); e.wrong++; stumble(); missed.push(v); } save();
       let adv=false; const go=()=>{ if(adv) return; adv=true; n++; step(); };
-      $("fb").innerHTML=wordCard(v,ok?'<div class="ok">✓</div>':'<div class="bad">✗ 明天再来一次</div>',{noPic:!listen,noZh:!listen})+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`; $("sp").onclick=()=>play(v); $("go").onclick=go;
-      if(listen) setTimeout(()=>{ if(ok) go(); },700); else play(v,()=>{ if(ok) setTimeout(go,500); }); }); }; step(); }
+      $("fb").innerHTML=wordCard(v,ok?`<div class="ok">✓${e.done?" 掌握了！":` 第 ${e.box}/5 次`}</div>`:'<div class="bad">✗ 明天再来一次</div>',{noPic:!listen,noZh:!listen})+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`; $("sp").onclick=()=>play(v); $("go").onclick=go;
+      autoNext(go,cb=>play(v,cb),ok); }); }; step(); }
 
 /* ---------- 场景 4：对话（用词块拼出回答） ---------- */
 let K=null;
