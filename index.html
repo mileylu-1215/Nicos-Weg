@@ -28,6 +28,13 @@ input[type=text]{font-family:var(--display);font-size:22px;width:100%;border:2px
 .tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:52px}
 .tile{font-family:var(--display);font-size:20px;padding:10px 14px;background:var(--bubble);border:2px solid var(--line);box-shadow:0 3px 0 var(--line);border-radius:14px}
 .tile.used{opacity:.25;pointer-events:none}
+.tile.hit{background:#E8F4E1;border-color:var(--ok);box-shadow:0 3px 0 var(--ok)}
+.tiles.wj .tile{font-size:18px;padding:8px 11px}
+.tg-book{text-align:left;background:#FFFBEF;border:1.5px dashed #C9B48A;font-family:Georgia,serif}
+.tg-h{font-style:italic;color:var(--muted);margin-bottom:4px}
+.tg-l{font-size:15px;line-height:1.6;color:var(--muted)}
+.tg-l.cur{color:var(--ink);font-size:17px}
+.tg-l b{color:#B8574A}
 .built{font-family:var(--display);font-size:26px;font-weight:700;min-height:44px;text-align:center;border-bottom:2px dashed var(--line);padding:4px 0;display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap}
 .built .art{font-size:20px;font-weight:600;padding:2px 8px;border-radius:8px;border:2px solid var(--line)}
 .built .art.der{color:var(--der);border-color:var(--der)}.built .art.die{color:var(--die);border-color:var(--die)}.built .art.das{color:var(--das);border-color:var(--das)}
@@ -1210,7 +1217,7 @@ function pathHTML(eps,curKey){ return `<div class="stamps">${eps.map(e=>{ const 
     return `<button class="stp ${cls}" data-ep="${e.key}" style="--sk:${sk};--ring:${ring};--rot:${rot}deg" aria-label="第 ${e.n} 集 ${esc(e.name)}">${cur?`<span class="nico">${avHTML("Nico")}</span>`:""}<span class="sc"><i class="no">Nº ${e.n}</i><span class="ic">${e.item.e}</span></span><span class="ps">${st.won?starStr(s):st.done&&!cur?`${st.done}/5`:""}</span><span class="pt">${esc(e.name)}</span></button>`; }).join("")}</div>`; }
 /* 本集路线：按实际流程排（赶路 → 插曲① → 写下来 → 听写 → 插曲② → 对话 → Boss），每站都能单独点进去重玩 */
 const ROUTE=[["s","chase"],["i","a"],["s","sms"],["s","radio"],["i","b"],["s","talk"],["s","boss"]];
-function routeHTML(ep){ let found=!!ep.won, no=0; const sp=t=>{ const m=String(t).match(/^(\S+)\s+(.+)$/); return m?[m[1],m[2]]:["•",String(t)]; };
+function routeHTML(ep){ let found=!!ep.won, no=0; const sp=t=>{ const m=String(t).match(/^(\p{Extended_Pictographic}\S*)\s+(.+)$/u); return m?[m[1],m[2]]:["",String(t)]; };
   return `<div class="route">${ROUTE.map(([t,k])=>{ let ic,lb,dn,at; no++;
     if(t==="s"){ [ic,lb]=sp(sceneName(k)); dn=!!ep[k]; at=`data-s="${k}"`; }
     else { const a=ep["i"+k]; [ic,lb]=sp(INTER_NAME[interPlan(E)[k]]); dn=a>=.8; at=`data-i="${k}"`; if(a!=null&&!dn) lb+=` ${Math.round(a*100)}%`; }
@@ -1262,7 +1269,7 @@ function chaseStart(){
   /* Boss 本身就是填空题时，赶路不再出同样的填空，避免同一题连做两遍 */
   const [title,desc,btn]=sceneText("chase"); const qs=[...LV.map(v=>({type:"v",v})),...(bossKind(E)==="cloze"?[]:E.cloze.map((c,i)=>({type:"c",ci:i,...c})))];
   /* 分段：每段最多 12 题，平均分配，避免最后一段只剩一两题 */
-  const segs=Math.max(1,Math.ceil(qs.length/12)), segSize=Math.ceil(qs.length/segs); const saved=prog("chase");
+  const segs=Math.max(1,Math.ceil(qs.length/10)), segSize=Math.ceil(qs.length/segs); const saved=prog("chase");
   G={qs,n:0,seg:0,segs,segSize,end:0,nico:6,taxi:70,lives:3,max:3,streak:0,score:0,step:4};
   hearts(3,3); setScene(6,70,false); $("gapLbl").textContent=title;
   stage.innerHTML=`${bubble("Lisa",title,`${esc(desc)}<br>${qs.length} 题${segs>1?`，分 ${segs} 段`:""}，每题 ${S.hard?5:10} 秒，${segs>1?"每段 ":""}3 颗心。连对 3 题有加速，${S.hard?2:3} 秒内答对跑得更远。${segs>1?"中途退出会记住进度。":""}`)}<div class="row"><button class="ghost" id="back">‹ 返回</button>${saved>0&&saved<segs?`<button id="cont">从第 ${saved+1} 段继续</button>`:""}<button class="primary" id="go">${esc(btn)}</button></div>`;
@@ -1510,8 +1517,62 @@ function numInfo(e){ if(e._ni!==undefined) return e._ni; const strip=s=>String(s
   const time=/\b\d{1,2}[:.]\d{2}\b|\bUhr\b|\bhalb\b|Viertel/.test(tx), price=/Euro|€|Cent|kostet|Preis/.test(tx), num=/\b\d+\b/.test(tx)||NUMW.test(tx);
   return e._ni=(time||price||num)?{time,price,num:num||time||price}:null; }
 const numRange=e=>e.lv==="A1"&&e.n<9?12:e.lv==="A1"&&e.n<20?20:100;
-const INTER_NAME={satz:"🧩 排句子",zahl:"🔢 听数字"};
-function interPlan(e){ const ni=numInfo(e); return {a:"satz",b:ni?"zahl":"satz"}; }
+const INTER_NAME={satz:"排句子",zahl:"听数字",wort:"抓词",tage:"Nico 的日记"};
+/* 两个插曲按集数轮换：排句子 / 抓词 / 日记；本集有数字、时间、价格时插曲② 固定是听数字 */
+function interPlan(e){ if(e._ip) return e._ip; const has={satz:true,wort:wortItems(e).length>=4,tage:true}, base=["satz","wort","tage"], s=e.n%3;
+  const rot=base.slice(s).concat(base.slice(0,s)).filter(k=>has[k]), a=rot[0]; return e._ip={a,b:numInfo(e)?"zahl":(rot.find(k=>k!==a)||"satz")}; }
+/* 抓词：一句本集台词，点出全部名词（含人名）或全部冠词。句首大写词靠全语料「句中出现时大不大写」+ 词表判断，拿不准的句子不用 */
+const ARTW=/^(der|die|das|den|dem|des|ein|eine|einen|einem|einer|eines)$/i, PRON_CAP=/^(Sie|Ihnen|Ihr|Ihre|Ihren|Ihrem|Ihrer|Ihres)$/;
+const tokClean=t=>t.replace(/^[„"“‚'(«»]+|[.,!?;:"“”‘’)«»…]+$/g,"");
+let CASEMAP=null;
+function caseMap(){ if(CASEMAP) return CASEMAP; const low=new Set(), cap=new Set(), noun=new Set(); VOCAB.forEach(v=>{ if(v.g){ const w=String(v.ans).replace(/^(der|die|das)\s+/,""); if(!/\s/.test(w)) noun.add(w); } });
+  for(const e of EPISODES) for(const s of [...e.intro.map(d=>d.de),...(e.talk||[]).flatMap(d=>[d.q,d.a])]){ const tk=String(s||"").replace(/<[^>]+>/g,"").split(/\s+/);
+    tk.forEach((t,i)=>{ if(i===0||/[.!?:]$/.test(tk[i-1]||"")) return; const c=tokClean(t); if(!c) return; (/^[A-ZÄÖÜ]/.test(c)?cap:low).add(c.toLowerCase()); }); }
+  return CASEMAP={low,cap,noun}; }
+function wortSent(de){ const M=caseMap(), raw=de.split(" "), cl=raw.map(tokClean); if(raw.length<3||raw.length>12||cl.some(c=>!c||/\d/.test(c))) return null;
+  const nouns=[], arts=[]; let artOk=true;
+  for(let i=0;i<cl.length;i++){ const c=cl[i], start=i===0||/[.!?:]$/.test(raw[i-1]), isCap=/^[A-ZÄÖÜ]/.test(c); let isN=false;
+    if(isCap&&!PRON_CAP.test(c)){ if(!start) isN=true; else { const lw=c.toLowerCase(), L=M.low.has(lw), C=M.cap.has(lw)||M.noun.has(c);
+        if(C&&!L) isN=true; else if(L&&!C) isN=false; else if(!L&&!C&&!ARTW.test(c)&&c.length>2) return null; else if(L&&C) return null; } }
+    if(isN) nouns.push(i);
+    if(ARTW.test(c)){ const nx=cl[i+1]||""; if(/^[A-ZÄÖÜ]/.test(nx)&&!/[,.!?:]$/.test(raw[i])) arts.push(i); else artOk=false; } }
+  return {raw,nouns,arts:artOk?arts:[]}; }
+function wortPool(e){ if(e._wp) return e._wp; const strip=s=>String(s||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim(), pool=[];
+  const add=(de,zh)=>{ de=strip(de); if(!de||/___|…|\.\.\.|[()\/]/.test(de)||pool.some(x=>x.de===de)) return; const w=wortSent(de); if(w&&((w.nouns.length&&w.nouns.length<=4)||w.arts.length)) pool.push({de,zh:strip(zh),...w}); };
+  e.intro.forEach(d=>add(d.de,d.zh)); (e.talk||[]).forEach(d=>{ add(d.a,d.azh); add(d.q,d.qzh); }); return e._wp=pool; }
+function wortItems(e){ if(e._wi) return e._wi; let pool=wortPool(e);
+  for(const o of EPISODES){ if(pool.length>=8) break; if(o.lv!==e.lv||o===e||Math.abs(o.n-e.n)>3) continue; pool=pool.concat(wortPool(o).filter(x=>!pool.some(y=>y.de===x.de))); }
+  const r=rng(e.key+"wort"), out=[]; let artN=0;
+  for(const p of shuf(pool,r)){ if(out.length>=6) break; const wantArt=artN<2&&p.arts.length&&(out.length%2===1||!p.nouns.length);
+    if(wantArt){ artN++; out.push({...p,k:"art",tg:p.arts}); } else if(p.nouns.length&&p.nouns.length<=4) out.push({...p,k:"noun",tg:p.nouns}); }
+  return e._wi=out; }
+function wortQ(it){ const tg=new Set(it.tg), hit=new Set(); let miss=0; const what=it.k==="art"?"冠词":"名词";
+  stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">点出这句里所有的${what}（${tg.size} 个）${it.k==="noun"?"，人名也算":""}</div><div class="zh">${esc(it.zh)}</div></div><div class="tiles wj" id="tiles">${it.raw.map((t,i)=>`<button class="tile" data-i="${i}">${esc(t)}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
+  $("back").onclick=()=>episode(E.key); interBoard(`Finde alle ${it.k==="art"?"Artikel":"Nomen"}`,`还差 ${tg.size} 个`);
+  stage.querySelectorAll(".tile").forEach(b=>b.onclick=()=>{ if(hit.size>=tg.size) return; const i=+b.dataset.i; if(hit.has(i)) return;
+    if(tg.has(i)){ hit.add(i); b.classList.add("hit"); interBoard(`Finde alle ${it.k==="art"?"Artikel":"Nomen"}`,hit.size>=tg.size?"找齐了":`还差 ${tg.size-hit.size} 个`);
+      if(hit.size>=tg.size){ const ok=miss===0; stage.querySelectorAll(".tile").forEach(x=>x.disabled=true);
+        $("fb").innerHTML=`<div class="card">${ok?`<div class="ok">✓ 全部找到，一次没点错</div>`:`<div class="bad">点错 ${miss} 次，这句不算一次对</div>`}<div class="word" style="font-size:20px">${it.raw.map((t,j)=>tg.has(j)?`<u>${esc(t)}</u>`:esc(t)).join(" ")}</div><div class="zh">${esc(it.zh)}</div></div>`; interNext(ok,it.de); } }
+    else { miss++; b.classList.remove("nope"); void b.offsetWidth; b.classList.add("nope"); if(miss===1) stumble();
+      if(miss>=2) stage.querySelectorAll(".tile").forEach(x=>{ if(tg.has(+x.dataset.i)&&!hit.has(+x.dataset.i)){ x.classList.remove("hintme"); void x.offsetWidth; x.classList.add("hintme"); } }); } }); }
+/* Nico 的日记（Mad Libs 式）：每句先随便挑一个本集名词填进去（越怪越好），再选 der/die/das；最后整篇日记读出来 */
+const TAGE_T=[["Heute war","sehr komisch.","今天 ___ 特别奇怪。"],["Am Morgen hat","laut gesungen.","早上 ___ 大声唱歌。"],["Dann ist","einfach weggelaufen.","然后 ___ 直接跑掉了。"],
+  ["Mittags hat mich","angelacht.","中午 ___ 冲我笑。"],["Am Abend war","plötzlich ganz blau.","晚上 ___ 突然变成了蓝色。"],["Ich glaube,","ist mein neuer Freund.","我觉得 ___ 是我的新朋友。"],
+  ["Leider hat","meinen Kaffee getrunken.","可惜 ___ 喝了我的咖啡。"],["Morgen kommt","bestimmt wieder.","明天 ___ 肯定还会来。"]];
+function tageNouns(e){ const one=o=>VOCAB.filter(v=>v.l===o.id&&v.g).map(v=>({w:String(v.ans).replace(/^(der|die|das)\s+/,""),g:v.g,zh:v.zh})).filter(x=>/^[A-ZÄÖÜ][\wäöüß-]*$/.test(x.w)&&x.w.length<=16);
+  let out=one(e); for(const o of EPISODES){ if(out.length>=9) break; if(o.lv!==e.lv||o===e||Math.abs(o.n-e.n)>3) continue; out=out.concat(one(o).filter(x=>!out.some(y=>y.w===x.w))); } return out; }
+function tageItems(e){ const r=rng(e.key+"tage"), ns=shuf(tageNouns(e),r), ts=shuf(TAGE_T,r).slice(0,5); if(ns.length<3) return [];
+  return ts.map((t,i)=>({pre:t[0],post:t[1],zh:t[2],o:[0,1,2].map(j=>ns[(i*3+j)%ns.length])})); }
+function tageLine(it,c){ return `${it.pre} ${c.g} ${c.w} ${it.post}`; }
+function tageQ(it){ IX.diary=IX.diary||[]; const prev=IX.diary.map(l=>`<div class="tg-l">${esc(l)}</div>`).join("");
+  stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="card tg-book"><div class="tg-h">Liebes Tagebuch …</div>${prev}<div class="tg-l cur">${esc(it.pre)} <b id="gap">____</b> ${esc(it.post)}</div><div class="zh">${esc(it.zh)}</div></div>
+    <div class="q"><div class="hint" id="th">先挑一个词填进去，随便挑，越怪越好</div></div><div class="opts" id="tops">${it.o.map((c,i)=>`<button class="opt" data-i="${i}">${esc(c.w)}<small style="display:block;font-size:11px;color:var(--muted)">${esc(c.zh)}</small></button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
+  $("back").onclick=()=>episode(E.key); interBoard("Liebes Tagebuch",esc(it.zh));
+  stage.querySelectorAll("#tops .opt").forEach(b=>b.onclick=()=>{ const c=it.o[+b.dataset.i]; $("gap").textContent=`___ ${c.w}`; $("th").textContent=`「${c.w}」用哪个冠词？`;
+    $("tops").innerHTML=["der","die","das"].map(a=>`<button class="opt" data-a="${a}">${a}</button>`).join("");
+    $("tops").querySelectorAll(".opt").forEach(x=>x.onclick=()=>{ const ok=x.dataset.a===c.g, line=tageLine(it,c); $("tops").querySelectorAll(".opt").forEach(y=>{ y.disabled=true; if(y.dataset.a===c.g) y.classList.add("right"); else if(y===x) y.classList.add("wrong"); });
+      $("gap").textContent=`${c.g} ${c.w}`; IX.diary.push(line); interBoard(esc(`${c.g} ${c.w}`),esc(it.zh));
+      $("fb").innerHTML=`<div class="card">${ok?`<div class="ok">✓ ${esc(c.g)} ${esc(c.w)}</div>`:`<div class="bad">✗ 是 ${esc(c.g)} ${esc(c.w)}</div>`}<div class="word" style="font-size:19px">${esc(line)}</div></div>`; interNext(ok,line); }); }); }
 function satzPool(e){ const strip=s=>String(s||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim(), out=[];
   const add=(de,zh)=>{ de=strip(de); const n=de.split(" ").length; if(n<3||n>9||/___|…|\.\.\.|[()\/]/.test(de)||out.some(x=>x.de===de)) return; out.push({de,zh:strip(zh)}); };
   e.intro.forEach(d=>add(d.de,d.zh)); (e.talk||[]).forEach(d=>{ add(d.a,d.azh); add(d.q,d.qzh); }); return out; }
@@ -1536,17 +1597,22 @@ function clockSVG(v,sz){ const h=Math.floor(v/60)%12, m=v%60, ha=(h+m/60)*30, ma
   return `<svg viewBox="0 0 100 100" width="${sz||72}" height="${sz||72}" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#FFFDF6" stroke="#22304A" stroke-width="4"/>${Array.from({length:12},(_,i)=>`<line x1="${50+38*Math.sin(i*Math.PI/6)}" y1="${50-38*Math.cos(i*Math.PI/6)}" ${L(i*30,i%3?42:44)} stroke="#22304A" stroke-width="${i%3?2:4}"/>`).join("")}<line x1="50" y1="50" ${L(ha,24)} stroke="#22304A" stroke-width="6" stroke-linecap="round"/><line x1="50" y1="50" ${L(ma,36)} stroke="#D2553F" stroke-width="3.5" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#22304A"/></svg>`; }
 let IX=null;
 function interBoard(t,s){ if(IX){ IX.bt=t; IX.bs=s; } const f=document.querySelector("#sceneFx .fx-board"); if(f){ f.querySelector("b").innerHTML=t; f.querySelector("span").innerHTML=s; } }
-function inter(slot,next){ stopTimer(); const kind=interPlan(E)[slot], qs=kind==="satz"?satzItems(E,slot):zahlItems(E);
+const INTER_INFO={
+  satz:{bt:"Satzbau",bs:"把词按顺序点出来",hi:"Wort für Wort!",d:n=>`${n} 句台词被打散了。按顺序一个一个点词，点错会抖一下——一句里一次都没点错才算对。注意动词放第二位，从句动词放最后。`},
+  zahl:{bt:"Zahlen hören",bs:"听数字、时间、价格",hi:"Hör genau hin!",d:n=>`${n} 题。听德语说的数字、时间或价格，在数轴、钟面或价签上点出来。可以反复听。`},
+  wort:{bt:"Wortjagd",bs:"点出名词 / 冠词",hi:"Wortjagd!",d:n=>`${n} 句本集台词。按要求点出句子里所有的名词或冠词，一次没点错才算对。德语名词首字母大写，是个好线索。`},
+  tage:{bt:"Liebes Tagebuch",bs:"帮 Nico 写日记",hi:"Liebes Tagebuch …",d:n=>`帮 Nico 写 ${n} 句日记：每句先随便挑一个本集的名词（越怪越好），再选对 der / die / das。写完整篇读给你听。`}};
+function inter(slot,next){ stopTimer(); const kind=interPlan(E)[slot], qs=({satz:()=>satzItems(E,slot),zahl:()=>zahlItems(E),wort:()=>wortItems(E),tage:()=>tageItems(E)})[kind](), I=INTER_INFO[kind];
   if(!qs.length) return next();
-  IX={slot,kind,qs,n:0,right:0,states:[],next,bt:kind==="satz"?"Satzbau":"Zahlen hören",bs:kind==="satz"?"把词按顺序点出来":"听数字、时间、价格"}; setScene(60,70,false); $("gapLbl").textContent=INTER_NAME[kind]; hearts(null);
-  const desc=kind==="satz"?`${qs.length} 句台词被打散了。按顺序一个一个点词，点错会抖一下——一句里一次都没点错才算对。注意动词放第二位，从句动词放最后。`:`${qs.length} 题。听德语说的数字、时间或价格，在数轴、钟面或价签上点出来。可以反复听。`;
-  stage.innerHTML=`${bubble("Lisa",kind==="satz"?"Wort für Wort!":"Hör genau hin!",desc)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="skip">跳过</button><button class="primary" id="go">开始</button></div><div class="tap">两个插曲都答对 80% 是 ⭐2 的条件之一</div>`;
+  IX={slot,kind,qs,n:0,right:0,states:[],next,bt:I.bt,bs:I.bs,diary:[]}; setScene(60,70,false); $("gapLbl").textContent=INTER_NAME[kind]; hearts(null);
+  stage.innerHTML=`${bubble("Lisa",I.hi,I.d(qs.length))}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="skip">跳过</button><button class="primary" id="go">开始</button></div><div class="tap">两个插曲都答对 80% 是 ⭐2 的条件之一</div>`;
   $("back").onclick=()=>episode(E.key); $("skip").onclick=next; $("go").onclick=interQ; }
 function interDone(){ const ep=EP(), acc=IX.qs.length?IX.right/IX.qs.length:1, k="i"+IX.slot; ep[k]=Math.max(ep[k]||0,acc); bumpStreak(); updateStars(E); save();
-  $("gapLbl").textContent="插曲完成"; const nx=IX.next;
-  stage.innerHTML=`${bubble("Lisa",acc>=.8?"Prima!":"Weiter üben!",`${IX.right}/${IX.qs.length} 题一次答对（${Math.round(acc*100)}%）。${acc>=.8?"":"想拿 ⭐2，这个插曲要答对 80%，可以从本集首页再玩一次。"}`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="again">再玩一次</button><button class="primary" id="go">继续 ›</button></div>`;
-  $("go").onclick=nx; $("back").onclick=()=>episode(E.key); const sl=IX.slot; $("again").onclick=()=>inter(sl,nx); }
-function interQ(){ if(IX.n>=IX.qs.length) return interDone(); const it=IX.qs[IX.n]; $("gapLbl").textContent=`${INTER_NAME[IX.kind]} ${IX.n+1}/${IX.qs.length}`; return IX.kind==="satz"?satzQ(it):zahlQ(it); }
+  $("gapLbl").textContent="插曲完成"; const nx=IX.next, diary=IX.kind==="tage"?IX.diary.slice():null;
+  stage.innerHTML=`${diary?`<div class="card tg-book"><div class="tg-h">Liebes Tagebuch …</div>${diary.map(l=>`<div class="tg-l">${esc(l)}</div>`).join("")}<div class="tg-l" style="text-align:right">— Nico</div><button id="rd" style="margin-top:8px">再读一遍</button></div>`:""}${bubble("Lisa",acc>=.8?"Prima!":"Weiter üben!",`${IX.right}/${IX.qs.length} 题一次答对（${Math.round(acc*100)}%）。${acc>=.8?"":"想拿 ⭐2，这个插曲要答对 80%，可以从本集首页再玩一次。"}`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="again">再玩一次</button><button class="primary" id="go">继续 ›</button></div>`;
+  $("go").onclick=nx; $("back").onclick=()=>episode(E.key); const sl=IX.slot; $("again").onclick=()=>inter(sl,nx);
+  if(diary){ const rd=()=>speakThen("Liebes Tagebuch. "+diary.join(" ")); $("rd").onclick=rd; rd(); } }
+function interQ(){ if(IX.n>=IX.qs.length) return interDone(); const it=IX.qs[IX.n]; $("gapLbl").textContent=`${INTER_NAME[IX.kind]} ${IX.n+1}/${IX.qs.length}`; return ({satz:satzQ,zahl:zahlQ,wort:wortQ,tage:tageQ})[IX.kind](it); }
 function interNext(ok,say){ if(!IX.states[IX.n]){ IX.states[IX.n]=ok?"ok":"bad"; if(ok) IX.right++; }
   let adv=false; const go=()=>{ if(adv) return; adv=true; IX.n++; interQ(); };
   $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go; autoNext(go,cb=>speakThen(say,cb),ok); combo(ok?"✓":"✗"); if(ok) cheer(); else stumble(); }
@@ -1564,10 +1630,10 @@ function zahlQ(it){ const say=()=>speakThen(it.say); let body;
   if(it.k==="num"){ const R=it.R, step=R<=20?1:10, ticks=Array.from({length:R/step+1},(_,i)=>i*step);
     body=`<div class="nl" id="nl"><div class="nl-line"></div>${ticks.map(t=>`<i style="left:${t/R*100}%" class="${t%(R<=12?3:R<=20?5:50)===0?"big":""}"></i>${t%(R<=12?3:R<=20?5:50)===0?`<em style="left:${t/R*100}%">${t}</em>`:""}`).join("")}<b class="nl-mk hidden" id="mk"></b></div><div class="nl-val" id="nv">点数轴</div><div class="row"><button id="minus" aria-label="减一">−</button><button class="primary" id="jump" disabled>跳！</button><button id="plus" aria-label="加一">＋</button></div>`; }
   else if(it.k==="time") body=`<div class="opts clocks">${it.o.map(v=>`<button class="opt" data-a="${v}">${clockSVG(v)}</button>`).join("")}</div>`;
-  else body=`<div class="opts">${it.o.map(c=>`<button class="opt tag" data-a="${c}">🏷️ ${priceStr(c)}</button>`).join("")}</div>`;
+  else body=`<div class="opts">${it.o.map(c=>`<button class="opt tag" data-a="${c}">${priceStr(c)}</button>`).join("")}</div>`;
   const q={num:"听到的是几？",time:"几点了？",price:"多少钱？"}[it.k];
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">${q}</div><button id="sp" style="margin-top:4px">🔊 再听</button></div>${body}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
-  $("back").onclick=()=>episode(E.key); $("sp").onclick=say; say(); interBoard("🔊",q);
+  $("back").onclick=()=>episode(E.key); $("sp").onclick=say; say(); interBoard("Hör zu",q);
   const ans=it.k==="time"?`${Math.floor(it.v/60)}:${String(it.v%60).padStart(2,"0")}`:it.k==="price"?priceStr(it.v):String(it.v);
   const finish=picked=>{ const ok=picked===it.v; stage.querySelectorAll(".opt,#jump,#minus,#plus").forEach(x=>{ x.disabled=true; if(x.dataset.a==String(it.v)) x.classList.add("right"); else if(x.dataset.a==String(picked)) x.classList.add("wrong"); });
     $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 对</div>':`<div class="bad">✗ 应该是 ${esc(ans)}</div>`}<div class="word" style="font-size:22px">${esc(it.say)}</div>${it.k==="time"?`<div class="zh">${esc(ans)}</div>`:""}</div>`; interBoard(esc(ans),esc(it.say)); interNext(ok,it.say); };
