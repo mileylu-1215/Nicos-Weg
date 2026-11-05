@@ -108,7 +108,8 @@ input[type=text]{font-family:var(--display);font-size:22px;width:100%;border:2px
 /* stage */
 .stage{flex:1;background:var(--paper);border-radius:26px 26px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 24px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:12px}
 .dialog{display:flex;gap:10px;align-items:flex-start}
-.dialog .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:var(--sky);flex:none}
+.dialog .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:var(--sky);flex:none;overflow:hidden}
+.dialog .av img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;transform:scale(1.25);transform-origin:50% 22%}
 .dialog .bub{background:var(--bubble);border:1px solid var(--line);border-radius:4px 18px 18px 18px;padding:10px 14px;flex:1;min-width:0}
 .dialog .bub .who{font-family:var(--display);font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 .dialog .bub .de{font-family:var(--display);font-size:19px;font-weight:600}
@@ -284,7 +285,7 @@ table.g td:first-child{color:var(--muted);white-space:nowrap}
 .grip{display:none}
 body.imm{overflow:hidden;background:#22304A}
 body.imm .wrap{height:100vh;height:100dvh;min-height:0}
-body.imm #sceneBg{display:block;position:fixed;inset:0;z-index:0;background-color:#B9CDB4;background-repeat:no-repeat;transition:background-position .7s ease,background-size .7s ease}
+body.imm #sceneBg{display:block;position:fixed;inset:0;z-index:0;background-color:#B9CDB4;background-repeat:no-repeat;transition:background-position .7s ease,background-size .7s ease,filter .4s ease}
 body.imm #sceneBg.nobg{display:none}
 #sceneBg::before,#sceneBg::after{content:"";position:absolute;inset:0;pointer-events:none}
 #sceneBg::after{background:radial-gradient(ellipse 115% 85% at 50% 38%,transparent 52%,rgba(34,48,74,.38)),var(--grain)}
@@ -296,9 +297,18 @@ body:has(.scene.moving) #sceneBg{animation:bgpan 7s ease-in-out infinite alterna
 body.imm .scene{position:fixed;left:0;right:0;top:0;margin:0 auto;max-width:480px;z-index:1;height:calc(100vh - var(--sh,320px));height:calc(100dvh - var(--sh,320px));transition:height .3s ease}
 body.imm .scene.hasbg{background:transparent}
 body.imm .scene.hasbg :is(.sun,.stars,.cloud,.hills,.skyline){display:none}
-body.imm .scene.hasbg .road{background:linear-gradient(#BFAA8C,#937F69);opacity:.93}
-body.imm .scene.hasbg .road::before{background:#DCCBA9}
-body.imm .scene.hasbg .road::after{background:repeating-linear-gradient(90deg,#F3E6C8 0 26px,transparent 26px 56px);opacity:.75}
+/* 水彩画面上不用旧街景的 emoji 道具（树、飞机、气球、🏃、CSS 出租车）；赶路时换成羊皮纸路线 + 棋子：金色 N 追红色蜡封 */
+body.imm .scene.hasbg :is(.trees,.fly,.puff,.prop,[id^=bal]){display:none!important}
+body.imm .scene.hasbg:not([data-m=street]) :is(.road,.nico,.car,.tgt){display:none!important}
+body.imm .scene.hasbg .road{left:14px;right:14px;bottom:16px;height:30px;border-radius:15px;background:var(--parch) var(--grain);box-shadow:0 4px 14px rgba(34,48,74,.28),inset 0 0 0 1px rgba(120,90,50,.18)}
+body.imm .scene.hasbg .road::before{display:none}
+body.imm .scene.hasbg .road::after{left:22px;right:22px;top:50%;height:0;border-top:2px dashed rgba(120,90,50,.45);background:none;opacity:1}
+body.imm .scene.hasbg :is(.nico,.tgt,.car){bottom:18px;width:26px;height:26px;margin-left:8px;border-radius:50%;font-size:0;color:transparent;filter:drop-shadow(0 2px 3px rgba(34,48,74,.35))}
+body.imm .scene.hasbg .nico{background:radial-gradient(circle at 35% 30%,#F6D88A,#E3B256 60%,#B98A35);border:2px solid #FFF6DC}
+body.imm .scene.hasbg .nico::before{content:"N";position:absolute;inset:0;display:grid;place-items:center;font:700 14px/1 Georgia,serif;color:#5B3A12}
+body.imm .scene.hasbg :is(.car,.tgt){background:radial-gradient(circle at 35% 30%,#D9786F,#B5463F 60%,#8A2E2A);border:2px solid #F3D9C6}
+body.imm .scene.hasbg :is(.car,.tgt)::before{content:"✦";position:absolute;inset:0;display:grid;place-items:center;font-size:13px;color:#FBE7C6}
+body.imm .scene.hasbg .car>*{display:none}
 body.imm .gap{top:calc(10px + env(safe-area-inset-top,0px));background:rgba(34,48,74,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 body.imm .hearts{top:calc(16px + env(safe-area-inset-top,0px))}
 body.imm .homebtn{top:calc(10px + env(safe-area-inset-top,0px))}
@@ -317,6 +327,72 @@ body.imm .stage{flex:none;background:transparent;box-shadow:none;border-radius:0
 body.imm .stage h2{font-family:Georgia,"Noto Serif SC","Songti SC",var(--display)}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body.imm .grip i{background:#6A5F4B} }
 :root[data-theme="dark"] body.imm .grip i{background:#6A5F4B}
+/* 各环节的专属画面（#sceneFx，按 .scene[data-m] 切换）：vn 剧情/对话立绘 · desk 便签 · phone 手机 · radio 车内收音机 · board 黑板 · boss 大立绘 · win 道具进包 */
+#sceneFx{display:none}
+body.imm #sceneFx{display:block;position:absolute;inset:0;pointer-events:none;animation:fxin .35s ease-out}
+@keyframes fxin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+body.imm .stage.fade{animation:fxin .3s ease-out}
+#sceneBg{transition:background-position .7s ease,background-size .7s ease,filter .4s ease}
+#sceneBg[data-m=phone]{filter:blur(5px) brightness(.9)}
+#sceneBg[data-m=radio]{filter:blur(3px) brightness(.55) saturate(.8)}
+#sceneBg[data-m=boss]{filter:brightness(.8) saturate(1.05)}
+#sceneBg[data-m=board]{filter:brightness(.92)}
+body.imm .scene:is([data-m=vn],[data-m=boss]) :is(.car,.tgt){display:none}
+body.imm .scene[data-m=win] .tgt{display:none}
+body.imm .scene[data-m=radio][data-car="1"] :is(.road,.trees,.car,.tgt,.prop,.nico,.puff){display:none}
+body.imm .scene.inside :is(.road,.trees,.car,.tgt,.prop,.nico,.puff,.fly){display:none}
+#sceneBg.swap{transition:none;animation:bgswap .5s ease}
+@keyframes bgswap{from{opacity:.25}to{opacity:1}}
+body.imm .scene[data-m=radio] :is(.car,.tgt,.prop){display:none}
+.fx-spk{top:calc(56px + env(safe-area-inset-top,0px));width:min(74%,250px);padding:12px 14px}
+.fx-spk .ic{display:block;font-size:34px;line-height:1.1;animation:buzz 2.4s ease-in-out infinite}
+.fx-spk b{font-size:14px;letter-spacing:.04em;margin-top:2px}
+.fx-pad{position:absolute;left:50%;top:calc(54px + env(safe-area-inset-top,0px));width:min(62%,220px);padding:14px 16px 18px;transform:translateX(-50%) rotate(-4deg);background:#FFFDF4 repeating-linear-gradient(transparent 0 23px,rgba(80,120,170,.25) 23px 24px);background-position:0 40px;border-radius:4px;box-shadow:0 10px 22px rgba(0,0,0,.28);text-align:center;color:#22304A;animation:stand .5s cubic-bezier(.3,1.4,.5,1)}
+.fx-pad span{display:block;font-size:40px;line-height:1.1}
+.fx-pad b{display:block;font-family:Georgia,"Noto Serif SC",serif;font-size:16px;margin-top:4px}
+.fx-pad i{display:block;height:2px;margin:12px 8% 0;background:rgba(34,48,74,.18);border-radius:1px}
+.fx-pad i:nth-of-type(2){margin-right:28%}.fx-pad i:nth-of-type(3){margin-right:45%}
+body.imm .scene[data-m=phone] :is(.car,.tgt,.prop){display:none}
+.fx-stand{position:absolute;right:9%;bottom:44px;display:flex;flex-direction:column;align-items:center;gap:2px;animation:stand .5s cubic-bezier(.3,1.4,.5,1)}
+.fx-stand .em{font-size:84px;line-height:1;filter:drop-shadow(0 8px 6px rgba(0,0,0,.28))}
+.fx-stand .em img{display:block;width:150px;height:150px;object-fit:contain;animation:breathe 3.6s ease-in-out infinite;transform-origin:50% 100%}
+.fx-stand.boss .em img{width:210px;height:210px}
+@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.025) translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){.fx-stand .em img{animation:none}}
+.fx-stand::before{content:"";position:absolute;left:50%;top:44%;width:150px;height:150px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(rgba(255,248,226,.85),rgba(255,248,226,0) 68%);z-index:-1}
+.fx-stand b{font-family:var(--display);font-size:12px;letter-spacing:.06em;color:#22304A;background:#F3E6C8;padding:2px 10px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.fx-stand.boss{right:50%;transform:translateX(50%);bottom:30px;animation:none}
+.fx-stand.boss .em{font-size:128px;animation:bossin .6s cubic-bezier(.3,1.4,.5,1)}
+.fx-stand.boss::before{width:230px;height:230px;background:radial-gradient(rgba(227,178,86,.75),rgba(227,178,86,0) 66%)}
+@keyframes stand{from{opacity:0;transform:translateY(18px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes bossin{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.fx-note{position:absolute;left:50%;top:calc(58px + env(safe-area-inset-top,0px));transform:translateX(-50%) rotate(-3deg);min-width:150px;max-width:72%;padding:14px 18px 12px;background:#FFE9A3;color:#3A2E12;text-align:center;box-shadow:0 8px 16px rgba(0,0,0,.22);border-radius:2px}
+.fx-note::before{content:"";position:absolute;left:50%;top:-8px;width:60px;height:16px;transform:translateX(-50%) rotate(2deg);background:rgba(255,255,255,.55)}
+.fx-note b{display:block;font-family:var(--display);font-size:24px;line-height:1.2;overflow-wrap:anywhere}
+.fx-note small{font-size:13px;opacity:.75}
+.fx-note:empty,.fx-note.off{display:none}
+.fx-phone{position:absolute;left:50%;top:calc(52px + env(safe-area-inset-top,0px));bottom:58px;aspect-ratio:9/17;max-height:250px;transform:translateX(-50%) rotate(4deg);background:#1f2430;border-radius:22px;padding:9px;box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.fx-phone .scr{height:100%;border-radius:15px;background:linear-gradient(#3B4A6B,#22304A);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;font-size:12px}
+.fx-phone .scr span{font-size:34px;animation:buzz 1.6s ease-in-out infinite}
+.fx-phone .notch{position:absolute;left:50%;top:12px;width:34%;height:6px;transform:translateX(-50%);border-radius:3px;background:#0d1018;z-index:1}
+@keyframes buzz{0%,70%,100%{transform:none}75%{transform:rotate(-12deg)}85%{transform:rotate(12deg)}}
+.fx-dash{position:absolute;left:0;right:0;bottom:0;height:46%;min-height:120px;background:linear-gradient(#5A4636,#2E241C);border-radius:50% 50% 0 0/26% 26% 0 0;box-shadow:0 -6px 18px rgba(0,0,0,.35)}
+.fx-radio{position:absolute;left:50%;top:22%;transform:translateX(-50%);width:min(70%,230px);padding:10px 14px;border-radius:12px;background:#1b1612;border:2px solid #7a6040;box-shadow:0 0 22px rgba(255,190,90,.45),inset 0 0 12px rgba(255,190,90,.25);text-align:center;color:#FFD889;font-family:var(--display)}
+.fx-radio b{display:block;font-size:15px;letter-spacing:.12em;text-shadow:0 0 8px rgba(255,200,100,.8)}
+.fx-radio .eq{display:flex;justify-content:center;align-items:flex-end;gap:4px;height:24px;margin-top:6px}
+.fx-radio .eq i{width:6px;border-radius:2px;background:#FFC86B;animation:eq .9s ease-in-out infinite alternate}
+.fx-radio .eq i:nth-child(2n){animation-duration:.6s}.fx-radio .eq i:nth-child(3n){animation-duration:1.2s}
+@keyframes eq{from{height:4px}to{height:24px}}
+.fx-board{position:absolute;left:8%;right:8%;top:calc(52px + env(safe-area-inset-top,0px));height:min(46%,170px);background:#2F4A3A radial-gradient(ellipse at 30% 30%,rgba(255,255,255,.08),transparent 60%);border:8px solid #8A6440;border-radius:6px;box-shadow:0 10px 22px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#F4F1E6;font-family:Georgia,"Noto Serif SC",serif;text-align:center;padding:8px}
+.fx-board b{font-size:24px;font-style:italic;letter-spacing:.04em;opacity:.95}
+.fx-board span{font-size:14px;opacity:.75}
+.fx-board::after{content:"";position:absolute;left:12%;bottom:-8px;width:40px;height:6px;background:#EDE8DA;border-radius:2px}
+.fx-win .it{position:absolute;font-size:72px;line-height:1;animation:itfly 1.8s cubic-bezier(.4,0,.3,1) forwards}
+@keyframes itfly{0%{left:50%;top:38%;transform:translate(-50%,-50%) scale(.2);opacity:0}25%{left:50%;top:38%;transform:translate(-50%,-50%) scale(1.35);opacity:1}55%{left:50%;top:38%;transform:translate(-50%,-50%) scale(1.15) rotate(-8deg)}100%{left:80%;top:calc(100% - 70px);transform:translate(-50%,-50%) scale(.35);opacity:0}}
+.fx-win .bag{position:absolute;left:80%;bottom:40px;transform:translateX(-50%);font-size:44px;animation:bagpop .5s ease-out 1.6s both}
+@keyframes bagpop{0%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.3)}100%{transform:translateX(-50%) scale(1)}}
+.fx-win::before{content:"✦ ✦ ✦";position:absolute;left:50%;top:22%;transform:translateX(-50%);color:#FFD66B;font-size:22px;letter-spacing:14px;text-shadow:0 0 10px rgba(255,214,107,.9);animation:twinkle 1.2s ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.3}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -328,6 +404,7 @@ body.imm .stage h2{font-family:Georgia,"Noto Serif SC","Songti SC",var(--display
     <div class="fly hidden" id="fly">✈️</div><div class="balloon hidden" id="bal1">🎈</div><div class="balloon b hidden" id="bal2">🎈</div><div class="balloon c hidden" id="bal3">🎈</div>
     <div class="hills"></div><div class="skyline" id="skyline"></div><div class="trees" id="trees">🌳🏮🌲🪧🌳</div>
     <div class="road"></div>
+    <div id="sceneFx" aria-hidden="true"></div>
     <div class="prop hidden" id="prop"></div>
     <div class="car" id="car"><div class="top"></div><div class="win"></div><div class="sign"></div><div class="body"></div><div class="lamp"></div><div class="w l"></div><div class="w r"></div></div>
     <div class="tgt hidden" id="tgt"></div>
@@ -396,6 +473,8 @@ const chapterName=(lv,n)=>{ const e=LEVELS.find(l=>l.id===lv).episodes.find(x=>x
 const TOWNS={
   /* A1：v0.4 水彩城市图。x,y 是楼在底图上的中心（原图像素），w,h 是可点区域；d 是所属街区；life 是「新生活」卡（D36，待用户审） */
   A1:{ size:[1024,1536], bg:"assets/city/a1-day.webp",
+    /* 室内图：assets/interiors/{id}.webp（1024×1536 竖图，重点在上 45%）；13 栋楼已全部画好 */
+    interiors:["flughafen","cafe","wg","sprachschule","baeckerei","restaurant","bahnhof","supermarkt","fahrrad","boutique","park","arztpraxis","rathaus"],
     districts:[
       {id:"air",   name:"机场区",     blobs:[[720,110,400,110],[380,115,260,80]]},
       {id:"kiez",  name:"北岸 Kiez",  blobs:[[170,340,230,190],[340,250,180,210],[720,250,240,170],[530,300,160,130]]},
@@ -453,6 +532,14 @@ for(const [lv,T] of Object.entries(TOWNS)){ if(!levelOf(lv)) continue; const all
 let CUR_LV=null;
 const V=id=>VOCAB.find(v=>v.id===id);
 const AV={Nico:"🧑",Emma:"👧",Lisa:"👩",Taxifahrer:"🧔",Mann:"👨",Frau:"👩‍🦰",Radio:"📻",Max:"🧑‍🦱",Jürgen:"👮",Mutter:"👩‍🦳",Anrufer:"📞",Moderatorin:"🎙️","Frau Schneider":"👩‍🦰"};
+/* 角色立绘 assets/portraits/{id}.webp（动物设定见 design/narrative/characters.md）；配角按职业复用路人；没列的（旁白、Alle、Mailbox…）继续用 emoji */
+const PORT=(()=>{ const m={nico:"Nico",lisa:"Lisa",max:"Max",inge:"Inge",tarek:"Tarek",emma:"Emma",selma:"Selma",sebastian:"Sebastian",juergen:"Jürgen",nina:"Nina",nawin:"Nawin",yanis:"Yanis",
+    taxi:"Taxifahrer",yara:"Yara",pepe:"Pepe",jacques:"Jacques",ibrahim:"Ibrahim",hauke:"Hauke",sarah:"Sarah",aya:"Aya",
+    raccoon:"Bäckerin|Verkäufer|Bäcker",goose:"Kellnerin|Verkäuferin|Kassiererin|Kellner",alpaca:"Sprechstundenhilfe|Arzt|Ärztin",magpie:"Moderatorin|Radio|Moderator",
+    wolf:"Mann|Dennis|Wolfgang|Marvin|Julius|Investor|Kunde|Kursteilnehmer|Fahrgast|Gast|Tom",
+    meerkat:"Frau|Ulla|Kursteilnehmerin|Teilnehmerin|Frau Schneider|Frau Kamp|Frau Scholl|Martina|Kundin|Botin|Rezeptionistin|Mutter Von Lotte|Model",tortoise:"Mutter|Nachbar|Nachbarin"};
+  const o={}; for(const k in m) m[k].split("|").forEach(n=>o[n]=k); return o; })();
+const avHTML=w=>PORT[w]?`<img src="assets/portraits/${PORT[w]}.webp" alt="" onerror="this.parentNode.textContent='${AV[w]||"🙂"}'">`:(AV[w]||"🙂");
 const GAP=[0,1,3,7,14,30];   /* box 1-4 记得后隔几天再来；box 到 5 算掌握 */
 /* 填空题讲解：key 是 "剧集key#填空序号"（序号从 0 开始，对应 E.cloze 的顺序） */
 const WHY={
@@ -561,27 +648,60 @@ function combo(txt){ const c=$("combo"); c.textContent=txt; c.classList.remove("
 let tInt=null; function timer(sec,onEndT){ clearInterval(tInt); const bar=$("tbar"); let left=sec; bar.style.width="100%"; tInt=setInterval(()=>{ if(SHEET_MIN) return; left-=.1; bar.style.width=Math.max(0,left/sec*100)+"%"; if(left<=0){ clearInterval(tInt); onEndT(); } },100); }
 function stopTimer(){ clearInterval(tInt); tInt=null; $("tbar").style.width="0"; }
 function dots(n,total,states){ return `<div class="dots">${Array.from({length:total},(_,i)=>`<i class="${states&&states[i]?states[i]:(i<n?'on':'')}"></i>`).join("")}</div>`; }
-function bubble(who,de,zh){ return `<div class="dialog ${who==="Nico"?'me':''}"><div class="av">${AV[who]||"🙂"}</div><div class="bub"><div class="who">${esc(who)}</div><div class="de">${de}</div>${zh?`<div class="zh">${zh}</div>`:""}</div></div>`; }
+function bubble(who,de,zh){ return `<div class="dialog ${who==="Nico"?'me':''}"><div class="av" data-w="${esc(who)}">${avHTML(who)}</div><div class="bub"><div class="who">${esc(who)}</div><div class="de">${de}</div>${zh?`<div class="zh">${zh}</div>`:""}</div></div>`; }
 /* ---------- 单集全屏场景：在一集里（或今日回顾）时，场景铺满全屏、答题卡浮在上面；题目仍旧写进 stage，这里只管外框 ---------- */
 let DIARY=false, SHEET_MIN=false, IMM_BG=null, IMM_KEY=null;
 const sheetEl=$("sheet"), sceneBg=$("sceneBg");
 const immOn=()=>(!!E||DIARY)&&townEl().hidden;
 function sheetMin(on){ if(SHEET_MIN===on) return; SHEET_MIN=on; sheetEl.classList.toggle("min",on); $("grip").setAttribute("aria-expanded",String(!on));
   if(on){ const a=document.activeElement; if(a&&stage.contains(a)) a.blur(); sheetEl.querySelector(".grip span").textContent=tInt?"▲ 展开，继续答题 · 计时已暂停":"▲ 展开，继续答题"; } immLayout(); }
-/* 背景：本集所在的楼（从城市水彩图里放大取景，室内图做好前先用它）；没有楼时取城市中部 */
+/* 背景：对话、热身、写下来、小课堂、Boss、结算在楼里，用室内图（进楼才加载，加载完前先用城市图里这栋楼的取景）；
+   赶路、听写、本集首页在外面，用城市图取景；没有楼时取城市中部 */
+const IN_MODES=/^(vn|desk|phone|board|boss|win)$/, IMG_OK={};
+function interiorOf(T,b){ if(!b||!(T.interiors||[]).includes(b.id)) return null; const src=`assets/interiors/${b.id}.webp`;
+  if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(document.body.classList.contains("imm")) immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
+  return IMG_OK[src]?{T,src,size:[1024,1536],inside:true}:null; }
 function immBgSpec(){ const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):null;
-  return b?{T,x:b.x,y:b.y,w:b.w}:{T,x:T.size[0]/2,y:T.size[1]*.42,w:T.size[0]*.7}; }
+  const inn=interiorOf(T,b); if(inn&&IN_MODES.test(SM)) return inn;
+  return b?{T,src:T.bg,size:T.size,x:b.x,y:b.y,w:b.w}:{T,src:T.bg,size:T.size,x:T.size[0]/2,y:T.size[1]*.42,w:T.size[0]*.7}; }
 function immLayout(){ if(!document.body.classList.contains("imm")) return; const sh=sheetEl.offsetHeight; scene.style.setProperty("--sh",sh+"px");
-  const s=IMM_BG; if(!s) return; const [iw,ih]=s.T.size, W=innerWidth, H=innerHeight;
+  const s=IMM_BG; if(!s) return; const [iw,ih]=s.size, W=innerWidth, H=innerHeight;
+  if(s.inside){ const k=Math.max(W/iw,H/ih); sceneBg.style.backgroundSize=`${iw*k}px ${ih*k}px`; sceneBg.style.backgroundPosition=`${(W-iw*k)/2}px 0px`; return; }
   const k=Math.max(W/iw,H/ih,Math.min(3,W*.75/s.w));
   const px=Math.min(0,Math.max(W-iw*k,W/2-s.x*k)), py=Math.min(0,Math.max(H-ih*k,Math.max(80,(H-sh)*.42)-s.y*k));
   sceneBg.style.backgroundSize=`${iw*k}px ${ih*k}px`; sceneBg.style.backgroundPosition=`${px}px ${py}px`; }
-function immSync(){ const on=immOn(); document.body.classList.toggle("imm",on);
-  if(!on){ IMM_BG=null; IMM_KEY=null; SHEET_MIN=false; sheetEl.classList.remove("min"); return; }
-  sheetMin(false); stage.scrollTop=0;
-  const s=immBgSpec(), key=s?s.T.bg+"@"+s.x+","+s.y:"";
-  if(key!==IMM_KEY){ IMM_KEY=key; IMM_BG=s; sceneBg.classList.toggle("nobg",!s); scene.classList.toggle("hasbg",!!s); if(s) sceneBg.style.backgroundImage=`url("${s.T.bg}")`; }
-  sceneBg.dataset.t=scene.dataset.t||"day"; immLayout(); }
+function immSync(bgOnly){ const on=immOn(); document.body.classList.toggle("imm",on);
+  if(!on){ IMM_BG=null; IMM_KEY=null; SHEET_MIN=false; sheetEl.classList.remove("min"); scene.classList.remove("inside"); scene.dataset.m=""; sceneBg.dataset.m=""; $("sceneFx").innerHTML=""; return; }
+  if(bgOnly!==true){ sheetMin(false); stage.scrollTop=0; }
+  const s=immBgSpec(), key=s?s.src+"@"+(s.inside?"in":s.x+","+s.y):"";
+  if(key!==IMM_KEY){ const swap=!!IMM_KEY&&!!s&&IMM_BG&&IMM_BG.src!==s.src; IMM_KEY=key; IMM_BG=s; sceneBg.classList.toggle("nobg",!s); scene.classList.toggle("hasbg",!!s);
+    if(s) sceneBg.style.backgroundImage=`url("${s.src}")`; scene.classList.toggle("inside",!!(s&&s.inside));
+    /* 换图（室外 ↔ 室内）时不做位置过渡，改成淡入，免得看到图片滑动缩放 */
+    if(swap){ sceneBg.classList.remove("swap"); void sceneBg.offsetWidth; sceneBg.classList.add("swap"); } }
+  sceneBg.dataset.t=scene.dataset.t||"day"; immLayout(); if(bgOnly!==true) fxSync(); }
+sceneBg.addEventListener("animationend",e=>{ if(e.animationName==="bgswap") sceneBg.classList.remove("swap"); });
+/* 各环节的专属画面：给环节入口函数套一层，记下当前环节；题目函数本身不动 */
+let SM="home";
+const SMODE={episode:"home",intro:"vn",learn:"desk",chaseStart:"street",chaseSeg:"street",chaseSegDone:"street",chaseWin:"street",lose:"street",
+  smsStart:"phone",smsWin:"phone",radioStart:"radio",radioWin:"radio",talkStart:"vn",talkWin:"vn",grammar:"board",boss:"boss",win:"win",diary:"vn",mySentences:"vn"};
+for(const [f,m] of Object.entries(SMODE)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ SM=m; return o.apply(this,arguments); }; }
+function fxSync(){ const fx=$("sceneFx"), m=SM;
+  if(scene.dataset.m!==m){ scene.dataset.m=m; sceneBg.dataset.m=m;
+    const st=(m==="phone"||m==="radio")&&E?String(sceneText(m==="phone"?"sms":"radio")[0]||""):"", ic=st.split(/\s+/)[0]||"", ti=esc(st.slice(ic.length).trim());
+    const isPhone=/📱|💬|✉|📩|📨/.test(ic), inCar=/📻|🚕|🚖/.test(ic)||/出租车|电台|收音机/.test(st);
+    scene.dataset.car=m==="radio"&&inCar?"1":"";
+    fx.innerHTML=({vn:`<div class="fx-stand"><span class="em"></span><b></b></div>`,boss:`<div class="fx-stand boss"><span class="em"></span><b></b></div>`,desk:`<div class="fx-note off"><b></b><small></small></div>`,
+      phone:isPhone?`<div class="fx-phone"><i class="notch"></i><div class="scr"><span>${ic}</span><em>${ti||"1 条新消息"}</em></div></div>`:`<div class="fx-pad"><span>${ic||"📝"}</span><b>${ti}</b><i></i><i></i><i></i></div>`,
+      radio:inCar?`<div class="fx-dash"><div class="fx-radio"><b>${ic} ${ti||"FM 98.6"}</b><span class="eq">${"<i></i>".repeat(9)}</span></div></div>`:`<div class="fx-radio fx-spk"><span class="ic">${ic||"🎧"}</span><b>${ti}</b><span class="eq">${"<i></i>".repeat(9)}</span></div>`,
+      board:`<div class="fx-board"><b></b><span></span></div>`,win:`<div class="fx-win"><span class="it"></span><span class="bag">👜</span></div>`})[m]||"";
+    fx.style.animation="none"; void fx.offsetWidth; fx.style.animation=""; stage.classList.remove("fade"); void stage.offsetWidth; stage.classList.add("fade"); }
+  const q=s=>fx.querySelector(s), tx=s=>{ const el=stage.querySelector(s); return el?el.textContent.trim():""; };
+  if(m==="vn"){ const d=stage.querySelector(".dialog:not(.me)")||stage.querySelector(".dialog"); if(d){ const a=d.querySelector(".av"), em=a.dataset.w||a.textContent, nm=d.querySelector(".who").textContent;
+      if(q(".em").dataset.w!==em){ const st=q(".fx-stand"); st.style.animation="none"; void st.offsetWidth; st.style.animation=""; q(".em").innerHTML=a.innerHTML; q(".em").dataset.w=em; } q("b").textContent=nm; } }
+  else if(m==="boss"&&E&&E.boss){ if(q(".em").dataset.w!==E.boss.who){ q(".em").innerHTML=PORT[E.boss.who]?avHTML(E.boss.who):AV[E.boss.who]||"🧔"; q(".em").dataset.w=E.boss.who; } q("b").textContent=E.boss.who||"Boss"; }
+  else if(m==="desk"){ const w=tx(".card .word .sg")||tx(".card .word"), wc=stage.querySelector(".card .word"); q(".fx-note").classList.toggle("off",!w); q("b").textContent=w; q("b").className=wc&&/\b(der|die|das)\b/.test(wc.className)?"c-"+wc.className.match(/\b(der|die|das)\b/)[1]:""; q("small").textContent=w?tx(".card .zh"):""; }
+  else if(m==="board"&&E&&E.grammar){ q("b").textContent=E.grammar.title||"Grammatik"; q("span").textContent=E.grammar.zh||""; }
+  else if(m==="win"&&E){ q(".it").textContent=E.item.e; } }
 /* 整页换题时同步外框；只换了一部分（答题反馈等）时，把新内容滚进卡片可见区 */
 new MutationObserver(recs=>{ if(recs.some(r=>r.target===stage)) return immSync(); if(!document.body.classList.contains("imm")) return;
   const r=recs.find(r=>r.addedNodes.length); if(r&&r.target.scrollIntoView) setTimeout(()=>{ if(r.target.isConnected) r.target.scrollIntoView({block:"nearest",behavior:"smooth"}); },40); }).observe(stage,{childList:true,subtree:true});
@@ -637,7 +757,7 @@ function assemble(item,opts,cb){ const isSpell=!!item.spell; const target=isSpel
   const extra=[pool[(need.length*3)%(pool.length||1)],pool[(need.length*7+2)%(pool.length||1)]].filter((x,i,a)=>x&&a.indexOf(x)===i);
   let tiles=need.concat(extra).map((t,i)=>({t,i})); for(let i=tiles.length-1;i>0;i--){ const j=(need.length*13+i*7)%(i+1); [tiles[i],tiles[j]]=[tiles[j],tiles[i]]; }
   let picked=[],tries=0;
-  stage.innerHTML=`${opts.head||""}<div class="dialog me"><div class="av">${AV.Nico}</div><div class="bub"><div class="who">${esc(opts.who||"你")}</div><div class="built" id="built" style="border:0;justify-content:flex-start;font-size:20px"><span class="tap">${esc(item.zh)}</span></div></div></div>
+  stage.innerHTML=`${opts.head||""}<div class="dialog me"><div class="av" data-w="Nico">${avHTML("Nico")}</div><div class="bub"><div class="who">${esc(opts.who||"你")}</div><div class="built" id="built" style="border:0;justify-content:flex-start;font-size:20px"><span class="tap">${esc(item.zh)}</span></div></div></div>
     <div class="tiles" id="tiles">${tiles.map(x=>`<button class="tile" data-i="${x.i}">${esc(x.t)}</button>`).join("")}</div>
     <div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button><button id="undo">⌫ 退一步</button><button class="primary" id="chk">${esc(opts.btn||"说出来")}</button></div>`;
   $("back").onclick=opts.onExit||home;
@@ -1119,7 +1239,7 @@ function talk(){ if(K.n>=K.qs.length) return talkWin(); const d=K.qs[K.n]; K.tri
   let tiles=need.concat(extra).map((t,i)=>({t,i})); for(let i=tiles.length-1;i>0;i--){ const j=(K.n*13+i*7)%(i+1); [tiles[i],tiles[j]]=[tiles[j],tiles[i]]; }
   let picked=[];
   stage.innerHTML=`${dots(K.n,K.qs.length,K.states)}${bubble(d.w,esc(d.q),esc(d.qzh))}
-    <div class="dialog me"><div class="av">${AV.Nico}</div><div class="bub"><div class="who">你（Nico）</div><div class="built" id="built" style="border:0;justify-content:flex-start;font-size:20px"><span class="tap">${esc(d.azh)}</span></div></div></div>
+    <div class="dialog me"><div class="av" data-w="Nico">${avHTML("Nico")}</div><div class="bub"><div class="who">你（Nico）</div><div class="built" id="built" style="border:0;justify-content:flex-start;font-size:20px"><span class="tap">${esc(d.azh)}</span></div></div></div>
     <div class="tiles" id="tiles">${tiles.map(x=>`<button class="tile" data-i="${x.i}">${esc(x.t)}</button>`).join("")}</div>
     <div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button><button id="undo">⌫ 退一步</button><button class="primary" id="chk">说出来</button></div>`;
   $("back").onclick=()=>episode(E.key); speakThen(d.q);
