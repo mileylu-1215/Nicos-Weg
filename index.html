@@ -170,7 +170,7 @@ input[type=text]{font-family:var(--display);font-size:22px;width:100%;border:2px
 .route::before{content:"";position:absolute;left:8%;right:8%;top:21px;border-top:2px dashed var(--line)}
 .rt{flex:1.25;min-width:0;min-height:0;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;box-shadow:none;color:inherit;position:relative;z-index:1}
 .rt.mini{flex:.85}
-.rt .o{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:var(--bubble);border:2px solid var(--line);position:relative}
+.rt .o{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font:700 17px/1 Georgia,serif;color:var(--muted);background:var(--bubble);border:2px solid var(--line);position:relative}
 .rt .o img{width:24px;height:24px}
 .rt.mini .o{width:30px;height:30px;margin-top:6px;border-radius:9px;font-size:14px;border-style:dashed}
 .rt.mini .o img{width:17px;height:17px}
@@ -736,7 +736,7 @@ function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show");
 let cur=null,onEnd=null;
 function play(v,cb){ if(!v) return; if(cur){try{cur.pause();}catch(e){}} onEnd=cb||null; const a=new Audio("media/"+v.snd); cur=a; const done=()=>{ if(onEnd&&cur===a){ const f=onEnd; onEnd=null; f(); } }; a.onended=done; const fb=()=>{ try{ const u=new SpeechSynthesisUtterance(v.ans); u.lang="de-DE"; u.onend=done; speechSynthesis.speak(u);}catch(e){ done(); } }; a.onerror=fb; a.play().catch(fb); a.onloadedmetadata=()=>{ setTimeout(done,Math.min(4000,(a.duration||2)*1000+300)); }; setTimeout(done,2500); }
 function speakThen(t,cb){ try{ const u=new SpeechSynthesisUtterance(t); u.lang="de-DE"; u.rate=.9; u.onend=()=>cb&&cb(); speechSynthesis.cancel(); speechSynthesis.speak(u); setTimeout(()=>cb&&cb(),2500);}catch(e){ cb&&cb(); } }
-function pic(v){ return v.img?`<div class="pic"><img src="media/${esc(v.img)}" alt="" onerror="this.remove()"></div>`:(v.e?`<div class="emoji">${v.e}</div>`:""); }
+function pic(v){ return v.img?`<div class="pic"><img src="media/${esc(v.img)}" alt="" onerror="this.remove()"></div>`:""; }
 const zkey=s=>String(s).replace(/[（(].*$/,"").replace(/[。！？!?.\s]/g,"");
 function distractors(v,n){ const k=zkey(v.zh); const i=VOCAB.indexOf(v); let pool=LV.filter(x=>x!==v&&zkey(x.zh)!==k); if(pool.length<n) pool=pool.concat(VOCAB.filter(x=>!LV.includes(x)&&zkey(x.zh)!==k)); const out=[]; for(let j=0;out.length<n&&j<pool.length*2;j++){ const c=pool[(j*7+i)%pool.length]; if(!out.includes(c)) out.push(c); } return out; }
 function rot(arr,k){ k=k%arr.length; return arr.slice(k).concat(arr.slice(0,k)); }
@@ -760,7 +760,7 @@ function skylineSVG(c1,c2){ const bs=[[0,40,60],[70,26,90],[105,44,50],[165,30,7
   return "url(\"data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='640' height='96' viewBox='0 0 640 96'>${rects}</svg>`)+"\")"; }
 function theme(n){ n=((n-1)%10)+1; const [c1,c2]=SKY[n]||SKY[3]; $("skyline").style.backgroundImage=skylineSVG(c1,c2); scene.dataset.t=TOD[n]||"day"; $("fly").classList.toggle("hidden",n!==1); ["bal1","bal2","bal3"].forEach(id=>$(id).classList.toggle("hidden",!(n===9||n===10))); $("trees").textContent=({1:"🧳✈️🛄🧳🛫",2:"🌳🚏🌲🪧🌳",7:"☕🌳🪑🌲☕",8:"🌳🚔🌲🪧🌳",9:"🏠🌳🏡🌲🏠",10:"🎂🎶🎁🎈🎶"})[n]||"🌳🏮🌲🪧🌳"; }
 function setScene(nicoPct,tPct,moving,prop){ $("nico").style.left=nicoPct+"%"; $("car").style.left=tPct+"%"; $("tgt").style.left=(tPct+2)+"%"; scene.classList.toggle("moving",!!moving); const p=$("prop"); if(prop){ p.textContent=prop; p.classList.remove("hidden"); } else p.classList.add("hidden"); }
-function target(e){ const car=$("car"), t=$("tgt"); if(!e||e==="🚕"){ car.classList.remove("hidden"); t.classList.add("hidden"); } else { car.classList.add("hidden"); t.textContent=e; t.classList.remove("hidden"); } }
+function target(e){ $("car").classList.remove("hidden"); $("tgt").classList.add("hidden"); }
 function cheer(){ const n=$("nico"); n.classList.remove("jump","stumble"); void n.offsetWidth; n.classList.add("jump"); }
 function stumble(){ const n=$("nico"); n.classList.remove("jump","stumble"); void n.offsetWidth; n.classList.add("stumble"); const p=$("puff"); p.style.left=n.style.left; p.classList.remove("go"); void p.offsetWidth; p.classList.add("go"); }
 function hearts(n,max){ $("hearts").innerHTML=n==null?"":Array.from({length:max||3},(_,k)=>`<span class="${k<n?'':'off'}">❤️</span>`).join(""); }
@@ -896,7 +896,9 @@ function liveNico(){
   LN={el,wake}; return el;
 }
 function liftPic(fx,m){ let ph=fx.querySelector(".fx-photo");
-  const el=/^(desk|street|vn|boss|phone)$/.test(m)?stage.querySelector(":scope>.q>.pic,:scope>.card>.pic,:scope>.q>.emoji,:scope>.card>.emoji,.phone .msg>.pic,.phone .msg>.emoji"):null;
+  const el0=/^(desk|street|boss|phone)$/.test(m)?stage.querySelector(":scope>.q>.pic,:scope>.card>.pic,:scope>.q>.emoji,:scope>.card>.emoji,.phone .msg>.pic,.phone .msg>.emoji"):null;
+  /* 只把真实配图贴到场景里；只有 emoji 的词不贴，免得画面上冒出一个莫名的表情 */
+  const el=el0&&el0.querySelector("img")?el0:null;
   const ps=m==="phone"?fx.querySelector(".scr span,.fx-pad span"):null; if(ps&&ps.dataset.ic==null) ps.dataset.ic=ps.innerHTML;
   if(!el){ if(ph) ph.remove(); if(ps){ ps.className=""; ps.innerHTML=ps.dataset.ic; } return; }
   const img=el.querySelector("img"), inner=img?`<img src="${esc(img.getAttribute("src"))}" alt="" onerror="var p=this.closest('.fx-photo');if(p)p.remove()">`:`<span class="em">${esc(el.textContent)}</span>`;
@@ -907,7 +909,18 @@ function liftPic(fx,m){ let ph=fx.querySelector(".fx-photo");
   const key=inner+cap; if(ph.dataset.k!==key){ ph.dataset.k=key; ph.innerHTML=inner+(cap?`<b class="${cls}">${esc(cap)}</b>`:""); ph.style.animation="none"; void ph.offsetWidth; ph.style.animation=""; }
   el.classList.add("lifted"); }
 /* 整页换题时同步外框；只换了一部分（答题反馈等）时，把新内容滚进卡片可见区 */
-new MutationObserver(recs=>{ if(recs.some(r=>r.target===stage)) return immSync(); if(!document.body.classList.contains("imm")) return;
+/* 答题过程里不要 emoji（分散注意力）：剧情 / 题目 / 反馈 / 场景小道具里的 emoji 一律去掉；首页、本集页、导航按钮不动 */
+const EMO_RE=/(?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:\uFE0F|\u20E3|[\u{1F3FB}-\u{1F3FF}]|\u200D(?:\p{Extended_Pictographic})\uFE0F?)*\s?/gu, EMO_KEEP=".spk,#sp,#hearts,.homebtn,#rail,.route,.lvtab";
+function deEmoji(root){ if(!root||!/^(home|vn|desk|street|phone|radio|board|boss|inter)$/.test(SM)||(SM==="home"&&!stage.querySelector(".route"))||stage.querySelector("[data-lt],.homerow")) return; const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let n; const todo=[];
+  while((n=w.nextNode())){ if(!EMO_RE.test(n.nodeValue)){ EMO_RE.lastIndex=0; continue; } EMO_RE.lastIndex=0; const p=n.parentElement; if(!p||p.closest(EMO_KEEP)) continue; todo.push(n); }
+  for(const t of todo){ const v=t.nodeValue.replace(EMO_RE,"").replace(/^\s+(?=\S)/,""); const b=t.parentElement.closest("button");
+    if(!v.trim()&&b&&b.textContent.trim()===t.nodeValue.trim()) continue;   /* 只有图标的按钮保留 */
+    t.nodeValue=v; } }
+function deEmojiAll(){ deEmoji(stage); deEmoji($("sceneFx")); deEmoji($("gapLbl")); deEmoji($("combo")); }
+new MutationObserver(()=>deEmoji($("gapLbl"))).observe($("gapLbl"),{childList:true});
+new MutationObserver(()=>deEmoji($("combo"))).observe($("combo"),{childList:true});
+new MutationObserver(()=>deEmoji($("sceneFx"))).observe($("sceneFx"),{childList:true,subtree:true});
+new MutationObserver(recs=>{ deEmojiAll(); if(recs.some(r=>r.target===stage)) return immSync(); if(!document.body.classList.contains("imm")) return;
   const r=recs.find(r=>r.addedNodes.length); if(r&&r.target.scrollIntoView) setTimeout(()=>{ if(r.target.isConnected) r.target.scrollIntoView({block:"nearest",behavior:"smooth"}); },40); }).observe(stage,{childList:true,subtree:true});
 if(window.ResizeObserver) new ResizeObserver(()=>immLayout()).observe(sheetEl);
 window.addEventListener("resize",immLayout);
@@ -1197,10 +1210,11 @@ function pathHTML(eps,curKey){ return `<div class="stamps">${eps.map(e=>{ const 
     return `<button class="stp ${cls}" data-ep="${e.key}" style="--sk:${sk};--ring:${ring};--rot:${rot}deg" aria-label="第 ${e.n} 集 ${esc(e.name)}">${cur?`<span class="nico">${avHTML("Nico")}</span>`:""}<span class="sc"><i class="no">Nº ${e.n}</i><span class="ic">${e.item.e}</span></span><span class="ps">${st.won?starStr(s):st.done&&!cur?`${st.done}/5`:""}</span><span class="pt">${esc(e.name)}</span></button>`; }).join("")}</div>`; }
 /* 本集路线：按实际流程排（赶路 → 插曲① → 写下来 → 听写 → 插曲② → 对话 → Boss），每站都能单独点进去重玩 */
 const ROUTE=[["s","chase"],["i","a"],["s","sms"],["s","radio"],["i","b"],["s","talk"],["s","boss"]];
-function routeHTML(ep){ let found=!!ep.won; const sp=t=>{ const m=String(t).match(/^(\S+)\s+(.+)$/); return m?[m[1],m[2]]:["•",String(t)]; };
-  return `<div class="route">${ROUTE.map(([t,k])=>{ let ic,lb,dn,at;
+function routeHTML(ep){ let found=!!ep.won, no=0; const sp=t=>{ const m=String(t).match(/^(\S+)\s+(.+)$/); return m?[m[1],m[2]]:["•",String(t)]; };
+  return `<div class="route">${ROUTE.map(([t,k])=>{ let ic,lb,dn,at; no++;
     if(t==="s"){ [ic,lb]=sp(sceneName(k)); dn=!!ep[k]; at=`data-s="${k}"`; }
     else { const a=ep["i"+k]; [ic,lb]=sp(INTER_NAME[interPlan(E)[k]]); dn=a>=.8; at=`data-i="${k}"`; if(a!=null&&!dn) lb+=` ${Math.round(a*100)}%`; }
+    ic=no;
     const cur=t==="s"&&!dn&&!found; if(cur) found=true;
     return `<button class="rt${t==="i"?" mini":""}${dn?" done":""}${cur?" cur":""}" ${at} aria-label="${esc(lb)}"><span class="o">${ic}${dn?'<i class="ck">✓</i>':""}</span><span class="l">${esc(lb)}</span></button>`; }).join("")}</div>`; }
 function episode(key){
@@ -1229,7 +1243,8 @@ function intro(k){
   const d=IN[k], v=d.v?V(d.v):null;
   stage.innerHTML=`${dots(k+1,IN.length)}${bubble(d.w,d.de,d.zh?esc(d.zh):"")}${v?wordCard(v):""}
     <div class="row"><button class="ghost" id="back">${k===0?"‹ 返回":"‹ 上一句"}</button><button class="primary" id="next">${k===IN.length-1?"出发！":"继续 ›"}</button></div>`;
-  if(v){ $("sp").onclick=()=>play(v); }
+  if(v){ $("sp").onclick=()=>play(v); play(v); }
+  else { const line=String(d.de||"").replace(/<[^>]+>/g,"").trim(); if(line) speakThen(line); }
   $("next").onclick=()=>intro(k+1); $("back").onclick=()=>k===0?episode(E.key):intro(k-1);
 }
 function learn(k){
