@@ -358,6 +358,9 @@ body.imm .scene[data-m=phone] :is(.car,.tgt,.prop){display:none}
 .fx-stand .em img{display:block;width:150px;height:150px;object-fit:contain;animation:breathe 3.6s ease-in-out infinite;transform-origin:50% 100%}
 .fx-stand.boss .em img{width:210px;height:210px}
 @keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.025) translateY(-1px)}}
+button.cd{position:relative;overflow:hidden}
+button.cd::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:4px;background:rgba(0,0,0,.28);transform-origin:left;transform:scaleX(0);animation:cdbar var(--cd,4s) linear forwards;pointer-events:none}
+@keyframes cdbar{to{transform:scaleX(1)}}
 @media (prefers-reduced-motion:reduce){.fx-stand .em img{animation:none}}
 .fx-stand::before{content:"";position:absolute;left:50%;top:44%;width:150px;height:150px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(rgba(255,248,226,.85),rgba(255,248,226,0) 68%);z-index:-1}
 .fx-stand b{font-family:var(--display);font-size:12px;letter-spacing:.06em;color:#22304A;background:#F3E6C8;padding:2px 10px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
@@ -374,6 +377,30 @@ body.imm .scene[data-m=phone] :is(.car,.tgt,.prop){display:none}
 .fx-phone{position:absolute;left:50%;top:calc(52px + env(safe-area-inset-top,0px));bottom:58px;aspect-ratio:9/17;max-height:250px;transform:translateX(-50%) rotate(4deg);background:#1f2430;border-radius:22px;padding:9px;box-shadow:0 14px 30px rgba(0,0,0,.35)}
 .fx-phone .scr{height:100%;border-radius:15px;background:linear-gradient(#3B4A6B,#22304A);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;font-size:12px}
 .fx-phone .scr span{font-size:34px;animation:buzz 1.6s ease-in-out infinite}
+/* 题目的图（热身、赶路、剧情、Boss）贴到场景里：拍立得照片；卡片里的原图藏起来，避免同一内容上下各一份 */
+body.imm .lifted{display:none!important}
+.fx-photo{position:absolute;left:50%;top:calc(56px + env(safe-area-inset-top,0px));translate:-50% 0;rotate:-3deg;width:min(54%,220px);padding:8px 8px 10px;background:#FFFDF6;border-radius:3px;box-shadow:0 12px 24px rgba(0,0,0,.3);text-align:center;color:#22304A;animation:photoin .45s cubic-bezier(.3,1.4,.5,1)}
+.fx-photo::before{content:"";position:absolute;left:50%;top:-9px;width:64px;height:18px;translate:-50% 0;rotate:3deg;background:rgba(255,255,255,.6);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.fx-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:2px;background:#EEE6D3}
+.fx-photo .em{display:block;font-size:76px;line-height:1.3}
+.fx-photo b{display:block;font-family:var(--display);font-size:22px;line-height:1.15;margin-top:6px;overflow-wrap:anywhere}
+.fx-photo small{display:block;font-size:13px;opacity:.7;margin-top:2px}
+.scene:is([data-m=vn],[data-m=boss]) .fx-photo{left:7%;translate:0 0;rotate:-6deg;width:min(36%,150px)}
+.scene[data-m=boss] .fx-photo{top:calc(70px + env(safe-area-inset-top,0px))}
+.scene[data-m=street] .fx-photo{width:min(42%,170px)}
+.fx-phone .scr span.ph,.fx-pad span.ph{animation:none;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:44px;line-height:1.1}
+.fx-phone .scr span.ph img,.fx-pad span.ph img{width:86%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}
+.fx-phone .scr span.ph small,.fx-pad span.ph small{font-size:13px;font-family:inherit}
+@keyframes photoin{from{opacity:0;scale:.85}to{opacity:1;scale:1}}
+.fx-title{position:absolute;left:50%;top:calc(50px + env(safe-area-inset-top,0px));translate:-50% 0;rotate:-2deg;padding:10px 22px 8px;background:#F6EBCF;border-radius:4px;box-shadow:0 10px 22px rgba(0,0,0,.25);font-family:Georgia,"Noto Serif SC",serif;font-size:30px;font-weight:700;font-style:italic;color:#22304A;text-align:center;white-space:nowrap;animation:photoin .5s cubic-bezier(.3,1.4,.5,1)}
+.fx-title small{display:block;font-size:12px;font-style:normal;font-weight:400;letter-spacing:.08em;opacity:.7;margin-top:2px}
+.fx-stand.lobby{right:50%;translate:50% 0;bottom:30px}
+.fx-stand.lobby .em img{width:190px;height:190px}
+.fx-bag{position:absolute;left:5%;bottom:34px;max-width:42%;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:7px 11px;background:rgba(246,235,207,.94);border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,.2);font-size:11px;line-height:1.35;color:#22304A;rotate:-2deg;animation:photoin .5s ease-out}
+.fx-bag .ic{font-size:20px;letter-spacing:1px}
+body.imm[data-m=lobby] .stage{max-height:min(46vh,calc(100vh - 300px));max-height:min(46dvh,calc(100dvh - 300px))}
+body.imm[data-m=desk] .stage>.card>.word{display:none}
+@media (prefers-reduced-motion:reduce){.fx-photo{animation:none}}
 .fx-phone .notch{position:absolute;left:50%;top:12px;width:34%;height:6px;transform:translateX(-50%);border-radius:3px;background:#0d1018;z-index:1}
 @keyframes buzz{0%,70%,100%{transform:none}75%{transform:rotate(-12deg)}85%{transform:rotate(12deg)}}
 .fx-dash{position:absolute;left:0;right:0;bottom:0;height:46%;min-height:120px;background:linear-gradient(#5A4636,#2E241C);border-radius:50% 50% 0 0/26% 26% 0 0;box-shadow:0 -6px 18px rgba(0,0,0,.35)}
@@ -386,6 +413,22 @@ body.imm .scene[data-m=phone] :is(.car,.tgt,.prop){display:none}
 .fx-board{position:absolute;left:8%;right:8%;top:calc(52px + env(safe-area-inset-top,0px));height:min(46%,170px);background:#2F4A3A radial-gradient(ellipse at 30% 30%,rgba(255,255,255,.08),transparent 60%);border:8px solid #8A6440;border-radius:6px;box-shadow:0 10px 22px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#F4F1E6;font-family:Georgia,"Noto Serif SC",serif;text-align:center;padding:8px}
 .fx-board b{font-size:24px;font-style:italic;letter-spacing:.04em;opacity:.95}
 .fx-board span{font-size:14px;opacity:.75}
+body.imm[data-m=inter] .stage>.q>.zh,body.imm[data-m=inter] .stage>.q>.hint,body.imm[data-m=inter] .stage>#built,body.imm[data-m=inter] #fb .card>.word,body.imm[data-m=inter] #fb .card>.zh{display:none}
+.fx-board.inter b{font-size:22px;font-style:normal;line-height:1.3;padding:0 6px;overflow-wrap:anywhere}
+.fx-board.inter span{font-size:15px}
+.tile.nope{animation:nope .35s;border-color:#D2553F}
+@keyframes nope{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.tile.hintme{animation:hintme 1s 2;border-color:var(--taxi)}
+@keyframes hintme{50%{transform:translateY(-6px);box-shadow:0 8px 0 var(--taxi)}}
+.nl{position:relative;height:74px;margin:6px 14px 0;cursor:pointer;touch-action:manipulation}
+.nl-line{position:absolute;left:0;right:0;top:30px;height:4px;border-radius:2px;background:var(--ink,#22304A);opacity:.7}
+.nl i{position:absolute;top:24px;width:2px;height:16px;margin-left:-1px;background:currentColor;opacity:.55}
+.nl i.big{top:18px;height:28px;width:3px;opacity:.85}
+.nl em{position:absolute;top:50px;transform:translateX(-50%);font-style:normal;font-size:12px;opacity:.75}
+.nl-mk{position:absolute;top:-4px;width:30px;height:30px;margin-left:-15px;border-radius:50% 50% 50% 0;rotate:-45deg;background:var(--taxi);box-shadow:0 3px 6px rgba(0,0,0,.25);transition:left .25s cubic-bezier(.3,1.4,.5,1)}
+.nl-val{text-align:center;font-family:var(--display);font-size:34px;min-height:44px}
+.opts.clocks .opt{padding:8px 0;display:flex;justify-content:center}
+.opt.tag{font-family:var(--display);font-size:20px}
 .fx-board::after{content:"";position:absolute;left:12%;bottom:-8px;width:40px;height:6px;background:#EDE8DA;border-radius:2px}
 .fx-win .it{position:absolute;font-size:72px;line-height:1;animation:itfly 1.8s cubic-bezier(.4,0,.3,1) forwards}
 @keyframes itfly{0%{left:50%;top:38%;transform:translate(-50%,-50%) scale(.2);opacity:0}25%{left:50%;top:38%;transform:translate(-50%,-50%) scale(1.35);opacity:1}55%{left:50%;top:38%;transform:translate(-50%,-50%) scale(1.15) rotate(-8deg)}100%{left:80%;top:calc(100% - 70px);transform:translate(-50%,-50%) scale(.35);opacity:0}}
@@ -556,7 +599,7 @@ try{ const r=localStorage.getItem(KEY)||localStorage.getItem("nicosweg-story-v2"
 let cloud={ref:null,ready:false,t:null,busy:false};
 function save(){ S.updatedAt=Date.now(); try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} pushCloud(); }
 function pushCloud(){ if(!cloud.ready) return; clearTimeout(cloud.t); cloud.t=setTimeout(async()=>{ if(cloud.busy){ pushCloud(); return; } cloud.busy=true; try{ await cloud.ref.set(JSON.parse(JSON.stringify(S))); }catch(e){} cloud.busy=false; },1000); }
-function mergeEp(x,y){ const o=Object.assign({},y,x); ["won","s2","s3","c3","b3"].forEach(k=>{ if(x[k]||y[k]) o[k]=true; }); if(x.plays||y.plays) o.plays=Math.max(x.plays||0,y.plays||0);
+function mergeEp(x,y){ const o=Object.assign({},y,x); ["won","s2","s3","c3","b3"].forEach(k=>{ if(x[k]||y[k]) o[k]=true; }); if(x.plays||y.plays) o.plays=Math.max(x.plays||0,y.plays||0); ["ia","ib"].forEach(k=>{ if(x[k]!=null||y[k]!=null) o[k]=Math.max(x[k]||0,y[k]||0); });
   if(x.ft||y.ft){ o.ft={}; ["sms","radio"].forEach(k=>{ o.ft[k]=Object.assign({},(y.ft||{})[k],(x.ft||{})[k]); }); } return o; }
 function mergeSave(a,b){ /* 合并两份存档：通关、星、物品、错词、场景进度取并集 */ const o=JSON.parse(JSON.stringify(a)); o.items=[...new Set([...(a.items||[]),...(b.items||[])])]; o.ep=Object.assign({},b.ep||{}); for(const [k,v] of Object.entries(a.ep||{})) o.ep[k]=mergeEp(v,b.ep&&b.ep[k]||{});
   const ma=a.mist||{}, mb=b.mist||{}; o.mist=Object.assign({},mb,ma); for(const k in ma) if(mb[k]){ const p=ma[k],q=mb[k],w=(p.box||0)>=(q.box||0)?p:q; o.mist[k]=Object.assign({},w,{wrong:Math.max(p.wrong||0,q.wrong||0)}); }
@@ -581,32 +624,34 @@ function touch(v){ if(!S.mist[v.id]){ S.mist[v.id]={box:0,due:addDays(1),wrong:0
 let RUN={key:null,wrong:new Set()};
 function runWrong(v){ if(!E||!v) return; if(RUN.key!==E.key) RUN={key:E.key,wrong:new Set()}; RUN.wrong.add(v.id); }
 function markWrong(v){ touch(v); runWrong(v); const m=S.mist[v.id]; m.box=0; m.due=today(); m.wrong++; m.done=false; save(); }
-/* 星级：⭐1 通关；⭐2 写下来一次拼对 ≥90% 且听写一次听对 ≥70%（小集按"最多错几个"算）；⭐3 赶路一颗心没丢 + Boss 全对，挑战模式通关直接给。只升不降 */
+/* 星级：⭐1 通关；⭐2 写下来一次拼对 ≥90% 且听写一次听对 ≥70%（小集按"最多错几个"算），且两个插曲首答正确率都 ≥80%；⭐3 赶路一颗心没丢 + Boss 全对，挑战模式通关直接给。只升不降，老存档已拿的 ⭐2 不收回 */
 const starMiss=(N,th)=>Math.floor((1-th)*N+.5);
 function starInfo(e){ const ep=S.ep[e.key]||{}, ft=ep.ft||{}, ids=VOCAB.filter(v=>v.l===e.id).map(v=>v.id), N=ids.length;
-  const okS=ids.filter(i=>ft.sms&&ft.sms[i]).length, okR=ids.filter(i=>ft.radio&&ft.radio[i]).length;
-  return {N,okS,okR,needS:N-starMiss(N,.9),needR:N-starMiss(N,.7),s2:N-okS<=starMiss(N,.9)&&N-okR<=starMiss(N,.7),c3:!!ep.c3,b3:!!ep.b3}; }
+  const okS=ids.filter(i=>ft.sms&&ft.sms[i]).length, okR=ids.filter(i=>ft.radio&&ft.radio[i]).length, okI=(ep.ia||0)>=.8&&(ep.ib||0)>=.8;
+  return {N,okS,okR,okI,ia:ep.ia,ib:ep.ib,needS:N-starMiss(N,.9),needR:N-starMiss(N,.7),s2:N-okS<=starMiss(N,.9)&&N-okR<=starMiss(N,.7)&&okI,c3:!!ep.c3,b3:!!ep.b3}; }
 function updateStars(e){ const ep=S.ep[e.key]; if(!ep||!ep.won) return; const i=starInfo(e); if(i.s2) ep.s2=true; if(i.c3&&i.b3) ep.s3=true; }
 function starsOf(e){ const ep=S.ep[e.key]||{}; return ep.won?1+(ep.s2?1:0)+(ep.s3?1:0):0; }
 const starStr=n=>"★".repeat(n)+"☆".repeat(3-n);
 const starSum=eps=>eps.reduce((s,e)=>s+starsOf(e),0);
 function starHints(e){ const ep=S.ep[e.key]||{}; if(!ep.won) return ""; const i=starInfo(e), out=[];
-  if(!ep.s2) out.push(`⭐2：写下来一次拼对 ${i.okS}/${i.N}（要 ${i.needS}），听写一次听对 ${i.okR}/${i.N}（要 ${i.needR}）`);
+  if(!ep.s2) out.push(`⭐2：写下来一次拼对 ${i.okS}/${i.N}（要 ${i.needS}），听写一次听对 ${i.okR}/${i.N}（要 ${i.needR}），两个插曲各答对 80%（${[i.ia,i.ib].map(x=>x==null?"未玩":Math.round(x*100)+"%").join(" / ")}）`);
   if(!ep.s3) out.push(`⭐3：赶路一颗心都不丢 ${i.c3?"✓":"✗"}，Boss 全对 ${i.b3?"✓":"✗"}`);
   return out.length?`<div class="tap" style="text-align:left">${out.join("<br>")}</div>`:""; }
 function ftSet(k,id){ const ep=EP(); ep.ft=ep.ft||{}; ep.ft[k]=ep.ft[k]||{}; ep.ft[k][id]=true; }
 /* 🔥 连续天数：当天完成今日回顾或任一场景算 1 天，断了只是从 1 重新数，不惩罚 */
 function bumpStreak(){ const t=today(), s=S.streak||{n:0,last:""}; if(s.last===t) return; s.n=s.last===addDays(-1)?(s.n||0)+1:1; s.last=t; S.streak=s; }
 const streakN=()=>{ const s=S.streak; return s&&(s.last===today()||s.last===addDays(-1))?s.n:0; };
-/* 答案卡：答对后自动念一遍，停 1.5–2 秒自动下一题，点空白处可提前；答错停下等手点。「总是手点」或系统减少动态效果时一律手点 */
+/* 答案卡：答对后自动念一遍，停约 4 秒（念完后至少再停 1 秒，最长 6.5 秒）自动下一题，「继续」按钮上走进度条；点空白处可提前；答错停下等手点。「总是手点」或系统减少动态效果时一律手点 */
 const RMQ=window.matchMedia?matchMedia("(prefers-reduced-motion: reduce)"):{matches:false};
 const manualNext=()=>!!(S.pref&&S.pref.manualNext)||RMQ.matches;
-function autoNext(go,sound,ok){ const t0=Date.now(), mark=stage.firstElementChild, auto=ok&&!manualNext(); let fired=false;
+const AUTO_MS=4000;
+function autoNext(go,sound,ok){ const mark=stage.firstElementChild, auto=ok&&!manualNext(); let fired=false, sndDone=false, timeUp=false;
   const off=()=>stage.removeEventListener("click",tap,true);
   const fire=()=>{ if(fired) return; if(!mark||!mark.isConnected){ off(); return; } fired=true; off(); go(); };
   const tap=e=>{ if(!mark||!mark.isConnected) return off(); if(e.target.closest("#sp,.spk,button,a,input,textarea")) return; fire(); };
-  sound(()=>{ if(auto) setTimeout(fire,Math.max(300,1500-(Date.now()-t0))); });
-  if(auto){ setTimeout(fire,2000); setTimeout(()=>stage.addEventListener("click",tap,true),50); } }
+  sound(()=>{ if(sndDone) return; sndDone=true; if(auto&&timeUp) setTimeout(fire,1000); });
+  if(auto){ const b=$("go"); if(b){ b.classList.add("cd"); b.style.setProperty("--cd",AUTO_MS+"ms"); }
+    setTimeout(()=>{ timeUp=true; if(sndDone) fire(); },AUTO_MS); setTimeout(fire,6500); setTimeout(()=>stage.addEventListener("click",tap,true),50); } }
 function dueList(){ const t=today(); return Object.entries(S.mist).filter(([k,m])=>!m.done&&m.due<=t&&V(k)).sort((a,b)=>(b[1].wrong||0)-(a[1].wrong||0)||(a[1].due<b[1].due?-1:a[1].due>b[1].due?1:0)).map(([k,m])=>Object.assign({v:V(k)},m,{key:k})); }
 
 /* ---------- 工具 ---------- */
@@ -652,16 +697,16 @@ function bubble(who,de,zh){ return `<div class="dialog ${who==="Nico"?'me':''}">
 /* ---------- 单集全屏场景：在一集里（或今日回顾）时，场景铺满全屏、答题卡浮在上面；题目仍旧写进 stage，这里只管外框 ---------- */
 let DIARY=false, SHEET_MIN=false, IMM_BG=null, IMM_KEY=null;
 const sheetEl=$("sheet"), sceneBg=$("sceneBg");
-const immOn=()=>(!!E||DIARY)&&townEl().hidden;
+const immOn=()=>townEl().hidden;
 function sheetMin(on){ if(SHEET_MIN===on) return; SHEET_MIN=on; sheetEl.classList.toggle("min",on); $("grip").setAttribute("aria-expanded",String(!on));
   if(on){ const a=document.activeElement; if(a&&stage.contains(a)) a.blur(); sheetEl.querySelector(".grip span").textContent=tInt?"▲ 展开，继续答题 · 计时已暂停":"▲ 展开，继续答题"; } immLayout(); }
 /* 背景：对话、热身、写下来、小课堂、Boss、结算在楼里，用室内图（进楼才加载，加载完前先用城市图里这栋楼的取景）；
    赶路、听写、本集首页在外面，用城市图取景；没有楼时取城市中部 */
-const IN_MODES=/^(vn|desk|phone|board|boss|win)$/, IMG_OK={};
+const IN_MODES=/^(vn|desk|phone|board|boss|win|lobby|inter)$/, IMG_OK={};
 function interiorOf(T,b){ if(!b||!(T.interiors||[]).includes(b.id)) return null; const src=`assets/interiors/${b.id}.webp`;
   if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(document.body.classList.contains("imm")) immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
   return IMG_OK[src]?{T,src,size:[1024,1536],inside:true}:null; }
-function immBgSpec(){ const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):null;
+function immBgSpec(){ const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):(!DIARY?(T.buildings||[]).find(x=>x.id==="wg")||{id:"wg"}:null);
   const inn=interiorOf(T,b); if(inn&&IN_MODES.test(SM)) return inn;
   return b?{T,src:T.bg,size:T.size,x:b.x,y:b.y,w:b.w}:{T,src:T.bg,size:T.size,x:T.size[0]/2,y:T.size[1]*.42,w:T.size[0]*.7}; }
 function immLayout(){ if(!document.body.classList.contains("imm")) return; const sh=sheetEl.offsetHeight; scene.style.setProperty("--sh",sh+"px");
@@ -683,7 +728,8 @@ sceneBg.addEventListener("animationend",e=>{ if(e.animationName==="bgswap") scen
 /* 各环节的专属画面：给环节入口函数套一层，记下当前环节；题目函数本身不动 */
 let SM="home";
 const SMODE={episode:"home",intro:"vn",learn:"desk",chaseStart:"street",chaseSeg:"street",chaseSegDone:"street",chaseWin:"street",lose:"street",
-  smsStart:"phone",smsWin:"phone",radioStart:"radio",radioWin:"radio",talkStart:"vn",talkWin:"vn",grammar:"board",boss:"boss",win:"win",diary:"vn",mySentences:"vn"};
+  smsStart:"phone",smsWin:"phone",radioStart:"radio",radioWin:"radio",talkStart:"vn",talkWin:"vn",grammar:"board",boss:"boss",win:"win",diary:"vn",mySentences:"vn",
+  home:"lobby",bookPage:"lobby",backupPage:"lobby",askMood:"vn",inter:"inter",interQ:"inter",interDone:"inter"};
 for(const [f,m] of Object.entries(SMODE)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ SM=m; return o.apply(this,arguments); }; }
 function fxSync(){ const fx=$("sceneFx"), m=SM;
   if(scene.dataset.m!==m){ scene.dataset.m=m; sceneBg.dataset.m=m;
@@ -693,7 +739,8 @@ function fxSync(){ const fx=$("sceneFx"), m=SM;
     fx.innerHTML=({vn:`<div class="fx-stand"><span class="em"></span><b></b></div>`,boss:`<div class="fx-stand boss"><span class="em"></span><b></b></div>`,desk:`<div class="fx-note off"><b></b><small></small></div>`,
       phone:isPhone?`<div class="fx-phone"><i class="notch"></i><div class="scr"><span>${ic}</span><em>${ti||"1 条新消息"}</em></div></div>`:`<div class="fx-pad"><span>${ic||"📝"}</span><b>${ti}</b><i></i><i></i><i></i></div>`,
       radio:inCar?`<div class="fx-dash"><div class="fx-radio"><b>${ic} ${ti||"FM 98.6"}</b><span class="eq">${"<i></i>".repeat(9)}</span></div></div>`:`<div class="fx-radio fx-spk"><span class="ic">${ic||"🎧"}</span><b>${ti}</b><span class="eq">${"<i></i>".repeat(9)}</span></div>`,
-      board:`<div class="fx-board"><b></b><span></span></div>`,win:`<div class="fx-win"><span class="it"></span><span class="bag">👜</span></div>`})[m]||"";
+      board:`<div class="fx-board"><b></b><span></span></div>`,inter:`<div class="fx-board inter"><b></b><span></span></div>`,win:`<div class="fx-win"><span class="it"></span><span class="bag">👜</span></div>`,
+      lobby:`<div class="fx-title">Nicos Weg<small>Nico 的德语之路 · Berlin</small></div><div class="fx-stand lobby"><span class="em">${avHTML("Nico")}</span><b>Nico</b></div><div class="fx-bag"></div>`})[m]||"";
     fx.style.animation="none"; void fx.offsetWidth; fx.style.animation=""; stage.classList.remove("fade"); void stage.offsetWidth; stage.classList.add("fade"); }
   const q=s=>fx.querySelector(s), tx=s=>{ const el=stage.querySelector(s); return el?el.textContent.trim():""; };
   if(m==="vn"){ const d=stage.querySelector(".dialog:not(.me)")||stage.querySelector(".dialog"); if(d){ const a=d.querySelector(".av"), em=a.dataset.w||a.textContent, nm=d.querySelector(".who").textContent;
@@ -701,7 +748,22 @@ function fxSync(){ const fx=$("sceneFx"), m=SM;
   else if(m==="boss"&&E&&E.boss){ if(q(".em").dataset.w!==E.boss.who){ q(".em").innerHTML=PORT[E.boss.who]?avHTML(E.boss.who):AV[E.boss.who]||"🧔"; q(".em").dataset.w=E.boss.who; } q("b").textContent=E.boss.who||"Boss"; }
   else if(m==="desk"){ const w=tx(".card .word .sg")||tx(".card .word"), wc=stage.querySelector(".card .word"); q(".fx-note").classList.toggle("off",!w); q("b").textContent=w; q("b").className=wc&&/\b(der|die|das)\b/.test(wc.className)?"c-"+wc.className.match(/\b(der|die|das)\b/)[1]:""; q("small").textContent=w?tx(".card .zh"):""; }
   else if(m==="board"&&E&&E.grammar){ q("b").textContent=E.grammar.title||"Grammatik"; q("span").textContent=E.grammar.zh||""; }
-  else if(m==="win"&&E){ q(".it").textContent=E.item.e; } }
+  else if(m==="win"&&E){ q(".it").textContent=E.item.e; }
+  else if(m==="inter"&&IX){ q("b").innerHTML=IX.bt; q("span").innerHTML=IX.bs; }
+  else if(m==="lobby"){ const b=q(".fx-bag"), its=EPISODES.filter(e=>S.items.includes(e.key)).slice(-6).map(e=>e.item.e).join(""); if(b) b.innerHTML=`<span class="ic">${its||"👜"}</span><span>${S.items.length?`背包里找回 ${S.items.length} 样`:"背包被出租车带走了"}${streakN()?` · 🔥 ${streakN()} 天`:""}</span>`; }
+  document.body.dataset.m=m;
+  liftPic(fx,m); }
+function liftPic(fx,m){ let ph=fx.querySelector(".fx-photo");
+  const el=/^(desk|street|vn|boss|phone)$/.test(m)?stage.querySelector(":scope>.q>.pic,:scope>.card>.pic,:scope>.q>.emoji,:scope>.card>.emoji,.phone .msg>.pic,.phone .msg>.emoji"):null;
+  const ps=m==="phone"?fx.querySelector(".scr span,.fx-pad span"):null; if(ps&&ps.dataset.ic==null) ps.dataset.ic=ps.innerHTML;
+  if(!el){ if(ph) ph.remove(); if(ps){ ps.className=""; ps.innerHTML=ps.dataset.ic; } return; }
+  const img=el.querySelector("img"), inner=img?`<img src="${esc(img.getAttribute("src"))}" alt="" onerror="var p=this.closest('.fx-photo');if(p)p.remove()">`:`<span class="em">${esc(el.textContent)}</span>`;
+  if(m==="phone"){ const zh=el.parentNode.querySelector(":scope>div:not(.pic):not(.emoji)"); if(ps){ ps.className="ph"; ps.innerHTML=inner+(zh?`<small>${esc(zh.textContent)}</small>`:""); el.classList.add("lifted"); } return; }
+  let cap="", cls="";
+  if(m==="desk"){ const wc=stage.querySelector(":scope>.card .word"); if(wc){ const sg=wc.querySelector(".sg"); cap=(sg||wc).textContent.trim(); const g=wc.className.match(/\b(der|die|das)\b/); cls=g?"c-"+g[1]:""; } const n=fx.querySelector(".fx-note"); if(n) n.classList.add("off"); }
+  if(!ph){ ph=document.createElement("div"); ph.className="fx-photo"; fx.appendChild(ph); }
+  const key=inner+cap; if(ph.dataset.k!==key){ ph.dataset.k=key; ph.innerHTML=inner+(cap?`<b class="${cls}">${esc(cap)}</b>`:""); ph.style.animation="none"; void ph.offsetWidth; ph.style.animation=""; }
+  el.classList.add("lifted"); }
 /* 整页换题时同步外框；只换了一部分（答题反馈等）时，把新内容滚进卡片可见区 */
 new MutationObserver(recs=>{ if(recs.some(r=>r.target===stage)) return immSync(); if(!document.body.classList.contains("imm")) return;
   const r=recs.find(r=>r.addedNodes.length); if(r&&r.target.scrollIntoView) setTimeout(()=>{ if(r.target.isConnected) r.target.scrollIntoView({block:"nearest",behavior:"smooth"}); },40); }).observe(stage,{childList:true,subtree:true});
@@ -765,7 +827,7 @@ function assemble(item,opts,cb){ const isSpell=!!item.spell; const target=isSpel
   stage.querySelectorAll(".tile").forEach(x=>x.onclick=()=>{ x.classList.add("used"); picked.push({t:x.textContent,i:x.dataset.i}); render(); });
   $("undo").onclick=()=>{ const last=picked.pop(); if(last){ const el=stage.querySelector(`.tile[data-i="${last.i}"]`); if(el) el.classList.remove("used"); } render(); };
   const grade=()=>{ if(!picked.length){ toast("先拼出来"); return; } const said=picked.map(x=>x.t).join(isSpell?"":" "); const ok=isSpell?said.toLowerCase()===target.toLowerCase():norm(said)===norm(target);
-    if(ok){ combo("✓"); cheer(); $("fb").innerHTML=`<div class="card"><div class="ok">✓</div><div class="word" style="font-size:22px">${esc(isSpell?target.split("").join("-"):target)}</div>${isSpell?"":`<div class="zh">${esc(item.zh)}</div>`}</div>`; $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; cb(true); }; speakThen(isSpell?target.split("").join(". "):target,()=>setTimeout(go,600)); $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go; }
+    if(ok){ combo("✓"); cheer(); $("fb").innerHTML=`<div class="card"><div class="ok">✓</div><div class="word" style="font-size:22px">${esc(isSpell?target.split("").join("-"):target)}</div>${isSpell?"":`<div class="zh">${esc(item.zh)}</div>`}</div>`; $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; cb(true); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go; autoNext(go,c=>speakThen(isSpell?target.split("").join(". "):target,c),true); }
     else { tries++; stumble(); if(opts.onWrong) opts.onWrong(); picked=[]; stage.querySelectorAll(".tile").forEach(y=>y.classList.remove("used")); render(); $("fb").innerHTML=`<div class="card"><div class="ans"><s>${esc(said)}</s></div><div class="bad">${tries>=2?"正确说法是：":"再试一次。"}</div>${tries>=2?`<div class="word" style="font-size:22px">${esc(target)}</div>`:""}</div>`; if(tries>=2) speakThen(isSpell?target.split("").join(". "):target); } };
   $("chk").onclick=grade; }
 function mySentences(after){ const miss=missingFor(E.n); if(miss.length) return profileForm(()=>mySentences(after),miss);
@@ -790,10 +852,8 @@ function askMood(){ E=null; theme(3); target(); setScene(6,70,false); $("gapLbl"
 function home(){
   townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Weg"; hearts(null);
   const due=dueList(), mtotal=Object.values(S.mist).filter(m=>!m.done).length;
-  stage.innerHTML=`<div class="brand">Nico 的背包</div>
-    <div class="bag">${EPISODES.filter(e=>S.items.includes(e.key)).slice(-12).map(e=>`<span title="${esc(e.item.n)}">${e.item.e}</span>`).join("")||'<span class="off">👜</span>'}</div>
-    <div class="tap">${S.items.length?`已找回 ${S.items.length} 样`:"包被出租车带走了。每通一集，找回一样东西。"}${streakN()?` · 🔥 连续 ${streakN()} 天`:""}</div>
-    ${wonN()>bkWon()?`<button class="ep" id="bkup" style="border-color:var(--taxi);background:var(--part)"><span class="n">📋</span><span class="t"><b>备份一下进度</b><span>又通关了！点一下复制进度码，发到微信“文件传输助手”或备忘录存好，换手机、删图标都不怕</span></span><span class="go">复制 ›</span></button>`:""}
+  const nx=EPISODES.find(e=>!epState(e).won);
+  stage.innerHTML=`${nx?`<button class="ep" id="cont" style="border-color:var(--taxi);background:var(--part)"><span class="n">▶️</span><span class="t"><b>继续冒险 · ${esc(nx.lv)} 第 ${nx.n} 集</b><span>${esc(nx.name)} · ${esc(nx.zh)}</span></span><span class="go">出发 ›</span></button>`:""}${wonN()>bkWon()?`<button class="ep" id="bkup" style="border-color:var(--taxi);background:var(--part)"><span class="n">📋</span><span class="t"><b>备份一下进度</b><span>又通关了！点一下复制进度码，发到微信“文件传输助手”或备忘录存好，换手机、删图标都不怕</span></span><span class="go">复制 ›</span></button>`:""}
     ${moodToday()?"":`<button class="ep" id="mood" style="border-color:var(--taxi)"><span class="n">🙂</span><span class="t"><b>Wie geht’s dir?</b><span>Emma 问你今天怎么样，用德语答一句</span></span><span class="go">答 ›</span></button>`}
     <button class="ep" id="diary" ${due.length?'':'disabled'} style="${due.length?'border-color:var(--taxi)':''}"><span class="n">☀️</span><span class="t"><b>今日回顾</b><span>${due.length?`${due.length} 个词到期，Emma 等着考你`:mtotal?`今天没有到期的词 · 已学 ${mtotal} 个，掌握 ${Object.values(S.mist).filter(m=>m.done).length} 个`:"学过的词会在 1 → 3 → 7 → 14 → 30 天后回来考你"}</span></span><span class="go">${due.length?'开始 ›':''}</span></button>
     <button class="ep" id="book"><span class="n">📔</span><span class="t"><b>我的小本子</b><span>${(S.book||[]).length?`${(S.book||[]).length} 句关于你自己的话`:"通关一集，攒下几句关于你自己的话"}</span></span><span class="go">${(S.profile||{}).name?"":"填档案 ›"}</span></button>
@@ -801,7 +861,7 @@ function home(){
     <div class="map">${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="lvcard" data-lv="${l.id}"><span class="big">${l.id}</span><span class="t" style="flex:1;min-width:0"><b>${esc(l.name)}</b><span>${l.episodes.length} 集 · 通关 ${won} · ★${starSum(l.episodes)}/${l.episodes.length*3}</span><div class="bar"><i style="width:${l.episodes.length?won/l.episodes.length*100:0}%"></i></div></span><span class="go">›</span></button>`; }).join("")}</div>
     <p class="tap">词汇与原声：DW Nicos Weg 官方 Wortschatz · ${cloud.ready?"进度已同步到云端":"进度存在本机"} · <a href="#" id="bk" style="color:var(--taxi)">备份 / 恢复进度</a> · <a href="#" id="rl" style="color:var(--taxi)">🔄 刷新</a></p>`;
   $("bk").onclick=e=>{ e.preventDefault(); backupPage(); }; $("rl").onclick=e=>{ e.preventDefault(); location.reload(); };
-  stage.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>townView(b.dataset.lv)); $("diary").onclick=()=>diary(false); $("book").onclick=bookPage; const mb=$("mood"); if(mb) mb.onclick=askMood;
+  stage.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>townView(b.dataset.lv)); $("diary").onclick=()=>diary(false); $("book").onclick=bookPage; const mb=$("mood"); if(mb) mb.onclick=askMood; const cb=$("cont"); if(cb) cb.onclick=()=>episode(nx.key);
   const bu=$("bkup"); if(bu) bu.onclick=async()=>{ if(await copyText(backupText())){ markBackup(); home(); toast("已复制，去微信粘贴保存吧"); } else backupPage(); };
 }
 function coverOf(e,cls){
@@ -986,13 +1046,15 @@ function episode(key){
   const done=SCENES.filter(([k])=>ep[k]).length;
   stage.innerHTML=`<h2 class="center">第 ${E.n} 集 · ${esc(E.name)}</h2><div class="tap">${esc(E.zh)} · ${LV.length} 个词 · 5 个场景</div>${E.synopsis?`<div class="card" style="text-align:left;font-size:14px;line-height:1.7">📖 ${esc(E.synopsis)}</div>`:""}
     <div class="chips">${SCENES.map(([k],i)=>`<button class="chip ${ep[k]?'done':''}" data-s="${k}">${esc(sceneName(k))}${ep[k]?' ✓':''}</button>`).join("")}</div>
+    <div class="chips">${["a","b"].map(sl=>{ const kd=interPlan(E)[sl], a=ep["i"+sl]; return `<button class="chip ${a>=.8?'done':''}" data-i="${sl}">插曲${sl==="a"?"①":"②"} ${INTER_NAME[kd]}${a!=null?` ${Math.round(a*100)}%`:""}${a>=.8?' ✓':''}</button>`; }).join("")}</div>
     <div class="row"><button class="ghost" id="back">‹ 地图</button><button class="primary" id="go">${done===0?"看剧情 ›":ep.won?"从头再玩":"继续 ›"}</button></div>
     ${ep.won?`<div class="center" style="font-size:24px;color:var(--taxi);letter-spacing:3px">${starStr(starsOf(E))}</div>${starHints(E)}`:""}
     <div class="row"><button id="mn">${manualNext()?"👆 答对后：总是手点":"⏩ 答对后：自动下一题"}</button></div>${RMQ.matches?`<div class="tap">系统开了「减少动态效果」，一律手点</div>`:""}
     ${ep.won?`<div class="row"><button id="hard">${S.hard?"⚡ 挑战模式：开":"⚡ 挑战模式：关"}</button></div><div class="tap">挑战模式：时间减半，答错直接重来；挑战模式通关直接拿 ⭐3</div>`:""}`;
   const cur=E; $("back").onclick=()=>{ const b=buildingOfEp(cur); townView(cur.lv,b&&b.id); }; $("go").onclick=()=>{ if(done===0||ep.won){ RUN={key:E.key,wrong:new Set()}; intro(0); } else run(SCENES.find(([k])=>!ep[k])[0]); };
   $("mn").onclick=()=>{ if(RMQ.matches) return toast("系统设置了减少动态效果"); S.pref=S.pref||{}; S.pref.manualNext=!S.pref.manualNext; save(); episode(key); };
-  stage.querySelectorAll(".chip").forEach(b=>b.onclick=()=>run(b.dataset.s));
+  stage.querySelectorAll(".chip[data-s]").forEach(b=>b.onclick=()=>run(b.dataset.s));
+  stage.querySelectorAll(".chip[data-i]").forEach(b=>b.onclick=()=>inter(b.dataset.i,()=>episode(cur.key)));
   const h=$("hard"); if(h) h.onclick=()=>{ S.hard=!S.hard; save(); episode(key); };
 }
 function run(k){ ({chase:chaseStart,sms:smsStart,radio:radioStart,talk:talkStart,boss:grammar})[k](); }
@@ -1022,7 +1084,7 @@ let G=null;
 function chaseStart(){
   LV.forEach(touch); save();
   /* Boss 本身就是填空题时，赶路不再出同样的填空，避免同一题连做两遍 */
-  const [title,desc,btn]=sceneText("chase"); const qs=[...LV.map(v=>({type:"v",v})),...(E.boss&&E.boss.type==="cloze"?[]:E.cloze.map((c,i)=>({type:"c",ci:i,...c})))];
+  const [title,desc,btn]=sceneText("chase"); const qs=[...LV.map(v=>({type:"v",v})),...(bossKind(E)==="cloze"?[]:E.cloze.map((c,i)=>({type:"c",ci:i,...c})))];
   /* 分段：每段最多 12 题，平均分配，避免最后一段只剩一两题 */
   const segs=Math.max(1,Math.ceil(qs.length/12)), segSize=Math.ceil(qs.length/segs); const saved=prog("chase");
   G={qs,n:0,seg:0,segs,segSize,end:0,nico:6,taxi:70,lives:3,max:3,streak:0,score:0,step:4};
@@ -1063,8 +1125,8 @@ function chase(){
   timer(S.hard?5:10,()=>answer(null));
 }
 function chaseWin(){ stopTimer(); const ep=EP(); if(ep.cf) ep.c3=true; sceneDone("chase"); setScene(60,70,false); $("gapLbl").textContent="到了！"; hearts(null);
-  stage.innerHTML=`${bubble("Lisa","Geschafft!",`赶到了，得分 ${G.score}。接下来：${esc(sceneName("sms"))}`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">${esc(sceneName("sms"))} ›</button></div>`;
-  $("go").onclick=smsStart; $("back").onclick=()=>episode(E.key); }
+  stage.innerHTML=`${bubble("Lisa","Geschafft!",`赶到了，得分 ${G.score}。先来个小插曲：${esc(INTER_NAME[interPlan(E).a])}，然后是${esc(sceneName("sms"))}`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">${esc(INTER_NAME[interPlan(E).a])} ›</button></div>`;
+  $("go").onclick=()=>inter("a",smsStart); $("back").onclick=()=>episode(E.key); }
 
 /* ---------- 场景 2：打字拼写 ---------- */
 let M=null;
@@ -1125,8 +1187,8 @@ function radio(){ if(R.n>=R.qs.length) return radioWin(); const v=R.qs[R.n]; pro
     else { if(!R.states[R.n]){ R.states[R.n]="bad"; markWrong(v); } $("fb").innerHTML=wordCard(v,`<div class="ans"><s>${esc(inp.value)}</s></div><div class="bad">${r==="article"?"冠词呢？听清楚 der / die / das":"再听一遍，照着正确写法打出来"}</div>`); $("sp").onclick=()=>play(v); play(v); inp.value=""; inp.focus(); } };
   $("chk").onclick=grade; inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); grade(); } }); }
 function radioWin(){ sceneDone("radio"); prog("radio",0); setScene(60,70,false); $("gapLbl").textContent="听完了";
-  stage.innerHTML=`${bubble("Lisa","Gut. Jetzt sprechen wir!",`${R.right}/${R.qs.length} 条一次听对。接下来用这些词说话。`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">💬 对话 ›</button></div>`;
-  $("go").onclick=talkStart; $("back").onclick=()=>episode(E.key); }
+  stage.innerHTML=`${bubble("Lisa","Gut. Jetzt sprechen wir!",`${R.right}/${R.qs.length} 条一次听对。再来个小插曲：${esc(INTER_NAME[interPlan(E).b])}，然后用这些词说话。`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">${esc(INTER_NAME[interPlan(E).b])} ›</button></div>`;
+  $("go").onclick=()=>inter("b",talkStart); $("back").onclick=()=>episode(E.key); }
 
 /* ---------- Lisa 的小课堂 ---------- */
 function grammar(){ stopTimer(); const g=E.grammar; setScene(60,70,false); $("gapLbl").textContent="小课堂"; hearts(null);
@@ -1147,25 +1209,33 @@ function buildBoss(){ stopTimer(); const items=E.talk.slice(0,6); const need=Mat
     assemble({de:d.a,zh:d.azh},{head:dots(n,items.length)+bubble(d.w,esc(d.q),esc(d.qzh)),who:"你（Nico）",extraPool:pool,onExit:()=>episode(E.key),onWrong:()=>{ first=false; }},()=>{ if(first) right++; n++; step(); });
     speakThen(d.q); };
   $("go").onclick=step; }
-function boss(){ stopTimer(); const b=E.boss; let items;
-  const useBuild=b.type==="gender"&&E.talk&&E.talk.length>=3&&E.n%2===0;
-  if(useBuild) return buildBoss();
+/* Boss 换皮：原本是冠词题的集，按本集内容在 冠词 / 拼句 / 填空 / 数字 之间轮换（同一集固定），其他类型（du/Sie、拨号……）不变 */
+function bossKind(e){ const b=e.boss; if(!b||b.type!=="gender") return b&&b.type; const o=["gender"];
+  if(e.talk&&e.talk.length>=3) o.push("build"); if(e.cloze&&e.cloze.length>=3) o.push("cloze"); if(numInfo(e)&&numInfo(e).num) o.push("num");
+  return o[e.n%o.length]; }
+function bossSpec(){ const b=E.boss, k=bossKind(E);
+  if(k==="cloze"){ const n=E.cloze.length; return Object.assign({},b,{type:"cloze",need:Math.ceil(n*.6),de:"Ergänz meine Sätze!",zh:`${b.who} 说话说一半，你来补上缺的词。`}); }
+  if(k==="num"){ const R=numRange(E), r=rng(E.key+"boss"), items=[]; while(items.length<6){ const x=Math.floor(r()*(R+1)); if(!items.some(i=>i.a===String(x))) items.push({say:numDE(x),a:String(x)}); }
+    return Object.assign({},b,{type:"dial",need:4,items,de:"Zahlen, bitte!",zh:`${b.who} 用德语报数字，你在键盘上按出来。`}); }
+  return b; }
+function boss(){ stopTimer(); const b=bossSpec(); let items;
+  if(bossKind(E)==="build") return buildBoss();
   if(b.type==="sort") items=b.items.slice();
   else if(b.type==="gender"){ items=LV.filter(v=>v.g&&!/Plural/.test(v.ans)); if(items.length<(b.count||8)){ for(const e of EPISODES){ if(e.lv!==E.lv) continue; if(e.n>=E.n) break; items=items.concat(VOCAB.filter(v=>v.l===e.id&&v.g&&!/Plural/.test(v.ans))); if(items.length>=b.count) break; } } items=items.slice(0,b.count||items.length); }
   else if(b.type==="pick") items=b.items.slice(0,b.count||b.items.length);
   else if(b.type==="cloze") items=E.cloze.slice();
   else items=b.items.slice();
-  B={qs:items,n:0,right:0,states:[],sec:S.hard?3:(b.type==="dial"?12:6)};
+  B={b,qs:items,n:0,right:0,states:[],sec:S.hard?3:(b.type==="dial"?12:6)};
   setScene(60,70,false); $("gapLbl").textContent="Boss";
   stage.innerHTML=`${bubble(b.who,esc(b.de),`${esc(b.zh)}<br>${items.length} 题，答对 ${b.need} 题过关${b.type==="dial"?"":`，每题 ${B.sec} 秒`}。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button><button class="primary" id="go">来吧</button></div>`;
   $("go").onclick=bossQ; $("back").onclick=()=>episode(E.key); }
-function bossQ(){ const b=E.boss; if(B.n>=B.qs.length){ if(B.right>=b.need&&B.right===B.qs.length){ EP().b3=true; save(); } return B.right>=b.need?mySentences(win):lose(`${b.who} 摇摇头…（答对 ${b.need} 题才行）`,boss); } const it=B.qs[B.n];
+function bossQ(){ const b=B.b; if(B.n>=B.qs.length){ if(B.right>=b.need&&B.right===B.qs.length){ EP().b3=true; save(); } return B.right>=b.need?mySentences(win):lose(`${b.who} 摇摇头…（答对 ${b.need} 题才行）`,boss); } const it=B.qs[B.n];
   let body,ans,check;
   if(b.type==="sort"){ body=`<div class="q"><div class="cloze">${esc(it.t)}</div></div><div class="opts"><button class="opt" data-a="informal" style="color:var(--taxi);border-color:var(--taxi)">du 非正式</button><button class="opt" data-a="formal" style="color:var(--der);border-color:var(--der)">Sie 正式</button></div>`; ans=it.k; }
   else if(b.type==="gender"){ body=`<div class="q">${pic(it)}<div class="hint">${esc(it.zh)}</div><div class="cloze" style="font-size:28px">${esc(it.ans.replace(/^(der|die|das) /,""))}</div></div><div class="opts three">${["der","die","das"].map(g=>`<button class="opt ${g}" data-a="${g}">${g}</button>`).join("")}</div>`; ans=it.g; }
   else if(b.type==="cloze"){ body=`<div class="q"><div class="hint">${esc(it.who)} 说</div><div class="cloze">${esc(it.t).replace("___","<u>&nbsp;</u>")}</div></div><div class="opts">${rot(it.o.slice(),B.n).map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div>`; ans=it.a; }
   else if(b.type==="pick"){ body=`<div class="q"><div class="num">${esc(it.q)}</div></div><div class="opts">${rot(it.o.slice(),B.n).map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div>`; ans=it.a; }
-  else { body=`<div class="q"><div class="hint">广播说</div><div class="cloze">${esc(it.say)}</div><button id="sp" style="margin-top:6px">🔊 再听</button><div class="num" id="dial" style="font-size:36px;min-height:48px;letter-spacing:4px">&nbsp;</div></div><div class="pad">${["1","2","3","4","5","6","7","8","9","⌫","0","✓"].map(d=>`<button data-d="${d}">${d}</button>`).join("")}</div>`; ans=it.a; }
+  else { body=`<div class="q"><div class="hint">${b.who==="Radio"?"广播说":esc(b.who)+" 说"}</div><div class="cloze">${esc(it.say)}</div><button id="sp" style="margin-top:6px">🔊 再听</button><div class="num" id="dial" style="font-size:36px;min-height:48px;letter-spacing:4px">&nbsp;</div></div><div class="pad">${["1","2","3","4","5","6","7","8","9","⌫","0","✓"].map(d=>`<button data-d="${d}">${d}</button>`).join("")}</div>`; ans=it.a; }
   stage.innerHTML=`${dots(B.n,B.qs.length,B.states)}${body}`;
   const finishQ=(picked)=>{ stopTimer(); const ok=picked===ans; if(ok) B.right++; B.states[B.n]=ok?"ok":"bad"; B.n++;
     stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===ans) x.classList.add("right"); else if(x.dataset.a===picked) x.classList.add("wrong"); });
@@ -1247,13 +1317,89 @@ function talk(){ if(K.n>=K.qs.length) return talkWin(); const d=K.qs[K.n]; K.tri
   stage.querySelectorAll(".tile").forEach(x=>x.onclick=()=>{ x.classList.add("used"); picked.push({t:x.textContent,i:x.dataset.i}); render(); });
   $("undo").onclick=()=>{ const last=picked.pop(); if(last){ const el=stage.querySelector(`.tile[data-i="${last.i}"]`); if(el) el.classList.remove("used"); } render(); };
   const grade=()=>{ if(!picked.length){ toast("先把回答拼出来"); return; } const said=picked.map(x=>x.t).join(" "); const ok=norm(said)===norm(d.a);
-    if(ok){ K.right++; if(!K.states[K.n]) K.states[K.n]="ok"; combo("💬"); cheer(); $("fb").innerHTML=`<div class="card"><div class="ok">✓ 说对了</div><div class="word" style="font-size:22px">${esc(d.a)}</div><div class="zh">${esc(d.azh)}</div></div>`; $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; K.n++; talk(); }; speakThen(d.a,()=>setTimeout(go,600)); $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一轮 ›</button></div>`); $("go").onclick=go; }
+    if(ok){ K.right++; if(!K.states[K.n]) K.states[K.n]="ok"; combo("💬"); cheer(); $("fb").innerHTML=`<div class="card"><div class="ok">✓ 说对了</div><div class="word" style="font-size:22px">${esc(d.a)}</div><div class="zh">${esc(d.azh)}</div></div>`; $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; K.n++; talk(); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一轮 ›</button></div>`); $("go").onclick=go; autoNext(go,c=>speakThen(d.a,c),true); }
     else { K.tries++; K.states[K.n]="bad"; stumble(); picked=[]; stage.querySelectorAll(".tile").forEach(y=>y.classList.remove("used")); render();
       $("fb").innerHTML=`<div class="card"><div class="ans"><s>${esc(said)}</s></div><div class="bad">${K.tries>=2?"正确说法是：":"再试一次。"}</div>${K.tries>=2?`<div class="word" style="font-size:22px">${esc(d.a)}</div>`:""}</div>`; if(K.tries>=2) speakThen(d.a); } };
   $("chk").onclick=grade; }
 function talkWin(){ sceneDone("talk"); setScene(60,70,false); $("gapLbl").textContent="说完了";
   stage.innerHTML=`${bubble("Lisa","Sehr gut! Aber zuerst …",`${K.right}/${K.qs.length} 轮一次说对。去打 Boss 之前，先上一堂小课。`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">Lisa 的小课堂 ›</button></div>`;
   $("go").onclick=grammar; $("back").onclick=()=>episode(E.key); }
+
+/* ---------- 插曲：🧩 排句子（One False Move 式：按顺序点词，点错一次这句就不算一次对）· 🔢 听数字（Line Jumper 式：听数字 / 时间 / 价格，在数轴、钟面、价签上点出来） ---------- */
+function rng(seed){ let h=7; for(const c of String(seed)) h=(h*31+c.charCodeAt(0))|0; h=Math.abs(h)||1; return ()=>{ h=(h*1103515245+12345)&0x7fffffff; return h/0x7fffffff; }; }
+function shuf(a,r){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const NUMW=/\b(null|eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf|zwanzig|dreißig|vierzig|fünfzig|hundert|Nummer|Telefonnummer|Jahre alt)\b/i;
+function numInfo(e){ if(e._ni!==undefined) return e._ni; const strip=s=>String(s||"").replace(/<[^>]+>/g,"");
+  const tx=[...e.intro.map(d=>d.de),...(e.talk||[]).flatMap(d=>[d.q,d.a]),...e.cloze.map(c=>c.t.replace("___",c.a)),...VOCAB.filter(v=>v.l===e.id).map(v=>v.ans)].map(strip).join(" \n ");
+  const time=/\b\d{1,2}[:.]\d{2}\b|\bUhr\b|\bhalb\b|Viertel/.test(tx), price=/Euro|€|Cent|kostet|Preis/.test(tx), num=/\b\d+\b/.test(tx)||NUMW.test(tx);
+  return e._ni=(time||price||num)?{time,price,num:num||time||price}:null; }
+const numRange=e=>e.lv==="A1"&&e.n<9?12:e.lv==="A1"&&e.n<20?20:100;
+const INTER_NAME={satz:"🧩 排句子",zahl:"🔢 听数字"};
+function interPlan(e){ const ni=numInfo(e); return {a:"satz",b:ni?"zahl":"satz"}; }
+function satzPool(e){ const strip=s=>String(s||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim(), out=[];
+  const add=(de,zh)=>{ de=strip(de); const n=de.split(" ").length; if(n<3||n>9||/___|…|\.\.\.|[()\/]/.test(de)||out.some(x=>x.de===de)) return; out.push({de,zh:strip(zh)}); };
+  e.intro.forEach(d=>add(d.de,d.zh)); (e.talk||[]).forEach(d=>{ add(d.a,d.azh); add(d.q,d.qzh); }); return out; }
+function satzItems(e,slot){ let pool=satzPool(e);
+  if(pool.length<8) for(const o of EPISODES){ if(o.lv!==e.lv||o===e||Math.abs(o.n-e.n)>3) continue; pool=pool.concat(satzPool(o).filter(x=>!pool.some(y=>y.de===x.de))); if(pool.length>=10) break; }
+  const p=shuf(pool,rng(e.key+"satz")), half=Math.min(5,Math.floor(p.length/2)); return slot==="b"&&p.length>=8?p.slice(5,10):p.slice(0,Math.max(half,Math.min(5,p.length))); }
+const HOURW=h=>h===1?"eins":ONES[h];
+function timeSay(h,m){ const H=x=>((x-1+12)%12)+1; if(m===0) return `${h===1?"ein":ONES[h]} Uhr`; if(m===30) return `halb ${HOURW(H(h+1))}`; if(m===15) return `Viertel nach ${HOURW(h)}`; return `Viertel vor ${HOURW(H(h+1))}`; }
+function priceSay(c){ const e=Math.floor(c/100), ct=c%100; return `${e===1?"ein":numDE(e)} Euro${ct?" "+numDE(ct):""}`; }
+const priceStr=c=>`${Math.floor(c/100)},${String(c%100).padStart(2,"0")} €`;
+function zahlItems(e){ const ni=numInfo(e)||{num:true}, r=rng(e.key+"zahl"), kinds=[ni.num&&"num",ni.time&&"time",ni.price&&"price"].filter(Boolean), R=numRange(e), easy=e.lv==="A1"&&e.n<20, out=[];
+  for(let i=0;i<6;i++){ const k=kinds[i%kinds.length];
+    if(k==="num"){ let x; do{ x=Math.floor(r()*(R+1)); }while(out.some(o=>o.v===x)); out.push({k,v:x,say:numDE(x),R}); }
+    else if(k==="time"){ const h=1+Math.floor(r()*12), m=easy?0:[0,15,30,45][Math.floor(r()*4)], key=h*60+m; if(out.some(o=>o.v===key)){ i--; continue; }
+      const alt=new Set([key]); const near=[[h,(m+30)%60],[((h%12)+1),m],[h===1?12:h-1,m],[h,(m+15)%60],[(h+5)%12+1,m]]; for(const [a,b] of shuf(near,r)){ if(alt.size>=4) break; if(easy&&b) continue; alt.add(a*60+b); } while(alt.size<4){ alt.add((1+Math.floor(r()*12))*60+(easy?0:[0,15,30,45][Math.floor(r()*4)])); }
+      out.push({k,v:key,say:"Es ist "+timeSay(h,m)+".",o:shuf([...alt],r)}); }
+    else { const eu=1+Math.floor(r()*(easy?12:19)), ct=easy?0:[0,20,50,80,90,99][Math.floor(r()*6)], c=eu*100+ct; if(out.some(o=>o.v===c)){ i--; continue; }
+      const sw=Number(String(eu).split("").reverse().join(""))||eu+10, alt=new Set([c,(eu+1)*100+ct,sw*100+ct,eu*100+(ct?(ct===50?20:50):50)]); while(alt.size<4) alt.add((1+Math.floor(r()*19))*100+ct);
+      out.push({k,v:c,say:priceSay(c),o:shuf([...alt].slice(0,4),r)}); } }
+  return out; }
+function clockSVG(v,sz){ const h=Math.floor(v/60)%12, m=v%60, ha=(h+m/60)*30, ma=m*6, L=(a,l)=>`x2="${50+l*Math.sin(a*Math.PI/180)}" y2="${50-l*Math.cos(a*Math.PI/180)}"`;
+  return `<svg viewBox="0 0 100 100" width="${sz||72}" height="${sz||72}" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#FFFDF6" stroke="#22304A" stroke-width="4"/>${Array.from({length:12},(_,i)=>`<line x1="${50+38*Math.sin(i*Math.PI/6)}" y1="${50-38*Math.cos(i*Math.PI/6)}" ${L(i*30,i%3?42:44)} stroke="#22304A" stroke-width="${i%3?2:4}"/>`).join("")}<line x1="50" y1="50" ${L(ha,24)} stroke="#22304A" stroke-width="6" stroke-linecap="round"/><line x1="50" y1="50" ${L(ma,36)} stroke="#D2553F" stroke-width="3.5" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#22304A"/></svg>`; }
+let IX=null;
+function interBoard(t,s){ if(IX){ IX.bt=t; IX.bs=s; } const f=document.querySelector("#sceneFx .fx-board"); if(f){ f.querySelector("b").innerHTML=t; f.querySelector("span").innerHTML=s; } }
+function inter(slot,next){ stopTimer(); const kind=interPlan(E)[slot], qs=kind==="satz"?satzItems(E,slot):zahlItems(E);
+  if(!qs.length) return next();
+  IX={slot,kind,qs,n:0,right:0,states:[],next,bt:kind==="satz"?"Satzbau":"Zahlen hören",bs:kind==="satz"?"把词按顺序点出来":"听数字、时间、价格"}; setScene(60,70,false); $("gapLbl").textContent=INTER_NAME[kind]; hearts(null);
+  const desc=kind==="satz"?`${qs.length} 句台词被打散了。按顺序一个一个点词，点错会抖一下——一句里一次都没点错才算对。注意动词放第二位，从句动词放最后。`:`${qs.length} 题。听德语说的数字、时间或价格，在数轴、钟面或价签上点出来。可以反复听。`;
+  stage.innerHTML=`${bubble("Lisa",kind==="satz"?"Wort für Wort!":"Hör genau hin!",desc)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="skip">跳过</button><button class="primary" id="go">开始</button></div><div class="tap">两个插曲都答对 80% 是 ⭐2 的条件之一</div>`;
+  $("back").onclick=()=>episode(E.key); $("skip").onclick=next; $("go").onclick=interQ; }
+function interDone(){ const ep=EP(), acc=IX.qs.length?IX.right/IX.qs.length:1, k="i"+IX.slot; ep[k]=Math.max(ep[k]||0,acc); bumpStreak(); updateStars(E); save();
+  $("gapLbl").textContent="插曲完成"; const nx=IX.next;
+  stage.innerHTML=`${bubble("Lisa",acc>=.8?"Prima!":"Weiter üben!",`${IX.right}/${IX.qs.length} 题一次答对（${Math.round(acc*100)}%）。${acc>=.8?"":"想拿 ⭐2，这个插曲要答对 80%，可以从本集首页再玩一次。"}`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="again">再玩一次</button><button class="primary" id="go">继续 ›</button></div>`;
+  $("go").onclick=nx; $("back").onclick=()=>episode(E.key); const sl=IX.slot; $("again").onclick=()=>inter(sl,nx); }
+function interQ(){ if(IX.n>=IX.qs.length) return interDone(); const it=IX.qs[IX.n]; $("gapLbl").textContent=`${INTER_NAME[IX.kind]} ${IX.n+1}/${IX.qs.length}`; return IX.kind==="satz"?satzQ(it):zahlQ(it); }
+function interNext(ok,say){ if(!IX.states[IX.n]){ IX.states[IX.n]=ok?"ok":"bad"; if(ok) IX.right++; }
+  let adv=false; const go=()=>{ if(adv) return; adv=true; IX.n++; interQ(); };
+  $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go; autoNext(go,cb=>speakThen(say,cb),ok); combo(ok?"✓":"✗"); if(ok) cheer(); else stumble(); }
+function satzQ(it){ const words=it.de.split(" "), last=words.length-1, punct=(words[last].match(/[.!?]+$/)||[""])[0]; words[last]=words[last].slice(0,words[last].length-punct.length);
+  const r=rng(it.de+IX.n); let order=shuf(words.map((t,i)=>({t,i})),r); if(order.every((x,i)=>x.i===i)&&words.length>1) order=order.slice(1).concat(order[0]);
+  let pos=0, miss=0;
+  stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="zh">${esc(it.zh)}</div><div class="hint">按顺序点词</div></div><div class="built" id="built"><span class="tap">…</span></div><div class="tiles" id="tiles">${order.map(x=>`<button class="tile" data-t="${esc(x.t)}">${esc(x.t)}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
+  $("back").onclick=()=>episode(E.key); interBoard("Satzbau",esc(it.zh));
+  const built=()=>words.slice(0,pos).join(" ")+(pos===words.length?punct:"");
+  stage.querySelectorAll(".tile").forEach(b=>b.onclick=()=>{ if(pos>=words.length) return;
+    if(b.dataset.t===words[pos]){ b.classList.add("used"); pos++; $("built").innerHTML=`<span class="b">${esc(built())}</span>`; interBoard(esc(built()),esc(it.zh));
+      if(pos===words.length){ const ok=miss===0; $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 一次都没点错</div>':`<div class="bad">点错 ${miss} 次，这句不算一次对</div>`}<div class="word" style="font-size:22px">${esc(it.de)}</div><div class="zh">${esc(it.zh)}</div></div>`; interNext(ok,it.de); } }
+    else { miss++; b.classList.remove("nope"); void b.offsetWidth; b.classList.add("nope"); if(miss===1) stumble(); if(miss>=2){ const want=[...stage.querySelectorAll(".tile:not(.used)")].find(x=>x.dataset.t===words[pos]); if(want){ want.classList.remove("hintme"); void want.offsetWidth; want.classList.add("hintme"); } } } }); }
+function zahlQ(it){ const say=()=>speakThen(it.say); let body;
+  if(it.k==="num"){ const R=it.R, step=R<=20?1:10, ticks=Array.from({length:R/step+1},(_,i)=>i*step);
+    body=`<div class="nl" id="nl"><div class="nl-line"></div>${ticks.map(t=>`<i style="left:${t/R*100}%" class="${t%(R<=12?3:R<=20?5:50)===0?"big":""}"></i>${t%(R<=12?3:R<=20?5:50)===0?`<em style="left:${t/R*100}%">${t}</em>`:""}`).join("")}<b class="nl-mk hidden" id="mk"></b></div><div class="nl-val" id="nv">点数轴</div><div class="row"><button id="minus" aria-label="减一">−</button><button class="primary" id="jump" disabled>跳！</button><button id="plus" aria-label="加一">＋</button></div>`; }
+  else if(it.k==="time") body=`<div class="opts clocks">${it.o.map(v=>`<button class="opt" data-a="${v}">${clockSVG(v)}</button>`).join("")}</div>`;
+  else body=`<div class="opts">${it.o.map(c=>`<button class="opt tag" data-a="${c}">🏷️ ${priceStr(c)}</button>`).join("")}</div>`;
+  const q={num:"听到的是几？",time:"几点了？",price:"多少钱？"}[it.k];
+  stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">${q}</div><button id="sp" style="margin-top:4px">🔊 再听</button></div>${body}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
+  $("back").onclick=()=>episode(E.key); $("sp").onclick=say; say(); interBoard("🔊",q);
+  const ans=it.k==="time"?`${Math.floor(it.v/60)}:${String(it.v%60).padStart(2,"0")}`:it.k==="price"?priceStr(it.v):String(it.v);
+  const finish=picked=>{ const ok=picked===it.v; stage.querySelectorAll(".opt,#jump,#minus,#plus").forEach(x=>{ x.disabled=true; if(x.dataset.a==String(it.v)) x.classList.add("right"); else if(x.dataset.a==String(picked)) x.classList.add("wrong"); });
+    $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 对</div>':`<div class="bad">✗ 应该是 ${esc(ans)}</div>`}<div class="word" style="font-size:22px">${esc(it.say)}</div>${it.k==="time"?`<div class="zh">${esc(ans)}</div>`:""}</div>`; interBoard(esc(ans),esc(it.say)); interNext(ok,it.say); };
+  if(it.k==="num"){ let val=null; const nl=$("nl"), mk=$("mk");
+    const setV=v=>{ val=Math.max(0,Math.min(it.R,v)); mk.classList.remove("hidden"); mk.style.left=val/it.R*100+"%"; $("nv").textContent=val; $("jump").disabled=false; };
+    nl.onclick=e=>{ const r=nl.getBoundingClientRect(); setV(Math.round((e.clientX-r.left)/r.width*it.R)); };
+    $("minus").onclick=()=>setV((val==null?0:val)-1); $("plus").onclick=()=>setV((val==null?-1:val)+1); $("jump").onclick=()=>{ if(val!=null) finish(val); }; }
+  else stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>finish(+b.dataset.a)); }
 
 const QS=new URLSearchParams(location.search), q=QS.get("ep"), lvq=QS.get("lv");
 if(q&&EPISODES.some(e=>e.key===q)) episode(q);
