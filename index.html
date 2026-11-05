@@ -30,22 +30,28 @@ input[type=text]{font-family:var(--display);font-size:22px;width:100%;border:2px
 .tile.used{opacity:.25;pointer-events:none}
 .tile.hit{background:#E8F4E1;border-color:var(--ok);box-shadow:0 3px 0 var(--ok)}
 .tiles.wj .tile{font-size:18px;padding:8px 11px}
-.tg-book{text-align:left;background:#FFFBEF;border:1.5px dashed #C9B48A;font-family:Georgia,serif}
+.tg-book{text-align:left;border-style:dashed}
 .fset{text-align:left}
-.fset .fl{font-size:12px;color:#7a6a4a;margin:10px 0 5px;font-weight:700}
+.fset .fl{font-size:13px;color:var(--muted);margin:12px 0 6px;font-weight:600;text-align:left}
 .fset .fl:first-child{margin-top:0}
-.fset .fch{display:flex;flex-wrap:wrap;gap:6px}
-.fset .fch.sub{margin-top:6px;padding:6px;background:#FFF6DC;border-radius:10px}
-.fchip{font-size:13px;padding:6px 11px;border-radius:999px;background:#fff;border:1.5px solid #D8CBAE;color:#22304A;min-height:0;width:auto;box-shadow:none}
-.fchip.on{background:#22304A;color:#fff;border-color:#22304A}
-.fchip:disabled{opacity:.45}
+.fset .fch{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px}
+.fset .fch.sub{display:flex;flex-wrap:wrap}
+.fset .fch .fchip{padding:9px 2px;font-size:14px;line-height:1.2}
+.fset .fch.sub .fchip{padding:6px 10px}
+.fset .fch.sub{margin-top:8px;padding:8px;background:var(--part);border-radius:14px}
+.fchip{font-family:var(--display);font-size:15px;padding:8px 14px;border-radius:14px;background:var(--bubble);border:2px solid var(--line);box-shadow:0 3px 0 var(--line);color:var(--ink);font-weight:600}
+.fchip.on{background:var(--taxi);border-color:var(--taxi);box-shadow:0 3px 0 color-mix(in srgb,var(--taxi) 60%,#000);color:#2B1D00}
+.fchip:disabled{opacity:.45;box-shadow:none}
+.opts.stack{grid-template-columns:1fr}
+.opts.stack .opt small{display:block;font-family:var(--body);font-size:12px;font-weight:400;color:var(--muted);margin-top:2px}
 .errand{flex:none;position:relative;height:76px;margin:4px 6px 8px}
-.errand .es-line{position:absolute;left:8%;right:8%;top:22px;border-top:3px dashed #C9B48A}
+.errand .es-line{position:absolute;left:8%;right:8%;top:22px;border-top:3px dashed var(--line)}
 .errand .es{position:absolute;top:0;transform:translateX(-50%);text-align:center;width:70px}
-.errand .es span{display:block;width:44px;height:44px;margin:0 auto;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);background-color:#E9DFC8;filter:grayscale(.7) brightness(.97)}
+.errand .es span{display:block;width:44px;height:44px;margin:0 auto;border-radius:50%;border:3px solid var(--bubble);box-shadow:0 2px 0 var(--line);background-color:var(--line);filter:grayscale(.7)}
 .errand .es.done span,.errand .es.cur span{filter:none}
-.errand .es.cur span{border-color:#E3B256}
-.errand .es small{display:block;font-size:11px;color:#22304A;white-space:nowrap;margin-top:3px}
+.errand .es.cur span{border-color:var(--taxi)}
+.errand .es small{display:block;font-size:12px;color:var(--muted);white-space:nowrap;margin-top:3px}
+.errand .es.cur small{color:var(--ink);font-weight:600}
 .errand .enico{position:absolute;top:-16px;width:34px;margin-left:-17px;transition:left 1.2s ease-in-out;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
 .errand .enico.walk{animation:ewalk .3s ease-in-out infinite}
 @keyframes ewalk{50%{transform:translateY(-4px) rotate(3deg)}}
@@ -54,18 +60,18 @@ input[type=text]{font-family:var(--display);font-size:22px;width:100%;border:2px
 .errand.mini .es span{width:24px;height:24px;border-width:2px}
 .errand.mini .es small{display:none}
 .errand.mini .enico{width:22px;margin-left:-11px;top:-12px}
-.comic{flex:none;position:relative;height:230px;border-radius:14px;border:3px solid #22304A;overflow:hidden;margin:4px 2px 12px;background-color:#E9DFC8;box-shadow:4px 4px 0 #22304A}
+.comic{flex:none;position:relative;height:230px;border-radius:20px;border:2px solid var(--line);overflow:hidden;margin:4px 0 12px;background-color:var(--line);box-shadow:0 3px 0 var(--line)}
 .comic .cnico{position:absolute;left:5%;bottom:-8px;height:84%;filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
 .comic .cnico.huh{transform:rotate(-8deg);transform-origin:50% 100%}
-.comic .cq{position:absolute;left:27%;top:4%;font:900 46px Georgia,serif;color:#D2553F;text-shadow:0 2px 0 #fff}
-.comic .cbub{position:absolute;right:4%;top:9%;max-width:56%;background:#fff;border:2.5px solid #22304A;border-radius:16px;padding:8px 11px;text-align:left}
-.comic .cbub::after{content:"";position:absolute;left:-14px;bottom:16px;border:7px solid transparent;border-right:9px solid #22304A}
-.comic .cbub .de{font-family:Georgia,serif;font-size:16px;font-weight:700;color:#22304A}
-.comic .cbub .zh{font-size:12px;color:#5b6475;margin-top:3px}
-.tg-h{font-style:italic;color:var(--muted);margin-bottom:4px}
-.tg-l{font-size:15px;line-height:1.6;color:var(--muted)}
-.tg-l.cur{color:var(--ink);font-size:17px}
-.tg-l b{color:#B8574A}
+.comic .cq{position:absolute;left:27%;top:4%;font:700 46px var(--display);color:var(--bad);text-shadow:0 2px 0 #fff}
+.comic .cbub{position:absolute;right:4%;top:9%;max-width:56%;background:var(--bubble);border:2px solid var(--line);border-radius:18px;padding:8px 12px;text-align:left;box-shadow:0 3px 8px rgba(0,0,0,.18)}
+.comic .cbub::after{content:"";position:absolute;left:-9px;bottom:16px;border:8px solid transparent;border-right-color:var(--bubble);border-left:0}
+.comic .cbub .de{font-family:var(--display);font-size:17px;font-weight:600;color:var(--ink);line-height:1.25}
+.comic .cbub .zh{font-size:12px;color:var(--muted);margin-top:3px}
+.tg-h{font-family:var(--display);color:var(--muted);margin-bottom:4px}
+.tg-l{font-family:var(--display);font-size:16px;line-height:1.6;color:var(--muted)}
+.tg-l.cur{color:var(--ink);font-size:18px;font-weight:600}
+.tg-l b{color:var(--taxi)}
 .built{font-family:var(--display);font-size:26px;font-weight:700;min-height:44px;text-align:center;border-bottom:2px dashed var(--line);padding:4px 0;display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap}
 .built .art{font-size:20px;font-weight:600;padding:2px 8px;border-radius:8px;border:2px solid var(--line)}
 .built .art.der{color:var(--der);border-color:var(--der)}.built .art.die{color:var(--die);border-color:var(--die)}.built .art.das{color:var(--das);border-color:var(--das)}
@@ -1632,9 +1638,9 @@ function wortItems(e){ if(e._wi) return e._wi; let pool=wortPool(e);
   return e._wi=out; }
 function wortQ(it){ const tg=new Set(it.tg), hit=new Set(); let miss=0; const what=it.k==="art"?"冠词":"名词";
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">点出这句里所有的${what}（${tg.size} 个）${it.k==="noun"?"，人名也算":""}</div><div class="zh">${esc(it.zh)}</div></div><div class="tiles wj" id="tiles">${it.raw.map((t,i)=>`<button class="tile" data-i="${i}">${esc(t)}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
-  $("back").onclick=ixBack; interBoard(`Finde alle ${it.k==="art"?"Artikel":"Nomen"}`,`还差 ${tg.size} 个`);
+  $("back").onclick=ixBack; interBoard(`Finde alle ${it.k==="art"?"Artikel":"Nomen"}`,`${esc(it.zh)}<br>还差 ${tg.size} 个`);
   stage.querySelectorAll(".tile").forEach(b=>b.onclick=()=>{ if(hit.size>=tg.size) return; const i=+b.dataset.i; if(hit.has(i)) return;
-    if(tg.has(i)){ hit.add(i); b.classList.add("hit"); interBoard(`Finde alle ${it.k==="art"?"Artikel":"Nomen"}`,hit.size>=tg.size?"找齐了":`还差 ${tg.size-hit.size} 个`);
+    if(tg.has(i)){ hit.add(i); b.classList.add("hit"); interBoard(`Finde alle ${it.k==="art"?"Artikel":"Nomen"}`,`${esc(it.zh)}<br>${hit.size>=tg.size?"找齐了":`还差 ${tg.size-hit.size} 个`}`);
       if(hit.size>=tg.size){ const ok=miss===0; stage.querySelectorAll(".tile").forEach(x=>x.disabled=true);
         $("fb").innerHTML=`<div class="card">${ok?`<div class="ok">✓ 全部找到，一次没点错</div>`:`<div class="bad">点错 ${miss} 次，这句不算一次对</div>`}<div class="word" style="font-size:20px">${it.raw.map((t,j)=>tg.has(j)?`<u>${esc(t)}</u>`:esc(t)).join(" ")}</div><div class="zh">${esc(it.zh)}</div></div>`; interNext(ok,it.de); } }
     else { miss++; b.classList.remove("nope"); void b.offsetWidth; b.classList.add("nope"); if(miss===1) stumble();
@@ -1650,10 +1656,10 @@ function tageItems(e){ const r=rng(e.key+"tage"), ns=shuf(tageNouns(e),r), ts=sh
 function tageLine(it,c){ return `${it.pre} ${c.g} ${c.w} ${it.post}`; }
 function tageQ(it){ IX.diary=IX.diary||[]; const prev=IX.diary.map(l=>`<div class="tg-l">${esc(l)}</div>`).join("");
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="card tg-book"><div class="tg-h">Liebes Tagebuch …</div>${prev}<div class="tg-l cur">${esc(it.pre)} <b id="gap">____</b> ${esc(it.post)}</div><div class="zh">${esc(it.zh)}</div></div>
-    <div class="q"><div class="hint" id="th">先挑一个词填进去，随便挑，越怪越好</div></div><div class="opts" id="tops">${it.o.map((c,i)=>`<button class="opt" data-i="${i}">${esc(c.w)}<small style="display:block;font-size:11px;color:var(--muted)">${esc(c.zh)}</small></button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
-  $("back").onclick=ixBack; interBoard("Liebes Tagebuch",esc(it.zh));
-  stage.querySelectorAll("#tops .opt").forEach(b=>b.onclick=()=>{ const c=it.o[+b.dataset.i]; $("gap").textContent=`___ ${c.w}`; $("th").textContent=`「${c.w}」用哪个冠词？`;
-    $("tops").innerHTML=["der","die","das"].map(a=>`<button class="opt" data-a="${a}">${a}</button>`).join("");
+    <div class="q"><div class="hint" id="th">先挑一个词填进去，随便挑，越怪越好</div></div><div class="opts stack" id="tops">${it.o.map((c,i)=>`<button class="opt" data-i="${i}">${esc(c.w)}<small>${esc(c.zh)}</small></button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
+  $("back").onclick=ixBack; interBoard("Liebes Tagebuch","先挑一个词，越怪越好");
+  stage.querySelectorAll("#tops .opt").forEach(b=>b.onclick=()=>{ const c=it.o[+b.dataset.i]; $("gap").textContent=`___ ${c.w}`; $("th").textContent=`「${c.w}」用哪个冠词？`; interBoard(esc(`___ ${c.w}`),"用哪个冠词？");
+    $("tops").className="opts three"; $("tops").innerHTML=["der","die","das"].map(a=>`<button class="opt ${a}" data-a="${a}">${a}</button>`).join("");
     $("tops").querySelectorAll(".opt").forEach(x=>x.onclick=()=>{ const ok=x.dataset.a===c.g, line=tageLine(it,c); $("tops").querySelectorAll(".opt").forEach(y=>{ y.disabled=true; if(y.dataset.a===c.g) y.classList.add("right"); else if(y===x) y.classList.add("wrong"); });
       $("gap").textContent=`${c.g} ${c.w}`; IX.diary.push(line); interBoard(esc(`${c.g} ${c.w}`),esc(it.zh));
       $("fb").innerHTML=`<div class="card">${ok?`<div class="ok">✓ ${esc(c.g)} ${esc(c.w)}</div>`:`<div class="bad">✗ 是 ${esc(c.g)} ${esc(c.w)}</div>`}<div class="word" style="font-size:19px">${esc(line)}</div></div>`; interNext(ok,line); }); }); }
@@ -1772,7 +1778,7 @@ function freePage(){ townHide(); stopTimer(); E=null; DIARY=false; $("homebtn").
   const chip=(f,val,lb,on,dis)=>`<button class="fchip${on?" on":""}" data-f="${f}" data-v="${val}"${dis?" disabled":""}>${lb}</button>`;
   stage.innerHTML=`${bubble("Lisa","Freies Training",`不走剧情，想练什么练什么。每局 ${FREE_N} 题，不给星；到期的词练对会往后排，练错的进错词本。`)}
     <div class="card fset"><div class="fl">级别</div><div class="fch">${["A1","A2","B1"].map(l=>chip("lv",l,levelOf(l)?l:l+" · 即将推出",c.lv===l,!levelOf(l))).join("")}</div>
-    <div class="fl">范围</div><div class="fch">${[["all","全部"],["learned","已学过的词"],["wrong","错词本"],["b","某栋楼"]].map(([v,l])=>chip("sc",v,l,c.sc===v)).join("")}</div>
+    <div class="fl">范围</div><div class="fch">${[["all","全部"],["learned","学过的词"],["wrong","错词本"],["b","某栋楼"]].map(([v,l])=>chip("sc",v,l,c.sc===v)).join("")}</div>
     ${c.sc==="b"&&T?`<div class="fch sub">${T.buildings.filter(b=>epsOfB(c.lv,b).length).map(b=>chip("b",b.id,esc(b.zh),sp.b&&sp.b.id===b.id)).join("")}</div>`:""}
     <div class="fl">题型</div><div class="fch">${Object.entries(FREE_K).map(([v,l])=>chip("k",v,l,c.k===v)).join("")}</div>
     <div class="fl">难度</div><div class="fch">${Object.entries(FREE_D).map(([v,l])=>chip("d",v,l,c.d===v)).join("")}</div>
@@ -1789,13 +1795,13 @@ function freeDone(){ stopTimer(); bumpStreak(); save(); const c=IX.cfg, acc=IX.q
   stage.innerHTML=`${bubble("Lisa",acc>=.8?"Super!":acc>=.5?"Gut gemacht!":"Weiter üben!",`${IX.right}/${IX.qs.length} 题答对（${Math.round(acc*100)}%）· ${FREE_K[c.k]} · ${FREE_D[c.d]}`)}${miss.length?`<div class="card" style="text-align:left">${miss.map(v=>`<div>${esc(v.ans)} — ${esc(v.zh)}</div>`).join("")}<div class="note">这些词记进了错词本，回顾时会再出现</div></div>`:""}<div class="row"><button class="ghost" id="back">‹ 回首页</button><button id="set">换设置</button><button class="primary" id="again">再来一局</button></div>`;
   $("back").onclick=home; $("set").onclick=freePage; $("again").onclick=()=>freeRun(c); }
 function artQ(it){ const v=it.v, w=v.ans.replace(/^(der|die|das) /,"");
-  stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q">${pic(v)}<div class="word" style="font-size:30px">___ ${esc(w)}</div><div class="zh">${esc(v.zh)}</div></div><div class="opts">${["der","die","das"].map(a=>`<button class="opt" data-a="${a}">${a}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
-  $("back").onclick=ixBack; interBoard("Der, die oder das?",esc(w));
+  stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q">${pic(v)}<div class="hint">${esc(v.zh)}</div><div class="cloze" style="font-size:28px;overflow-wrap:anywhere"><u></u> ${esc(w)}</div></div><div class="opts three">${["der","die","das"].map(a=>`<button class="opt ${a}" data-a="${a}">${a}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
+  $("back").onclick=ixBack; interBoard("Der, die oder das?",esc(v.zh));
   stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const ok=b.dataset.a===v.g; stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===v.g) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); });
     $("fb").innerHTML=wordCard(v,ok?'<div class="ok">✓ 对</div>':`<div class="bad">✗ 是 ${esc(v.g)}</div>`,{noPic:true}); stage.querySelectorAll("#sp").forEach(x=>x.onclick=()=>play(v)); interBoard(esc(v.ans),esc(v.zh)); interNext(ok,cb=>play(v,cb),v); }); }
 function horQ(it){ const v=it.v, typed=!it.o;
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">${typed?"听写：听到什么写什么，名词带冠词":"听原声，选中文意思"}</div><button id="sp" class="spk" style="position:static;width:72px;height:72px;font-size:30px;margin:0 auto">🔊</button></div>${typed?`${typedBox()}<div class="row"><button class="primary" id="chk">确定</button></div>`:`<div class="opts">${it.o.map(o=>`<button class="opt" data-a="${esc(o.id)}">${esc(o.zh)}</button>`).join("")}</div>`}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
-  $("back").onclick=ixBack; interBoard("Hör zu","听一听"); $("sp").onclick=()=>play(v); play(v);
+  $("back").onclick=ixBack; interBoard("Hör zu",typed?"听写 · 名词带冠词":"听原声，选中文意思"); $("sp").onclick=()=>play(v); play(v);
   const fin=(ok,msg)=>{ $("fb").innerHTML=wordCard(v,msg); stage.querySelectorAll("#sp").forEach(x=>x.onclick=()=>play(v)); interBoard(esc(v.ans),esc(v.zh)); interNext(ok,cb=>play(v,cb),v); };
   if(typed){ const inp=wireKeys(), chk=()=>{ if(inp.disabled) return; const r=checkTyped(inp.value,v); if(r==="empty"){ toast("先写点什么"); return; }
       inp.disabled=true; stage.querySelectorAll("#chk,.keys button").forEach(x=>x.disabled=true);
