@@ -185,9 +185,35 @@ input[type=text]{font-family:var(--display);font-size:22px;width:100%;border:2px
 .cont .cv{width:64px;flex:none;border-radius:10px;overflow:hidden}.cont .cv .cover{border-radius:0}
 .cont b{display:block;font-family:var(--display);font-size:16px}.cont span{font-size:12px;opacity:.9}
 .eplist{display:grid;gap:8px}
+body:not(:has(#homebtn.hidden)) .gap{left:56px}
+.stamps{flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:16px 6px;margin:4px 0 12px;padding-top:6px}
+.stp{position:relative;padding:0;border:0;border-radius:0;background:none;box-shadow:none;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink);-webkit-tap-highlight-color:transparent}
+.stp:active{transform:none;box-shadow:none}.stp:active .sc{transform:scale(.93)}
+.stp .sc{position:relative;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;transition:transform .15s;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),transparent 60%),var(--sk,#E9DDBF);box-shadow:inset 0 0 0 3px rgba(255,255,255,.55),inset 0 0 0 5px var(--ring,rgba(34,48,74,.18)),0 3px 6px rgba(34,48,74,.12)}
+.stp .sc .ic{font-size:30px;line-height:1;filter:saturate(.85)}
+.stp .sc .no{position:absolute;top:7px;left:50%;translate:-50% 0;font-family:Georgia,serif;font-size:10px;font-style:normal;font-weight:700;letter-spacing:.06em;color:var(--ring,#22304A);opacity:.85;white-space:nowrap}
+.stp .ps{font-size:12px;letter-spacing:1px;color:#D99A00;line-height:1;height:12px}
+.stp .pt{font-family:var(--display);font-size:11.5px;font-weight:600;line-height:1.25;max-width:100%;padding:0 2px;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em}
+.stp.won .sc{rotate:var(--rot,-6deg)}
+.stp.won .sc::after{content:"\2713";position:absolute;right:-2px;bottom:2px;width:22px;height:22px;border-radius:50%;background:var(--ring);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;rotate:calc(var(--rot,-6deg) * -1);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.stp.new .sc{background:transparent;box-shadow:none;border:2px dashed rgba(34,48,74,.25)}
+.stp.new .sc .ic{opacity:.35;filter:grayscale(1)}.stp.new .pt{color:var(--muted);font-weight:500}.stp.new .sc .no{color:var(--muted)}
+.stp.prog .sc{background:#F6EBCF;box-shadow:inset 0 0 0 4px var(--taxi),0 3px 6px rgba(34,48,74,.12)}
+.stp.cur .sc{background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.6),transparent 60%),#FFE7A3;box-shadow:inset 0 0 0 3px rgba(255,255,255,.55),inset 0 0 0 5px var(--taxi),0 3px 6px rgba(34,48,74,.12);width:84px;height:84px;margin-top:-4px;animation:stpulse 1.8s ease-in-out infinite}
+.stp.cur .sc .no{color:#B47800}
+.stp.cur .nico{position:absolute;top:-16px;right:4px;width:38px;height:38px;z-index:2;animation:stbob 1.4s ease-in-out infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25));pointer-events:none}
+.stp.cur .nico img{width:100%;height:100%;border-radius:50%;border:2px solid #fff;object-fit:cover;background:#fff}
+.stp.cur .pt{color:#B47800}
+@keyframes stpulse{50%{box-shadow:inset 0 0 0 3px rgba(255,255,255,.55),inset 0 0 0 5px var(--taxi),0 0 0 9px rgba(255,180,0,.18)}}
+@keyframes stbob{50%{transform:translateY(-4px)}}
+body.imm .stage:has(.stamps){max-height:min(64vh,calc(100vh - 230px));max-height:min(64dvh,calc(100dvh - 230px))}
+.ptop{position:sticky;top:0;z-index:6;flex:none;display:flex;align-items:center;gap:10px;padding:6px 0 10px;background:var(--parch) var(--grain)}
+.ptop .bk{flex:none;width:40px;height:40px;border-radius:50%;padding:0;font-size:20px;display:grid;place-items:center}
+.ptop h2{flex:1;margin:0;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptop small{display:block;font-size:12px;font-weight:400;color:var(--muted);font-family:inherit}
 .ep .cv{width:54px;flex:none;border-radius:10px;overflow:hidden}.ep .cv .cover{border-radius:0}
 .grammar-html{font-size:15px;line-height:1.6;text-align:left}.lk-fold{max-height:96px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}
-.homebtn{position:absolute;right:10px;top:10px;z-index:6;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.85);border:0;box-shadow:0 2px 6px rgba(0,0,0,.15);font-size:18px;display:grid;place-items:center;padding:0}
+.homebtn{position:absolute;left:10px;top:10px;z-index:6;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.85);border:0;box-shadow:0 2px 6px rgba(0,0,0,.15);font-size:18px;display:grid;place-items:center;padding:0}
 .grammar-html *{font-size:15px!important;line-height:1.6!important;text-wrap:initial}.grammar-html h1{display:none}.grammar-html h2,.grammar-html h3,.grammar-html h4{font-size:17px!important;margin:10px 0 4px;color:var(--taxi);font-family:var(--display)}.grammar-html h3,.grammar-html h4{color:var(--ink)}.grammar-html small,.grammar-html sup,.grammar-html sub{font-size:12px!important}
 .grammar-html em{color:var(--der);font-style:normal}.grammar-html table{border-collapse:collapse;width:100%;margin:6px 0}.grammar-html td{border:1px solid var(--line);padding:4px 8px;font-size:14px}
 .grammar-html p{margin:6px 0}.grammar-html figure{margin:6px 0}.grammar-html img{max-width:100%;border-radius:10px}
@@ -399,6 +425,22 @@ body.imm .lifted{display:none!important}
 .fx-bag{position:absolute;left:5%;bottom:34px;max-width:42%;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:7px 11px;background:rgba(246,235,207,.94);border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,.2);font-size:11px;line-height:1.35;color:#22304A;rotate:-2deg;animation:photoin .5s ease-out}
 .fx-bag .ic{font-size:20px;letter-spacing:1px}
 body.imm[data-m=lobby] .stage{max-height:min(46vh,calc(100vh - 300px));max-height:min(46dvh,calc(100dvh - 300px))}
+.bigcont{display:flex;align-items:center;gap:12px;width:100%;background:var(--taxi);color:#fff;border:0;border-radius:18px;padding:12px 14px;text-align:left;box-shadow:0 5px 0 rgba(0,0,0,.2);animation:contpulse 2.4s ease-in-out infinite}
+.bigcont .cv .cover{width:64px;height:64px;border-radius:12px}
+.bigcont .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.bigcont small{font-size:12px;opacity:.85;letter-spacing:.04em}.bigcont b{font-family:var(--display);font-size:20px;line-height:1.15}.bigcont .t>span{font-size:13px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bigcont .pl{width:44px;height:44px;flex:none;border-radius:50%;background:#fff;color:var(--taxi);display:grid;place-items:center;font-size:18px;padding-left:3px}
+@keyframes contpulse{50%{transform:translateY(-2px);box-shadow:0 7px 0 rgba(0,0,0,.2)}}
+#rail{position:fixed;left:0;right:0;top:calc(118px + env(safe-area-inset-top,0px));max-width:480px;margin:0 auto;z-index:3;pointer-events:none}
+#rail[hidden]{display:none}
+#rail .rl,#rail .rr{position:absolute;top:0;display:flex;flex-direction:column;gap:10px}
+#rail .rl{left:10px}#rail .rr{right:10px}
+#rail .ri{pointer-events:auto;position:relative;width:52px;padding:0;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;color:#22304A}
+#rail .ri .e{width:46px;height:46px;border-radius:50%;background:rgba(246,235,207,.95);box-shadow:0 4px 10px rgba(0,0,0,.22);display:grid;place-items:center;font-size:22px}
+#rail .ri b{font-size:10.5px;font-weight:600;padding:0 5px;border-radius:6px;background:rgba(246,235,207,.85)}
+#rail .ri .bd{position:absolute;top:-3px;right:0;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#E0533D;color:#fff;font-size:11px;font-style:normal;font-weight:700;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+#rail .ri.lv .e{font-family:var(--display);font-weight:800;font-size:17px;color:#fff;background:conic-gradient(var(--taxi) var(--p),rgba(34,48,74,.55) 0);border:3px solid rgba(246,235,207,.95)}
+#rail .ri:active .e{transform:scale(.92)}
 body.imm[data-m=desk] .stage>.card>.word{display:none}
 @media (prefers-reduced-motion:reduce){.fx-photo{animation:none}}
 .fx-phone .notch{position:absolute;left:50%;top:12px;width:34%;height:6px;transform:translateX(-50%);border-radius:3px;background:#0d1018;z-index:1}
@@ -500,7 +542,7 @@ body.imm[data-m=inter] .stage>.q>.zh,body.imm[data-m=inter] .stage>.q>.hint,body
 <div class="toast" id="toast"></div>
 <script>/* 加载太久时给一个重试按钮：主程序跑起来后 #loading 会被替换掉，这里就什么也不做 */
 setTimeout(function(){ var l=document.getElementById("loading"); if(l&&!document.getElementById("retry")) l.insertAdjacentHTML("beforeend",'<p class="tap">好像有点慢…</p><button class="primary" id="retry" onclick="location.reload()">🔄 重新加载</button>'); },15000);</script>
-<script>document.addEventListener("DOMContentLoaded",()=>{ const hb=document.getElementById("homebtn"); hb.onclick=()=>{ if(typeof stopTimer==="function") stopTimer(); home(); }; new MutationObserver(()=>{ /* 任何非首页都显示 */ if(!document.getElementById("bk")) hb.classList.remove("hidden"); }).observe(document.getElementById("stage"),{childList:true}); });</script>
+<script>document.addEventListener("DOMContentLoaded",()=>{ const hb=document.getElementById("homebtn"); hb.onclick=()=>{ if(typeof stopTimer==="function") stopTimer(); home(); }; new MutationObserver(()=>{ /* 任何非首页都显示 */ if(!document.getElementById("homeMark")) hb.classList.remove("hidden"); if(typeof railSync==="function") railSync(); }).observe(document.getElementById("stage"),{childList:true}); });</script>
 
 <script>
 /* ---------- 数据：DW Nicos Weg A1 第 1–10 集官方 Wortschatz + 视频台词 ---------- */
@@ -853,17 +895,22 @@ function home(){
   townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Weg"; hearts(null);
   const due=dueList(), mtotal=Object.values(S.mist).filter(m=>!m.done).length;
   const nx=EPISODES.find(e=>!epState(e).won);
-  stage.innerHTML=`${nx?`<button class="ep" id="cont" style="border-color:var(--taxi);background:var(--part)"><span class="n">▶️</span><span class="t"><b>继续冒险 · ${esc(nx.lv)} 第 ${nx.n} 集</b><span>${esc(nx.name)} · ${esc(nx.zh)}</span></span><span class="go">出发 ›</span></button>`:""}${wonN()>bkWon()?`<button class="ep" id="bkup" style="border-color:var(--taxi);background:var(--part)"><span class="n">📋</span><span class="t"><b>备份一下进度</b><span>又通关了！点一下复制进度码，发到微信“文件传输助手”或备忘录存好，换手机、删图标都不怕</span></span><span class="go">复制 ›</span></button>`:""}
-    ${moodToday()?"":`<button class="ep" id="mood" style="border-color:var(--taxi)"><span class="n">🙂</span><span class="t"><b>Wie geht’s dir?</b><span>Emma 问你今天怎么样，用德语答一句</span></span><span class="go">答 ›</span></button>`}
-    <button class="ep" id="diary" ${due.length?'':'disabled'} style="${due.length?'border-color:var(--taxi)':''}"><span class="n">☀️</span><span class="t"><b>今日回顾</b><span>${due.length?`${due.length} 个词到期，Emma 等着考你`:mtotal?`今天没有到期的词 · 已学 ${mtotal} 个，掌握 ${Object.values(S.mist).filter(m=>m.done).length} 个`:"学过的词会在 1 → 3 → 7 → 14 → 30 天后回来考你"}</span></span><span class="go">${due.length?'开始 ›':''}</span></button>
-    <button class="ep" id="book"><span class="n">📔</span><span class="t"><b>我的小本子</b><span>${(S.book||[]).length?`${(S.book||[]).length} 句关于你自己的话`:"通关一集，攒下几句关于你自己的话"}</span></span><span class="go">${(S.profile||{}).name?"":"填档案 ›"}</span></button>
-    <div class="brand" style="margin-top:6px">等级</div>
-    <div class="map">${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="lvcard" data-lv="${l.id}"><span class="big">${l.id}</span><span class="t" style="flex:1;min-width:0"><b>${esc(l.name)}</b><span>${l.episodes.length} 集 · 通关 ${won} · ★${starSum(l.episodes)}/${l.episodes.length*3}</span><div class="bar"><i style="width:${l.episodes.length?won/l.episodes.length*100:0}%"></i></div></span><span class="go">›</span></button>`; }).join("")}</div>
-    <p class="tap">词汇与原声：DW Nicos Weg 官方 Wortschatz · ${cloud.ready?"进度已同步到云端":"进度存在本机"} · <a href="#" id="bk" style="color:var(--taxi)">备份 / 恢复进度</a> · <a href="#" id="rl" style="color:var(--taxi)">🔄 刷新</a></p>`;
-  $("bk").onclick=e=>{ e.preventDefault(); backupPage(); }; $("rl").onclick=e=>{ e.preventDefault(); location.reload(); };
-  stage.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>townView(b.dataset.lv)); $("diary").onclick=()=>diary(false); $("book").onclick=bookPage; const mb=$("mood"); if(mb) mb.onclick=askMood; const cb=$("cont"); if(cb) cb.onclick=()=>episode(nx.key);
-  const bu=$("bkup"); if(bu) bu.onclick=async()=>{ if(await copyText(backupText())){ markBackup(); home(); toast("已复制，去微信粘贴保存吧"); } else backupPage(); };
+  const stepN=nx?epState(nx).done:0;
+  stage.innerHTML=`<i id="homeMark" hidden></i>${nx?`<button class="bigcont" id="cont"><span class="cv">${coverOf(nx)}</span><span class="t"><small>${stepN?"继续":"下一集"} · ${esc(nx.lv)} 第 ${nx.n} 集</small><b>${esc(nx.name)}</b><span>${esc(nx.zh)}</span></span><span class="pl">▶</span></button>`
+      :`<button class="bigcont" id="cont"><span class="t"><small>全部通关 🎉</small><b>去地图复习</b><span>每集都可以重玩刷星</span></span><span class="pl">▶</span></button>`}
+    <p class="tap" style="margin:8px 0 0">${cloud.ready?"进度已同步到云端":"进度存在本机"} · 词汇与原声 DW Nicos Weg</p>`;
+  const cb=$("cont"); if(cb) cb.onclick=()=>nx?episode(nx.key):townView(LEVELS[LEVELS.length-1].id);
+  const r=$("rail")||document.body.appendChild(Object.assign(document.createElement("div"),{id:"rail"})), bk=wonN()>bkWon(), bookN=(S.book||[]).length;
+  const ic=(id,e,lb,badge)=>`<button class="ri" id="${id}" aria-label="${lb}"><span class="e">${e}</span><b>${lb}</b>${badge?`<i class="bd">${badge}</i>`:""}</button>`;
+  r.innerHTML=`<div class="rl">${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="ri lv" data-lv="${l.id}" aria-label="${esc(l.name)}" style="--p:${l.episodes.length?won/l.episodes.length*100:0}%"><span class="e">${l.id}</span><b>${won}/${l.episodes.length}</b></button>`; }).join("")}</div>
+    <div class="rr">${ic("r-diary","☀️","回顾",due.length||"")}${ic("r-book","📔","本子",bookN?"":"•")}${ic("r-mood","🙂","心情",moodToday()?"":"•")}${ic("r-bk","💾","备份",bk?"!":"")}${ic("r-rl","🔄","刷新","")}</div>`;
+  r.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>townView(b.dataset.lv));
+  $("r-diary").onclick=()=>due.length?diary(false):toast(mtotal?`今天没有到期的词 · 已学 ${mtotal} 个`:"学过的词会在 1→3→7→14→30 天后回来考你");
+  $("r-book").onclick=bookPage; $("r-mood").onclick=askMood; $("r-rl").onclick=()=>location.reload();
+  $("r-bk").onclick=async()=>{ if(bk&&await copyText(backupText())){ markBackup(); home(); toast("进度码已复制，去微信粘贴保存吧"); } else backupPage(); };
+  railSync();
 }
+function railSync(){ const r=$("rail"); if(r) r.hidden=!stage.querySelector("#homeMark"); }
 function coverOf(e,cls){
   const fb=`data-e="${e.item.e}"`; /* 图片加载失败时，封面显示这一集物品的 emoji */
   if(e.thumb) return `<div class="cover c1 ${cls||""}" ${fb}><img src="${esc(e.thumb)}" alt="" loading="lazy" onerror="this.remove()"></div>`;
@@ -900,7 +947,7 @@ function backupPage(){ E=null; theme(3); target(); setScene(6,70,false,"📦"); 
 let TV={lv:null,sel:null,sc:.6,tx:0,ty:0,drag:null,pinch:null,raf:null,swiped:0};
 const townEl=()=>$("town");
 function townView(lv,selId){
-  const T=TOWNS[lv], L=levelOf(lv); if(!T||!L) return levelMap(lv);
+  const T=TOWNS[lv], L=levelOf(lv); if(!T||!T.bg||!L) return levelMap(lv);   /* 没有水彩城市图的等级（A2）直接进闯关路线 */
   stopTimer(); E=null; DIARY=false; CUR_LV=lv; TV.lv=lv; const bg=!!T.bg; document.body.classList.remove("imm");
   const tw=townEl(); tw.hidden=false; tw.classList.toggle("bgm",bg); document.body.style.overflow="hidden";
   tw.querySelectorAll(".t-modal").forEach(x=>x.remove());
@@ -975,12 +1022,12 @@ function townSelect(id,quiet){
   const n=$("townNico"); if(T.bg){ n.style.left=(b.x-b.w*.32)+"px"; n.style.top=(b.y+b.h*.1)+"px"; n.style.zIndex=2; } else { n.style.left=(b.x+b.w*.42)+"px"; n.style.top=(b.y+16)+"px"; n.style.zIndex=b.y+1; }
   const eps=epsOfB(TV.lv,b), nx=nextEpOf(TV.lv);
   const groups=b.ch.map(c=>({c,name:chapterName(TV.lv,c),eps:eps.filter(e=>e._ch===c)})).filter(g=>g.eps.length);
-  const row=e=>{ const st=epState(e), isNext=nx&&nx.key===e.key; return `<button class="ep" data-ep="${e.key}" style="${isNext?'border-color:var(--taxi)':''}"><span class="cv">${coverOf(e)}</span><span class="t"><b>${e.n} · ${esc(e.name)}</b><span>${st.won?starStr(starsOf(e))+' 已通关':st.done?`进行中 ${st.done}/5`:esc(e.zh||"")}</span></span><span class="go">${st.won?'★':isNext?'▶':''}</span></button>`; };
   const sh=$("townSheet"); sh.classList.remove("min");
   sh.innerHTML=`<div class="t-grip" id="townGrip"></div><div class="t-head" id="townHead">${tThumb(b,64)}<div style="flex:1;min-width:0"><b>${esc(b.zh)} ${esc(b.name)}</b><span>${eps.length} 集 · 通关 ${eps.filter(e=>epState(e).won).length}${bState(TV.lv,b)==="later"?" · 还没到这里，也可以先看看":""}</span></div></div>
-    ${groups.length?`<div class="eplist">${groups.map(g=>`<div class="chap"><b>${g.c===0?"起点":g.c}</b>${esc(g.name)}</div>`+g.eps.map(row).join("")).join("")}</div>`:`<div class="tap">这里还没有课</div>`}`;
+    ${groups.length?groups.map(g=>`<div class="chap"><b>${g.c===0?"起点":g.c}</b>${esc(g.name)}</div>`+pathHTML(g.eps,nx&&nx.key)).join(""):`<div class="tap">这里还没有课</div>`}`;
   sh.scrollTop=0;
   sh.querySelectorAll("[data-ep]").forEach(x=>x.onclick=()=>{ townHide(); episode(x.dataset.ep); });
+  const cn=sh.querySelector(".stp.cur"); if(cn) setTimeout(()=>{ sh.scrollTop=cn.offsetTop>sh.clientHeight*.55?cn.offsetTop-sh.clientHeight*.35:0; },30);
   $("townGrip").onclick=$("townHead").onclick=()=>townSheetMin(!sh.classList.contains("min"));
   if(!quiet) townFocus(b,true);
 }
@@ -1027,20 +1074,22 @@ function townZoom(cx,cy,k){ const ns=Math.min(TV.max||1.3,Math.max(TV.min||.35,T
 /* ---------- 全部集数（列表）：地图右上角「☰ 全部集数」进来 ---------- */
 function levelMap(lv,keep){
   const L=LEVELS.find(x=>x.id===lv); CUR_LV=lv; stopTimer(); E=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Weg "+lv; hearts(null);
-  const cur=L.episodes.find(e=>!epState(e).won)||L.episodes[L.episodes.length-1];
-  const stOf=e=>{ const st=epState(e); return st.won?starStr(starsOf(e))+' 已通关':st.done?`进行中 ${st.done}/5`:esc(e.zh||""); };
-  const row=e=>{ const st=epState(e), isCur=cur&&cur.key===e.key; return `<button class="ep" data-ep="${e.key}" style="${isCur?'border-color:var(--taxi)':''}"><span class="cv">${coverOf(e)}</span><span class="t"><b>${e.n} · ${esc(e.name)}</b><span>${stOf(e)}</span></span><span class="go">${st.won?'★':isCur?'▶':''}</span></button>`; };
+  const nx=L.episodes.find(e=>!epState(e).won), won=L.episodes.filter(e=>epState(e).won).length, hasMap=!!(TOWNS[lv]&&TOWNS[lv].bg);
   // 按章节分组（PDF 里的 "5 | 物品 | …"，缺失时沿用上一集）；整个等级都没有章节信息时每 4 集一组
   const hasCh=L.episodes.some(e=>e.ch);
   const groups=[]; L.episodes.forEach((e,i)=>{ const key=hasCh?e._ch:Math.floor(i/4); let g=groups[groups.length-1]; if(!g||g.key!==key){ g={key,name:hasCh?chapterName(lv,key):`第 ${key+1} 站`,eps:[]}; groups.push(g); } g.eps.push(e); });
   const chapHead=g=>`<div class="chap"><b>${hasCh&&g.key===0?"起点":g.key}</b>${esc(g.name)}</div>`;
-  stage.innerHTML=`<div class="row" style="align-items:center"><button class="ghost" id="back">‹ 地图</button><h2 style="flex:1;text-align:center;font-size:20px;white-space:nowrap">${esc(L.name)}</h2></div>
-    ${cur?`<button class="cont" id="cont"><span class="cv">${coverOf(cur)}</span><span style="flex:1;min-width:0"><b>▶ 继续 · 第 ${cur.n} 集 ${esc(cur.name)}</b><span>${esc(cur.zh||"")}</span></span></button>`:""}
-    <div class="eplist">${groups.map(g=>chapHead(g)+g.eps.map(row).join("")).join("")}</div>`;
-  $("back").onclick=()=>townView(lv);
-  stage.querySelectorAll("[data-ep]").forEach(b=>b.onclick=()=>episode(b.dataset.ep)); const c=$("cont"); if(c) c.onclick=()=>episode(cur.key);
-  const el=stage.querySelector(".cur,[style*='--taxi']"); if(el&&!keep) setTimeout(()=>el.scrollIntoView({block:"center",behavior:"instant"}),30);
+  stage.innerHTML=`<div class="ptop"><button class="ghost bk" id="back" aria-label="返回">‹</button><h2>${esc(L.name)}<small>通关 ${won}/${L.episodes.length} · ★${starSum(L.episodes)}/${L.episodes.length*3}</small></h2></div>
+    ${groups.map(g=>chapHead(g)+pathHTML(g.eps,nx&&nx.key)).join("")}`;
+  $("back").onclick=()=>hasMap?townView(lv):home();
+  stage.querySelectorAll("[data-ep]").forEach(b=>b.onclick=()=>episode(b.dataset.ep));
+  const el=stage.querySelector(".stp.cur"); if(el&&!keep) setTimeout(()=>el.scrollIntoView({block:"center",behavior:"instant"}),30);
 }
+/* 护照印章墙：每集一个水彩邮戳（物品图标 + 编号）；通关盖章，下一集 Nico 站在上面 */
+const STAMP_INK=[["#E8C7C0","#B8574A"],["#C9DCE8","#3F6E8E"],["#D5E3C6","#5B7F3E"],["#EBD9B5","#A3741F"],["#DCCFE6","#6E5590"],["#C8E2DD","#2F7A70"]];
+function pathHTML(eps,curKey){ return `<div class="stamps">${eps.map(e=>{ const st=epState(e), cur=e.key===curKey, s=starsOf(e), [sk,ring]=STAMP_INK[(e.n-1)%STAMP_INK.length];
+    const cls=cur?"cur":st.won?"won":st.done?"prog":"new", rot=((e.n*37)%13)-6;
+    return `<button class="stp ${cls}" data-ep="${e.key}" style="--sk:${sk};--ring:${ring};--rot:${rot}deg" aria-label="第 ${e.n} 集 ${esc(e.name)}">${cur?`<span class="nico">${avHTML("Nico")}</span>`:""}<span class="sc"><i class="no">Nº ${e.n}</i><span class="ic">${e.item.e}</span></span><span class="ps">${st.won?starStr(s):st.done&&!cur?`${st.done}/5`:""}</span><span class="pt">${esc(e.name)}</span></button>`; }).join("")}</div>`; }
 function episode(key){
   E=EPISODES.find(e=>e.key===key); CUR_LV=E.lv; LV=VOCAB.filter(v=>v.l===E.id); stopTimer(); theme(E.n); target(E.taxi?"🚕":E.item.e); setScene(6,70,false); $("gapLbl").textContent=`第 ${E.n} 集 · ${E.name}`; hearts(null); const ep=EP();
   const done=SCENES.filter(([k])=>ep[k]).length;
