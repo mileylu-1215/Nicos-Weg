@@ -698,6 +698,7 @@ setTimeout(function(){ var l=document.getElementById("loading"); if(l&&!document
 
 <script src="data/vocab.js?v=d62796cb"></script>
 <script src="data/levels.js?v=d62796cb"></script>
+<script src="data/tts.js?v=d62796cb" onerror="window.TTS=''"></script>
 <script>
 /* ---------- 数据：词表和剧集目录在 data/*.js 里，先于本脚本加载 ---------- */
 const BUILD="d62796cb";
@@ -915,7 +916,25 @@ function voiceFor(who){ const vs=deVoices(); if(!vs.length) return null; const s
 function voicePitch(who,v){ const s=sexOf(who); if(v&&/siri/i.test(v.name+" "+v.voiceURI)) return 1;
   if(s==="m"&&!(v&&MALV.test(v.name+" "+v.voiceURI))) return .7;   /* 手机上找不到男声时，男角色压低音调 */
   return s==="k"?1.35:s==="n"&&v&&/anna|yannick/i.test(v.name)?1.15:1; }
-function sayAs(who,text,rate,cb){ const v=voiceFor(who); speakThen(text,cb,{rate:rate||.95,voice:v,pitch:voicePitch(who,v)}); }
+function synthSay(who,text,rate,cb){ const v=voiceFor(who); speakThen(text,cb,{rate:rate||.95,voice:v,pitch:voicePitch(who,v)}); }
+/* 预生成的对话朗读 tts/<哈希>.mp3（build/tts.py 用微软神经网络声音生成，男女声固定）；没有这句的文件或播不出来时退回手机自带声音 */
+const TTSSET=new Set(String(window.TTS||"").split(" ").filter(Boolean)), TAU=new Audio(); TAU.preload="auto"; let TAU_TOK=0;
+const ttsNorm=t=>String(t||"").replace(/<[^>]+>/g,"").replace(/\*\*/g,"").replace(/\s+/g," ").trim();
+function ttsKey(who,t){ const s=who+"|"+ttsNorm(t); let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return ("0000000"+h.toString(16)).slice(-8); }
+function ttsStop(){ TAU_TOK++; TAU.onended=TAU.onerror=null; try{ TAU.pause(); }catch(e){} }
+function ttsPlay(who,text,rate,cb){ const h=TTSSET.size&&ttsKey(who,text); if(!h||!TTSSET.has(h)) return false;
+  ttsStop(); const tok=TAU_TOK; let done=false;
+  const fin=ok=>{ if(done||tok!==TAU_TOK) return; done=true; clearTimeout(tm); TAU.onended=TAU.onerror=null; ok?cb&&cb():synthSay(who,text,rate,cb); };
+  const tm=setTimeout(()=>fin(true),Math.max(5000,ttsNorm(text).length*160/(rate||.95)+3000));
+  TAU.onended=()=>fin(true); TAU.onerror=()=>fin(false); TAU.src=`tts/${h}.mp3`; TAU.playbackRate=Math.min(1,(rate||.95)/.95);
+  const p=TAU.play(); if(p&&p.catch) p.catch(()=>fin(false)); return true; }
+/* 第一次点屏幕时用一段静音解锁这个播放器，之后自动连播不会被 iOS 拦下 */
+document.addEventListener("touchend",function unlock(){ document.removeEventListener("touchend",unlock,true); if(TAU.src) return;
+  const b=new Uint8Array(46), dv=new DataView(b.buffer), w=(o,s)=>[...s].forEach((c,i)=>b[o+i]=c.charCodeAt(0));
+  w(0,"RIFF"); dv.setUint32(4,38,true); w(8,"WAVEfmt "); dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true); dv.setUint32(24,8000,true); dv.setUint32(28,16000,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true); w(36,"data"); dv.setUint32(40,2,true);
+  try{ TAU.src=URL.createObjectURL(new Blob([b],{type:"audio/wav"})); const p=TAU.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} },true);
+try{ const sc=speechSynthesis.cancel.bind(speechSynthesis); speechSynthesis.cancel=()=>{ ttsStop(); sc(); }; }catch(e){}
+function sayAs(who,text,rate,cb){ if(!ttsPlay(who,text,rate||.95,cb)) synthSay(who,text,rate,cb); }
 /* 首次进入时 iOS 的声音列表可能还是空的，提前取一次 */
 try{ speechSynthesis.getVoices(); }catch(e){}
 /* 声音检测：网址加 ?voices 时列出本机网页能用的德语声音和角色分配，点一行试听 */
@@ -1569,6 +1588,7 @@ function intro(){
   const say=(d,cb)=>{ const txt=chatPlain(d); let fired=false, safe=null; const go=()=>{ if(fired) return; fired=true; clearTimeout(safe); if(alive()) cb(); };
     if(P.chatMute||!txt){ CH.t=setTimeout(go,Math.max(1200,txt.length*55)); return; }
     safe=setTimeout(go,Math.max(4000,txt.length*120));
+    try{ speechSynthesis.cancel(); }catch(e){} if(ttsPlay(d.w,txt,.9,go)){ clearTimeout(safe); return; }
     try{ const u=new SpeechSynthesisUtterance(txt), v=voiceFor(d.w); u.lang="de-DE"; u.rate=.9; if(v) u.voice=v; u.pitch=voicePitch(d.w,v); u.onend=go; u.onerror=go; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ go(); } };
   const finish=()=>{ CH.done=true; prog("intro",IN.length); $("next").classList.remove("hidden"); $("chatPause").classList.add("hidden");
     $("chatAll").textContent="从头播放"; list.querySelectorAll(".cmsg.now").forEach(x=>x.classList.remove("now")); updFade(); };
@@ -1944,6 +1964,7 @@ const diaryAll=e=>((e.diary&&e.diary.lines)||[]).map(l=>l.gap?diaryPlain(l):l.de
 /* 逐句朗读，一句读完再读下一句；再次调用会打断上一轮 */
 function sayLines(ls){ const tok=sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} let k=0;
   const nx=()=>{ if(tok!==sayLines.t||k>=ls.length) return; const t=ls[k++]; let done=false; const go=()=>{ if(done) return; done=true; nx(); };
+    if(ttsPlay("Nico",t,.9,go)) return;
     try{ const u=new SpeechSynthesisUtterance(t), v=voiceFor("Nico"); u.lang="de-DE"; u.rate=.9; if(v) u.voice=v; u.pitch=voicePitch("Nico",v); u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
   nx(); }
 function diaryHTML(l,fill){ let h=esc(l.de).replace(/\*\*(.+?)\*\*/g,(m,x)=>`<button class="sl" data-s="${esc(slKey(x))}">${x}</button>`);
