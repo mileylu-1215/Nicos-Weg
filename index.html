@@ -881,14 +881,30 @@ function speakThen(t,cb,o){ o=o||{}; const txt=String(t||""); let done=false;
   const tm=setTimeout(fin,Math.max(2500,txt.length*110/(o.rate||.9)+800));
   try{ const u=new SpeechSynthesisUtterance(txt); u.lang="de-DE"; u.rate=o.rate||.9; if(o.voice) u.voice=o.voice; if(o.pitch) u.pitch=o.pitch;
     u.onend=fin; u.onerror=fin; if(!o.queue) speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ fin(); } }
-/* 角色声音：按性别挑德语女声 / 男声，小孩调高音调；设备只有一个德语声音时都用它。没列的角色默认女声 */
-const SEX={Nico:"m",Lisa:"f",Emma:"k",Lotte:"k",Max:"m",Taxifahrer:"m",Taxifahrerin:"f",Mann:"m",Frau:"f",Mutter:"f",Jürgen:"m",Inge:"f",Tarek:"m",Yara:"f",Selma:"f",Sebastian:"m",Nina:"f",Radio:"m"};
+/* 角色声音：女角色 Anna（Premium 优先），男角色 Yannick（Enhanced 优先），小孩 / 广播 / 旁白轮流用 Siri 声音；
+   网页拿不到 Siri 时退回其他德语声音，再不行用 Anna 调音高 */
+const SEX={Nico:"m",Lisa:"f",Emma:"k",Lotte:"k",Max:"m",Inge:"f",Tarek:"m",Selma:"f",Yara:"f",Pepe:"m",Sebastian:"m",Nina:"f",Jacques:"m",Jürgen:"m",Ibrahim:"m",Nawin:"m",Hauke:"m",Sarah:"f",Yanis:"m",Aya:"f",Ulla:"f",Dennis:"m",Wolfgang:"m",Julius:"m",Marvin:"m",Martina:"f",Tom:"m",Model:"f",
+  Taxifahrer:"m",Mann:"m",Kunde:"m",Verkäufer:"m",Gast:"m",Fahrgast:"m",Kursteilnehmer:"m",Investor:"m",Polizei:"m",Vater:"m",Frau:"f",Mutter:"f",Tante:"f","Mutter Von Lotte":"f",Sprechstundenhilfe:"f",Moderatorin:"n",Radio:"n",Mailbox:"n",Flughafen:"n"};
+const sexOf=w=>{ w=String(w||""); if(SEX[w]) return SEX[w]; if(/^(Frau|Mutter|Tante)\b|[a-zäöü]in$/.test(w)) return "f"; if(/^(Herr|Vater)\b/.test(w)) return "m"; return "n"; };
 let DEV=null; try{ speechSynthesis.onvoiceschanged=()=>{ DEV=null; }; }catch(e){}
 function deVoices(){ if(DEV&&DEV.length) return DEV; try{ DEV=speechSynthesis.getVoices().filter(v=>/^de([-_]|$)/i.test(v.lang)); }catch(e){ DEV=[]; } return DEV; }
+const vq=v=>/premium/i.test(v.voiceURI+v.name)?3:/enhanced|erweitert/i.test(v.voiceURI+v.name)?2:1;
+const bestNamed=(vs,re)=>vs.filter(v=>re.test(v.name)).sort((a,b)=>vq(b)-vq(a))[0]||null;
 const FEMV=/anna|helena|petra|marlene|vicki|katja|hedda|sabine|female|weiblich/i, MALV=/martin|markus|yannick|hans|stefan|conrad|\bmale\b|männlich/i;
-function voiceFor(who){ const vs=deVoices(); if(!vs.length) return null; const m=(SEX[who]||"f")==="m", want=m?MALV:FEMV, pool=vs.filter(v=>want.test(v.name)&&!(m?FEMV:MALV).test(v.name)), list=pool.length?pool:vs;
-  let h=0; for(const c of String(who)) h=(h*31+c.charCodeAt(0))|0; return list[Math.abs(h)%list.length]; }
-function sayAs(who,text,rate,cb){ speakThen(text,cb,{rate:rate||.95,voice:voiceFor(who),pitch:SEX[who]==="k"?1.35:1}); }
+function voiceFor(who){ const vs=deVoices(); if(!vs.length) return null; const s=sexOf(who);
+  let h=0; for(const c of String(who)) h=(h*31+c.charCodeAt(0))|0; const pick=l=>l[Math.abs(h)%l.length];
+  if(s==="f"||s==="m"){ const re=s==="f"?/anna/i:/yannick/i, pool=vs.filter(v=>(s==="f"?FEMV:MALV).test(v.name)); return bestNamed(vs,re)||pick(pool.length?pool:vs); }
+  const siri=vs.filter(v=>/siri/i.test(v.name+" "+v.voiceURI)); if(siri.length) return pick(siri);
+  const other=vs.filter(v=>!/anna|yannick/i.test(v.name)); return other.length?pick(other):bestNamed(vs,/anna/i)||vs[0]; }
+function voicePitch(who,v){ const s=sexOf(who); if(v&&/siri/i.test(v.name+" "+v.voiceURI)) return 1; return s==="k"?1.35:s==="n"&&v&&/anna|yannick/i.test(v.name)?1.15:1; }
+function sayAs(who,text,rate,cb){ const v=voiceFor(who); speakThen(text,cb,{rate:rate||.95,voice:v,pitch:voicePitch(who,v)}); }
+/* 声音检测：网址加 ?voices 时列出本机网页能用的德语声音和角色分配，点一行试听 */
+if(/[?&]voices\b/.test(location.search)) setTimeout(function vlist(){ DEV=null; const vs=deVoices(); if(!vs.length&&!(vlist.n=(vlist.n||0)+1>8)) return setTimeout(vlist,500);
+  const box=document.createElement("div"); box.style.cssText="position:fixed;inset:0;z-index:9999;overflow:auto;background:#fff;color:#222;font:14px/1.5 -apple-system,sans-serif;padding:16px";
+  const who=["Nico","Lisa","Emma","Radio"].map(w=>{ const v=voiceFor(w); return `${w} → ${v?esc(v.name):"(无)"}`; }).join("<br>");
+  box.innerHTML=`<b>网页可用的德语声音（${vs.length} 个）</b><br>${vs.map((v,i)=>`<div data-i="${i}" style="padding:6px 0;border-bottom:1px solid #ddd">${esc(v.name)}<br><small>${esc(v.voiceURI)}</small></div>`).join("")}<p><b>角色分配</b><br>${who}</p><button style="font-size:16px;padding:8px 16px">关闭</button>`;
+  box.onclick=e=>{ const r=e.target.closest("[data-i]"); if(r){ const u=new SpeechSynthesisUtterance("Hallo, ich bin Nico. Wie geht es dir?"); u.lang="de-DE"; u.voice=vs[+r.dataset.i]; speechSynthesis.cancel(); speechSynthesis.speak(u); } else if(e.target.tagName==="BUTTON") box.remove(); };
+  document.body.appendChild(box); },800);
 /* 按顺序念几句台词（每句用角色的声音）；离开画面（leaveScene 会把 sayLines.t 加一）或重新开念时，旧的那一串自动停 */
 function sayChain(ds,rate,gap,cb,each){ const tok=sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} let k=0;
   const nx=()=>{ if(tok!==sayLines.t) return; if(k>=ds.length) return cb&&cb(); const i=k++; if(each) each(i); sayAs(ds[i].w,ds[i].de,rate,()=>setTimeout(nx,gap)); }; nx(); return tok; }
@@ -1507,7 +1523,7 @@ function intro(){
   const say=(d,cb)=>{ const txt=chatPlain(d); let fired=false, safe=null; const go=()=>{ if(fired) return; fired=true; clearTimeout(safe); if(alive()) cb(); };
     if(P.chatMute||!txt){ CH.t=setTimeout(go,Math.max(1200,txt.length*55)); return; }
     safe=setTimeout(go,Math.max(4000,txt.length*120));
-    try{ const u=new SpeechSynthesisUtterance(txt); u.lang="de-DE"; u.rate=.9; u.onend=go; u.onerror=go; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ go(); } };
+    try{ const u=new SpeechSynthesisUtterance(txt), v=voiceFor(d.w); u.lang="de-DE"; u.rate=.9; if(v){ u.voice=v; u.pitch=voicePitch(d.w,v); } u.onend=go; u.onerror=go; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ go(); } };
   const finish=()=>{ CH.done=true; prog("intro",IN.length); $("next").classList.remove("hidden"); $("chatPause").classList.add("hidden");
     $("chatAll").textContent="从头播放"; list.querySelectorAll(".cmsg.now").forEach(x=>x.classList.remove("now")); updFade(); };
   const step=()=>{ if(!alive()||CH.paused) return; if(CH.i>=IN.length) return finish();
@@ -1536,7 +1552,7 @@ function intro(){
       msg.insertAdjacentHTML("afterend",`<div class="chat-word" data-i="${i}">${wordCard(v)}</div>`);
       const w=list.querySelector(".chat-word"), sp=w.querySelector("#sp"); if(sp){ sp.removeAttribute("id"); sp.onclick=ev=>{ ev.stopPropagation(); play(v); }; }
       play(v); updFade(); return; }
-    if(msg&&!msg.classList.contains("typing")&&(CH.done||CH.paused)){ try{ speechSynthesis.cancel(); }catch(err){} speakThen(chatPlain(IN[+msg.dataset.i]),()=>{}); } });
+    if(msg&&!msg.classList.contains("typing")&&(CH.done||CH.paused)){ try{ speechSynthesis.cancel(); }catch(err){} const d=IN[+msg.dataset.i]; sayAs(d.w,chatPlain(d),.9,()=>{}); } });
 
   const vis=()=>{ if(!list.isConnected){ document.removeEventListener("visibilitychange",vis); return; } if(document.hidden&&!CH.done&&!CH.paused) $("chatPause").click(); };
   document.addEventListener("visibilitychange",vis);
@@ -1882,7 +1898,7 @@ const diaryAll=e=>((e.diary&&e.diary.lines)||[]).map(l=>l.gap?diaryPlain(l):l.de
 /* 逐句朗读，一句读完再读下一句；再次调用会打断上一轮 */
 function sayLines(ls){ const tok=sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} let k=0;
   const nx=()=>{ if(tok!==sayLines.t||k>=ls.length) return; const t=ls[k++]; let done=false; const go=()=>{ if(done) return; done=true; nx(); };
-    try{ const u=new SpeechSynthesisUtterance(t); u.lang="de-DE"; u.rate=.9; u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
+    try{ const u=new SpeechSynthesisUtterance(t), v=voiceFor("Nico"); u.lang="de-DE"; u.rate=.9; if(v) u.voice=v; u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
   nx(); }
 function diaryHTML(l,fill){ let h=esc(l.de).replace(/\*\*(.+?)\*\*/g,(m,x)=>`<button class="sl" data-s="${esc(slKey(x))}">${x}</button>`);
   return h.replace(/\{([^}]+)\}/,(m,w)=>fill===false?`<b id="gap" class="gapb">___ ___</b>`:`<b class="gapb">${esc(artCap(l,l.gap.g))} ${esc(w)}</b>`); }
