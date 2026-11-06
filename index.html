@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Nicos Weg"><meta name="theme-color" content="#FFB300"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icons/icon-180.png"><title>Nicos Weg 冒险</title><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Nicos Abenteuer"><meta name="theme-color" content="#FFB300"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icons/icon-180.png"><title>Nicos Abenteuer</title><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout: one phone screen — a comic scene on top (sky, road, target, Nico), the "stage" card below where dialog and mini-games happen. */
@@ -605,6 +605,22 @@ body.imm .chat-list{height:min(46vh,430px)}
 .opt.nope{animation:nope .35s;border-color:#D2553F}
 #ho .opt{text-align:left}
 .card .chat-list,.card .chat-list .zh{text-align:left}
+/* 正式美术：木招牌 logo、答题反应头像、出租车 / 日记背景 */
+.fx-title.logo{background:none;box-shadow:none;padding:0;rotate:0deg;top:calc(14px + env(safe-area-inset-top,0px));width:min(50%,200px);transform-origin:12% 0;animation:photoin .5s cubic-bezier(.3,1.4,.5,1),sway 5s ease-in-out .5s infinite}
+body.imm:is([data-m=lobby],[data-m=radio]) #gapLbl,body.imm .scene[data-art=diary] #gapLbl{display:none}
+.fx-title.logo img{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 8px rgba(0,0,0,.25))}
+@keyframes sway{0%,100%{rotate:-1deg}50%{rotate:1.2deg}}
+#nicoReact{position:absolute;right:10px;bottom:10px;width:78px;height:78px;border-radius:50%;overflow:hidden;background:#FFF4DA;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.28);z-index:4;pointer-events:none;opacity:0;transform:translateY(24px) scale(.6);transition:opacity .2s,transform .3s cubic-bezier(.3,1.5,.5,1)}
+#nicoReact img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+#nicoReact.on{opacity:1;transform:none}
+#nicoReact.ok.on{border-color:#7BC47F}
+#nicoReact.no.on{border-color:#E7A35A;animation:nrshake .4s .15s}
+@keyframes nrshake{25%{translate:-4px 0}75%{translate:4px 0}}
+body:not(.imm) #nicoReact{display:none}
+body.imm #sceneBg[data-art]:not([data-art=""]){filter:none}
+body.imm .scene[data-art=taxi] .fx-dash{display:none}
+body.imm .scene[data-art=diary] .fx-board{background:none;border:0;box-shadow:none;color:#5A4030;top:26%;left:12%;right:12%;rotate:-1.5deg}
+@media (prefers-reduced-motion:reduce){.fx-title.logo{animation:none}#nicoReact.no.on{animation:none}}
 </style>
 
 <div id="sceneBg" aria-hidden="true"></div>
@@ -761,7 +777,17 @@ const PORT=(()=>{ const m={nico:"Nico",lisa:"Lisa",max:"Max",inge:"Inge",tarek:"
     wolf:"Mann|Dennis|Wolfgang|Marvin|Julius|Investor|Kunde|Kursteilnehmer|Fahrgast|Gast|Tom",
     meerkat:"Frau|Ulla|Kursteilnehmerin|Teilnehmerin|Frau Schneider|Frau Kamp|Frau Scholl|Martina|Kundin|Botin|Rezeptionistin|Mutter Von Lotte|Model",tortoise:"Mutter|Nachbar|Nachbarin"};
   const o={}; for(const k in m) m[k].split("|").forEach(n=>o[n]=k); return o; })();
-const avHTML=w=>PORT[w]?`<img src="assets/portraits/${PORT[w]}.webp" alt="" onerror="this.parentNode.textContent='${AV[w]||"🙂"}'">`:(AV[w]||"🙂");
+/* 主角四人有 6 种表情：assets/art/portraits/{id}-{mood}.webp；按台词内容挑表情，没把握就用 talk */
+const EXPR={nico:1,lisa:1,max:1,inge:1};
+const moodOf=t=>{ t=String(t||"").replace(/<[^>]+>/g," ");
+  if(/\b(leider|schade|tut mir leid|oje|oh,? nein|krank|traurig|müde)\b/i.test(t)) return "sad";
+  if(/(wie bitte|verstehe (ich )?nicht|keine ahnung|\bhm+\b|\bähm\b|was heißt|was bedeutet|wo ist|entschuldigung\?)/i.test(t)) return "confused";
+  if(/(\bwas\?|wirklich\?|\boh[!,]|\bwow\b|\bach!|echt\?|\bwahnsinn\b)/i.test(t)) return "surprised";
+  if(/(geschafft|natürlich!|kein problem|ich kann das|ich weiß)/i.test(t)) return "proud";
+  if(/(super|toll|prima|klasse|danke|gern|schön|freut|willkommen|juhu|cool|lecker|perfekt|wunderbar|hurra)/i.test(t)) return "happy";
+  return "talk"; };
+const avHTML=(w,mood)=>{ const id=PORT[w]; if(!id) return AV[w]||"🙂"; const fb=`this.onerror=null;this.src='assets/portraits/${id}.webp'`;
+  return EXPR[id]?`<img src="assets/art/portraits/${id}-${mood||"talk"}.webp" alt="" onerror="${fb}">`:`<img src="assets/portraits/${id}.webp" alt="" onerror="this.parentNode.textContent='${AV[w]||"🙂"}'">`; };
 const GAP=[0,1,3,7,14,30];   /* box 1-4 记得后隔几天再来；box 到 5 算掌握 */
 /* 填空题讲解：key 是 "剧集key#填空序号"（序号从 0 开始，对应 E.cloze 的顺序） */
 const WHY={
@@ -891,8 +917,14 @@ function skylineSVG(c1,c2){ const bs=[[0,40,60],[70,26,90],[105,44,50],[165,30,7
 function theme(n){ n=((n-1)%10)+1; const [c1,c2]=SKY[n]||SKY[3]; $("skyline").style.backgroundImage=skylineSVG(c1,c2); scene.dataset.t=TOD[n]||"day"; $("fly").classList.toggle("hidden",n!==1); ["bal1","bal2","bal3"].forEach(id=>$(id).classList.toggle("hidden",!(n===9||n===10))); $("trees").textContent=({1:"🧳✈️🛄🧳🛫",2:"🌳🚏🌲🪧🌳",7:"☕🌳🪑🌲☕",8:"🌳🚔🌲🪧🌳",9:"🏠🌳🏡🌲🏠",10:"🎂🎶🎁🎈🎶"})[n]||"🌳🏮🌲🪧🌳"; }
 function setScene(nicoPct,tPct,moving,prop){ $("nico").style.left=nicoPct+"%"; $("car").style.left=tPct+"%"; $("tgt").style.left=(tPct+2)+"%"; scene.classList.toggle("moving",!!moving); const p=$("prop"); if(prop){ p.textContent=prop; p.classList.remove("hidden"); } else p.classList.add("hidden"); }
 function target(e){ $("car").classList.remove("hidden"); $("tgt").classList.add("hidden"); }
-function cheer(){ const n=$("nico"); n.classList.remove("jump","stumble"); void n.offsetWidth; n.classList.add("jump"); }
-function stumble(){ const n=$("nico"); n.classList.remove("jump","stumble"); void n.offsetWidth; n.classList.add("stumble"); const p=$("puff"); p.style.left=n.style.left; p.classList.remove("go"); void p.offsetWidth; p.classList.add("go"); }
+function cheer(){ const n=$("nico"); n.classList.remove("jump","stumble"); void n.offsetWidth; n.classList.add("jump"); nicoReact(true); }
+function stumble(){ const n=$("nico"); n.classList.remove("jump","stumble"); void n.offsetWidth; n.classList.add("stumble"); const p=$("puff"); p.style.left=n.style.left; p.classList.remove("go"); void p.offsetWidth; p.classList.add("go"); nicoReact(false); }
+/* 答题反应：Nico 的表情头像从场景右下角探出来一下（答对开心/得意，答错困惑/难过）；剧情对话里已有大立绘，不再弹 */
+let NR_T=0, NR_K=0;
+function nicoReact(ok){ if(!document.body.classList.contains("imm")||/^(vn|lobby|boss)$/.test(SM)) return;
+  let r=$("nicoReact"); if(!r){ r=document.createElement("div"); r.id="nicoReact"; r.setAttribute("aria-hidden","true"); r.innerHTML="<img alt=''>"; scene.appendChild(r); }
+  const m=ok?(++NR_K%3?"happy":"proud"):(NR_K++%2?"sad":"confused"); r.firstChild.src=`assets/art/portraits/nico-${m}.webp`;
+  r.className=ok?"ok":"no"; void r.offsetWidth; r.classList.add("on"); clearTimeout(NR_T); NR_T=setTimeout(()=>r.classList.remove("on"),1500); }
 function hearts(n,max){ $("hearts").innerHTML=n==null?"":Array.from({length:max||3},(_,k)=>`<span class="${k<n?'':'off'}">❤️</span>`).join(""); }
 function combo(txt){ const c=$("combo"); c.textContent=txt; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
 let tInt=null; function timer(sec,onEndT){ clearInterval(tInt); const bar=$("tbar"); let left=sec; bar.style.width="100%"; tInt=setInterval(()=>{ if(SHEET_MIN) return; left-=.1; bar.style.width=Math.max(0,left/sec*100)+"%"; if(left<=0){ clearInterval(tInt); onEndT(); } },100); }
@@ -900,7 +932,7 @@ function stopTimer(){ clearInterval(tInt); tInt=null; $("tbar").style.width="0";
 /* 离开当前画面时统一清理：计时器、朗读、音频、聊天剧情播放 */
 function leaveScene(){ stopTimer(); try{ if(CH) CH.stop(); }catch(e){} sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} if(cur){ try{ cur.pause(); }catch(e){} } }
 function dots(n,total,states){ return `<div class="dots">${Array.from({length:total},(_,i)=>`<i class="${states&&states[i]?states[i]:(i<n?'on':'')}"></i>`).join("")}</div>`; }
-function bubble(who,de,zh){ return `<div class="dialog ${who==="Nico"?'me':''}"><div class="av" data-w="${esc(who)}">${avHTML(who)}</div><div class="bub"><div class="who">${esc(who)}</div><div class="de">${de}</div>${zh?`<div class="zh">${zh}</div>`:""}</div></div>`; }
+function bubble(who,de,zh){ return `<div class="dialog ${who==="Nico"?'me':''}"><div class="av" data-w="${esc(who)}">${avHTML(who,moodOf(de))}</div><div class="bub"><div class="who">${esc(who)}</div><div class="de">${de}</div>${zh?`<div class="zh">${zh}</div>`:""}</div></div>`; }
 /* ---------- 单集全屏场景：在一集里（或今日回顾）时，场景铺满全屏、答题卡浮在上面；题目仍旧写进 stage，这里只管外框 ---------- */
 let DIARY=false, SHEET_MIN=false, IMM_BG=null, IMM_KEY=null;
 const sheetEl=$("sheet"), sceneBg=$("sceneBg");
@@ -914,12 +946,16 @@ function interiorOf(T,b){ if(!b||!(T.interiors||[]).includes(b.id)) return null;
   if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(document.body.classList.contains("imm")) immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
   return IMG_OK[src]?{T,src,size:[1024,1536],inside:true}:null; }
 let BG_B=null;   /* 不在某一集里时（复习跑腿、自由练习）借用哪栋楼当背景 */
-function immBgSpec(){ const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):BG_B?(T.buildings||[]).find(x=>x.id===BG_B):(!DIARY?(T.buildings||[]).find(x=>x.id==="wg")||{id:"wg"}:null);
+function immBgSpec(){ if(SM==="radio"&&radioInCar()) return {src:"assets/art/scenes/taxi.webp",size:[768,1152],inside:true,fy:.36,art:"taxi"};
+  if(SM==="inter"&&IX&&IX.kind==="tage") return {src:"assets/art/scenes/diary.webp",size:[768,1152],inside:true,fy:.3,art:"diary"};
+  const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):BG_B?(T.buildings||[]).find(x=>x.id===BG_B):(!DIARY?(T.buildings||[]).find(x=>x.id==="wg")||{id:"wg"}:null);
   const inn=interiorOf(T,b); if(inn&&IN_MODES.test(SM)) return inn;
   return b?{T,src:T.bg,size:T.size,x:b.x,y:b.y,w:b.w}:{T,src:T.bg,size:T.size,x:T.size[0]/2,y:T.size[1]*.42,w:T.size[0]*.7}; }
 function immLayout(){ if(!document.body.classList.contains("imm")) return; const sh=sheetEl.offsetHeight; scene.style.setProperty("--sh",sh+"px");
   const s=IMM_BG; if(!s) return; const [iw,ih]=s.size, W=innerWidth, H=innerHeight;
-  if(s.inside){ const k=Math.max(W/iw,H/ih); sceneBg.style.backgroundSize=`${iw*k}px ${ih*k}px`; sceneBg.style.backgroundPosition=`${(W-iw*k)/2}px 0px`; return; }
+  if(s.inside){ const k=Math.max(W/iw,H/ih); sceneBg.style.backgroundSize=`${iw*k}px ${ih*k}px`;
+    /* fy：这张图的重点在多高（0–1），让它落在露出来的那块场景中间 */
+    const py=s.fy?Math.min(0,Math.max(H-ih*k,(H-sh)/2-s.fy*ih*k)):0; sceneBg.style.backgroundPosition=`${(W-iw*k)/2}px ${py}px`; return; }
   const k=Math.max(W/iw,H/ih,Math.min(3,W*.75/s.w));
   const px=Math.min(0,Math.max(W-iw*k,W/2-s.x*k)), py=Math.min(0,Math.max(H-ih*k,Math.max(80,(H-sh)*.42)-s.y*k));
   sceneBg.style.backgroundSize=`${iw*k}px ${ih*k}px`; sceneBg.style.backgroundPosition=`${px}px ${py}px`; }
@@ -928,7 +964,7 @@ function immSync(bgOnly){ const on=immOn(); document.body.classList.toggle("imm"
   if(bgOnly!==true){ sheetMin(false); stage.scrollTop=0; }
   const s=immBgSpec(), key=s?s.src+"@"+(s.inside?"in":s.x+","+s.y):"";
   if(key!==IMM_KEY){ const swap=!!IMM_KEY&&!!s&&IMM_BG&&IMM_BG.src!==s.src; IMM_KEY=key; IMM_BG=s; sceneBg.classList.toggle("nobg",!s); scene.classList.toggle("hasbg",!!s);
-    if(s) sceneBg.style.backgroundImage=`url("${s.src}")`; scene.classList.toggle("inside",!!(s&&s.inside));
+    if(s) sceneBg.style.backgroundImage=`url("${s.src}")`; scene.classList.toggle("inside",!!(s&&s.inside)); sceneBg.dataset.art=scene.dataset.art=s&&s.art||"";
     /* 换图（室外 ↔ 室内）时不做位置过渡，改成淡入，免得看到图片滑动缩放 */
     if(swap){ sceneBg.classList.remove("swap"); void sceneBg.offsetWidth; sceneBg.classList.add("swap"); } }
   sceneBg.dataset.t=scene.dataset.t||"day"; immLayout(); if(bgOnly!==true) fxSync(); }
@@ -939,21 +975,22 @@ const SMODE={episode:"home",intro:"vn",learn:"desk",chaseStart:"street",chaseSeg
   smsStart:"phone",smsWin:"phone",radioStart:"radio",radioWin:"radio",talkStart:"vn",talkWin:"vn",grammar:"board",stationBreak:"board",boss:"boss",win:"win",diary:"vn",mySentences:"vn",
   home:"lobby",bookPage:"lobby",backupPage:"lobby",askMood:"vn",inter:"inter",interQ:"inter",interDone:"inter",hoerenStart:"inter",freePage:"inter",freeDone:"inter"};
 for(const [f,m] of Object.entries(SMODE)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ SM=m; return o.apply(this,arguments); }; }
+const radioInCar=()=>{ if(!E) return false; const st=String(sceneText("radio")[0]||""), ic=st.split(/\s+/)[0]||""; return /📻|🚕|🚖/.test(ic)||/出租车|电台|收音机/.test(st); };
 function fxSync(){ const fx=$("sceneFx"), m=SM;
   if(scene.dataset.m!==m){ scene.dataset.m=m; sceneBg.dataset.m=m;
     const st=(m==="phone"||m==="radio")&&E?String(sceneText(m==="phone"?"sms":"radio")[0]||""):"", ic=st.split(/\s+/)[0]||"", ti=esc(st.slice(ic.length).trim());
-    const isPhone=/📱|💬|✉|📩|📨/.test(ic), inCar=/📻|🚕|🚖/.test(ic)||/出租车|电台|收音机/.test(st);
+    const isPhone=/📱|💬|✉|📩|📨/.test(ic), inCar=m==="radio"&&radioInCar();
     scene.dataset.car=m==="radio"&&inCar?"1":"";
     fx.innerHTML=({vn:`<div class="fx-stand"><span class="em"></span><b></b></div>`,boss:`<div class="fx-stand boss"><span class="em"></span><b></b></div>`,desk:`<div class="fx-note off"><b></b><small></small></div>`,
       phone:isPhone?`<div class="fx-phone"><i class="notch"></i><div class="scr"><span>${ic}</span><em>${ti||"1 条新消息"}</em></div></div>`:`<div class="fx-pad"><span>${ic||"📝"}</span><b>${ti}</b><i></i><i></i><i></i></div>`,
       radio:inCar?`<div class="fx-dash"><div class="fx-radio"><b>${ic} ${ti||"FM 98.6"}</b><span class="eq">${"<i></i>".repeat(9)}</span></div></div>`:`<div class="fx-radio fx-spk"><span class="ic">${ic||"🎧"}</span><b>${ti}</b><span class="eq">${"<i></i>".repeat(9)}</span></div>`,
       board:`<div class="fx-board"><b></b><span></span></div>`,inter:`<div class="fx-board inter"><b></b><span></span></div>`,win:`<div class="fx-win"><span class="it"></span><span class="bag">👜</span></div>`,
-      lobby:`<div class="fx-title">Nicos Weg<small>Nico 的德语之路 · Berlin</small></div><div class="fx-bag"></div>`})[m]||"";
+      lobby:`<div class="fx-title logo"><img src="assets/art/logo.webp" alt="Nicos Abenteuer" onerror="this.parentNode.classList.remove('logo');this.outerHTML='Nicos Abenteuer'"></div><div class="fx-bag"></div>`})[m]||"";
     if(m==="lobby") fx.insertBefore(liveNico(),fx.querySelector(".fx-bag"));
     fx.style.animation="none"; void fx.offsetWidth; fx.style.animation=""; stage.classList.remove("fade"); void stage.offsetWidth; stage.classList.add("fade"); }
   const q=s=>fx.querySelector(s), tx=s=>{ const el=stage.querySelector(s); return el?el.textContent.trim():""; };
-  if(m==="vn"){ const d=stage.querySelector(".chat .cmsg.now:not(.typing)")||[...stage.querySelectorAll(".chat .cmsg[data-i]")].pop()||stage.querySelector(".dialog:not(.me)")||stage.querySelector(".dialog"); if(d){ const a=d.querySelector(".av"), em=a.dataset.w||a.textContent, nm=d.querySelector(".who").textContent;
-      if(q(".em").dataset.w!==em){ const st=q(".fx-stand"); st.style.animation="none"; void st.offsetWidth; st.style.animation=""; q(".em").innerHTML=a.innerHTML; q(".em").dataset.w=em; } q("b").textContent=nm; } }
+  if(m==="vn"){ const d=stage.querySelector(".chat .cmsg.now:not(.typing)")||[...stage.querySelectorAll(".chat .cmsg[data-i]")].pop()||stage.querySelector(".dialog:not(.me)")||stage.querySelector(".dialog"); if(d){ const a=d.querySelector(".av"), w=a.dataset.w||a.textContent, im=a.querySelector("img"), em=w+(im?"|"+im.getAttribute("src"):""), nm=d.querySelector(".who").textContent;
+      if(q(".em").dataset.w!==em){ const st=q(".fx-stand"); if(String(q(".em").dataset.w||"").split("|")[0]!==w){ st.style.animation="none"; void st.offsetWidth; st.style.animation=""; } q(".em").innerHTML=a.innerHTML; q(".em").dataset.w=em; } q("b").textContent=nm; } }
   else if(m==="boss"&&E&&E.boss){ if(q(".em").dataset.w!==E.boss.who){ q(".em").innerHTML=PORT[E.boss.who]?avHTML(E.boss.who):AV[E.boss.who]||"🧔"; q(".em").dataset.w=E.boss.who; } q("b").textContent=E.boss.who||"Boss"; }
   else if(m==="desk"){ const w=tx(".card .word .sg")||tx(".card .word"), wc=stage.querySelector(".card .word"); q(".fx-note").classList.toggle("off",!w); q("b").textContent=w; q("b").className=wc&&/\b(der|die|das)\b/.test(wc.className)?"c-"+wc.className.match(/\b(der|die|das)\b/)[1]:""; q("small").textContent=w?tx(".card .zh"):""; }
   else if(m==="board"&&stage.querySelector("i[data-bt]")){ const sb=stage.querySelector("i[data-bt]"); q("b").textContent=sb.dataset.bt; q("span").textContent=sb.dataset.bs; }
@@ -1141,7 +1178,7 @@ function askMood(){ E=null; theme(3); target(); setScene(6,70,false); $("gapLbl"
 
 /* ---------- 首页 ---------- */
 function home(){ leaveScene();
-  townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; BG_B=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Weg"; hearts(null);
+  townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; BG_B=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Abenteuer"; hearts(null);
   const due=dueList(), mtotal=Object.values(S.mist).filter(m=>!m.done).length;
   const nx=EPISODES.find(e=>!epState(e).won);
   const stepN=nx?epState(nx).done:0;
@@ -1177,7 +1214,7 @@ const BKKEY="nicosweg-bk";
 const wonN=()=>Object.values(S.ep).filter(x=>x&&x.won).length;
 function bkWon(){ try{ return +localStorage.getItem(BKKEY)||0; }catch(e){ return 0; } }
 function markBackup(){ try{ localStorage.setItem(BKKEY,String(wonN())); }catch(e){} }
-function backupText(){ return `Nicos Weg 进度码（${today()} · 通关 ${wonN()} 集）\n${exportCode()}`; }
+function backupText(){ return `Nicos Abenteuer 进度码（${today()} · 通关 ${wonN()} 集）\n${exportCode()}`; }
 async function copyText(t){ try{ await navigator.clipboard.writeText(t); return true; }catch(e){}
   const a=document.createElement("textarea"); a.value=t; a.setAttribute("readonly",""); a.style.cssText="position:fixed;left:0;top:0;width:1px;height:1px;opacity:0"; document.body.appendChild(a); a.select(); a.setSelectionRange(0,a.value.length);
   let ok=false; try{ ok=document.execCommand("copy"); }catch(e){} a.remove(); return ok; }
@@ -1214,7 +1251,7 @@ function townView(lv,selId){ leaveScene();
     if(bg){ const tag=st==="done"?`★${starSum(eps)}/${eps.length*3}`:st==="cur"?`▶ ${w}/${eps.length}`:`${w}/${eps.length}`;
       return `<div class="t-hs ${st}" data-b="${b.id}" style="left:${b.x-b.w/2}px;top:${b.y-b.h/2}px;width:${b.w}px;height:${b.h}px"><span class="t-tag"><em>${b.ic||""}</em>${esc(b.name)} <small>${tag}</small></span></div>`; }
     const tag=st==="done"?"⭐ 全部通关":st==="cur"?`▶ ${w}/${eps.length}`:`${w}/${eps.length}`;
-    return `<div class="t-b ${st}" data-b="${b.id}" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;z-index:${Math.round(b.y)}"><img src="assets/buildings/${b.id}.png" alt=""><span class="t-tag">${esc(b.name)} · ${tag}</span></div>`; }).join("");
+    return `<div class="t-b ${st}" data-b="${b.id}" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;z-index:${Math.round(b.y)}"><img src="assets/art/buildings/${b.id}.webp" alt="" onerror="this.onerror=null;this.src='assets/buildings/${b.id}.png'"><span class="t-tag">${esc(b.name)} · ${tag}</span></div>`; }).join("");
   $("townBuildings").querySelectorAll(".t-b,.t-hs").forEach(el=>el.onclick=()=>{ if(TV.drag&&TV.drag.moved) return; townSelect(el.dataset.b); });
   const cur=T.buildings.find(b=>b.id===selId)||T.buildings.find(b=>bState(lv,b)==="cur")||T.buildings[0];
   townScale(true);
@@ -1227,7 +1264,7 @@ function townScale(reset){ const T=TOWNS[TV.lv], W=townEl().clientWidth, H=townE
   if(T.bg){ TV.min=Math.max(W/T.size[0],H/T.size[1]); TV.max=Math.max(TV.min*2.2,1.2); TV.sc=reset?Math.min(TV.max,TV.min*1.15):Math.min(TV.max,Math.max(TV.min,TV.sc)); }
   else { TV.min=.35; TV.max=1.3; if(reset) TV.sc=Math.max(.42,Math.min(.75,W/900)); } }
 /* 楼的缩略图：画作模式直接从底图裁出这栋楼 */
-function tThumb(b,size){ const T=TOWNS[TV.lv]; if(!T.bg) return `<img src="assets/buildings/${b.id}.png" alt="">`;
+function tThumb(b,size){ const T=TOWNS[TV.lv]; if(!T.bg) return `<img src="assets/art/buildings/${b.id}.webp" alt="" onerror="this.onerror=null;this.src='assets/buildings/${b.id}.png'">`;
   const k=size/Math.max(b.w,b.h), w=Math.round(b.w*k), h=Math.round(b.h*k);
   return `<div class="t-thumb" style="width:${w}px;height:${h}px;background-image:url('${T.bg}');background-size:${(T.size[0]*k).toFixed(1)}px ${(T.size[1]*k).toFixed(1)}px;background-position:${(-(b.x-b.w/2)*k).toFixed(1)}px ${(-(b.y-b.h/2)*k).toFixed(1)}px"></div>`; }
 /* ---------- 云雾：fog 浓雾 / mist 薄雾 / clear 晴，全由存档推导；S.seen 只记"上次看到的状态"，用来决定要不要播散雾 ---------- */
@@ -1431,7 +1468,7 @@ let CH=null;
 function chatSides(IN){ const n0=IN.findIndex(d=>d.w==="Nico"), alt={}; let k=0;
   return IN.map((d,i)=>{ if(n0>=0&&i>=n0) return d.w==="Nico"; if(!(d.w in alt)) alt[d.w]=k++%2===1; return alt[d.w]; }); }
 function chatMsg(d,i,me,cont){ const de=String(d.de||"").replace(/<mark>/g,`<mark data-i="${i}" role="button" tabindex="0">`);
-  return `<div class="dialog cmsg${me?" me":""}${cont?" same":""}" data-i="${i}"><div class="av" data-w="${esc(d.w)}">${avHTML(d.w)}</div><div class="bub"><div class="who">${esc(d.w)}</div><div class="de">${de}</div>${d.zh?`<div class="zh">${esc(d.zh)}</div>`:""}</div></div>`; }
+  return `<div class="dialog cmsg${me?" me":""}${cont?" same":""}" data-i="${i}"><div class="av" data-w="${esc(d.w)}">${avHTML(d.w,moodOf(d.de))}</div><div class="bub"><div class="who">${esc(d.w)}</div><div class="de">${de}</div>${d.zh?`<div class="zh">${esc(d.zh)}</div>`:""}</div></div>`; }
 const chatPlain=d=>String(d.de||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
 function intro(){
   const IN=E.intro||[]; stopTimer(); setScene(6,70,false); $("gapLbl").textContent=`第 ${E.n} 集 · ${E.name}`; hearts(null);
@@ -1636,7 +1673,7 @@ function smsWin(){ sceneDone("sms"); prog("sms",0); setScene(60,70,false,"📱")
 /* ---------- 场景 3：听写 ---------- */
 let R=null;
 function radioStart(){ const [title,desc,btn]=sceneText("radio"); const saved=prog("radio"); R={qs:LV.slice().reverse(),n:0,right:0,states:[]}; setScene(60,70,false,"📻"); $("gapLbl").textContent=title;
-  stage.innerHTML=`<div class="radio"><div class="wave">▂▃▅▃▂▅▃▂</div><div>${esc(title)}</div></div>${bubble("Radio",title,`${esc(desc)}<br>${LV.length} 个词，可以反复听。中途退出会记住进度。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button>${saved>0&&saved<LV.length?`<button id="cont">从第 ${saved+1} 个继续</button>`:""}<button class="primary" id="go">${esc(btn)}</button></div>`;
+  stage.innerHTML=`${bubble("Radio","Hör gut zu!",`${esc(desc)}<br>${LV.length} 个词，可以反复听。中途退出会记住进度。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button>${saved>0&&saved<LV.length?`<button id="cont">从第 ${saved+1} 个继续</button>`:""}<button class="primary" id="go">${esc(btn)}</button></div>`;
   $("go").onclick=()=>{ prog("radioR",0); prog("radio",0); radio(); }; $("back").onclick=()=>episode(E.key); const c=$("cont"); if(c) c.onclick=()=>{ R.n=saved; R.right=Math.min(saved,prog("radioR")); radio(); }; }
 function radio(){ if(R.n>=R.qs.length) return radioWin(); const v=R.qs[R.n]; prog("radio",R.n);
   stage.innerHTML=`${dots(R.n,R.qs.length,R.states)}<div class="radio"><div class="wave">▂▃▅▃▂▅▃▂</div><button id="sp" style="margin-top:6px;width:84px;height:84px;border-radius:50%;font-size:34px;padding:0">🔊</button></div>
