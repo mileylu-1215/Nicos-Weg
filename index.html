@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Nicos Abenteuer"><meta name="theme-color" content="#FFB300"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="assets/icons/icon-180.png"><title>Nicos Abenteuer</title><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Nicos Abenteuer"><meta name="theme-color" content="#FFB300"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-180.png?v=2"><link rel="icon" type="image/png" href="assets/icons/icon-192.png?v=2"><title>Nicos Abenteuer</title><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout: one phone screen — a comic scene on top (sky, road, target, Nico), the "stage" card below where dialog and mini-games happen. */
@@ -343,6 +343,10 @@ table.g td:first-child{color:var(--muted);white-space:nowrap}
 #town .t-hs.later .t-tag{background:rgba(255,255,255,.62);color:#56607a}
 #town .t-hs.done .t-tag{background:#fff2c9}
 #town .t-hs.cur .t-tag{background:var(--taxi);color:#2B1D00}
+#town .t-trail{position:absolute;left:0;top:0;width:0;height:0;z-index:5}
+#town .t-paw{position:absolute;width:16px;height:18px;cursor:pointer;opacity:0;animation:pawIn .4s ease-out forwards;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 22'%3E%3Cg fill='%237a3b12' fill-opacity='.82'%3E%3Cellipse cx='10' cy='15.5' rx='5.2' ry='4.6'/%3E%3Cellipse cx='4' cy='8.5' rx='2.1' ry='2.7'/%3E%3Cellipse cx='8' cy='4.5' rx='2.1' ry='2.8'/%3E%3Cellipse cx='12' cy='4.5' rx='2.1' ry='2.8'/%3E%3Cellipse cx='16' cy='8.5' rx='2.1' ry='2.7'/%3E%3C/g%3E%3C/svg%3E");filter:drop-shadow(0 0 2px rgba(255,248,230,.9))}
+#town .t-paw.end{width:20px;height:22px}
+@keyframes pawIn{from{opacity:0}to{opacity:1}}
 #town .t-hs.cur .t-tag::before{content:"▼";position:absolute;left:50%;bottom:100%;transform:translateX(-50%);color:var(--taxi);font-size:20px;text-shadow:0 1px 2px rgba(0,0,0,.3);animation:tbob 1.2s ease-in-out infinite}
 #town.bgm #townNico{width:auto;transform:translate(-50%,-100%) scale(var(--inv,1));transform-origin:50% 100%}
 #townFox{display:none;width:46px;transform-origin:50% 100%}
@@ -897,19 +901,21 @@ const SEX={Nico:"m",Lisa:"f",Emma:"k",Lotte:"k",Max:"m",Inge:"f",Tarek:"m",Selma
   Taxifahrer:"m",Mann:"m",Kunde:"m",Verkäufer:"m",Gast:"m",Fahrgast:"m",Kursteilnehmer:"m",Investor:"m",Polizei:"m",Vater:"m",Frau:"f",Mutter:"f",Tante:"f","Mutter Von Lotte":"f",Sprechstundenhilfe:"f",Moderatorin:"n",Radio:"n",Mailbox:"n",Flughafen:"n"};
 const sexOf=w=>{ w=String(w||""); if(SEX[w]) return SEX[w]; if(/^(Frau|Mutter|Tante)\b|[a-zäöü]in$/.test(w)) return "f"; if(/^(Herr|Vater)\b/.test(w)) return "m"; return "n"; };
 let DEV=null; try{ speechSynthesis.onvoiceschanged=()=>{ DEV=null; }; }catch(e){}
-function deVoices(){ if(DEV&&DEV.length) return DEV; try{ DEV=speechSynthesis.getVoices().filter(v=>/^de([-_]|$)/i.test(v.lang)); }catch(e){ DEV=[]; } return DEV; }
+function deVoices(){ try{ const all=speechSynthesis.getVoices(); if(!DEV||all.length!==deVoices.n){ deVoices.n=all.length; DEV=all.filter(v=>/^de([-_]|$)/i.test(v.lang)); } }catch(e){ DEV=DEV||[]; } return DEV; }
 const vq=v=>/premium/i.test(v.voiceURI+v.name)?3:/enhanced|erweitert/i.test(v.voiceURI+v.name)?2:1;
-const bestNamed=(vs,re)=>vs.filter(v=>re.test(v.name)).sort((a,b)=>vq(b)-vq(a))[0]||null;
-const FEMV=/anna|helena|petra|marlene|vicki|katja|hedda|sabine|female|weiblich/i, MALV=/martin|markus|yannick|viktor|hans|stefan|conrad|\bmale\b|männlich/i;
+const bestNamed=(vs,re)=>vs.filter(v=>re.test(v.name+" "+v.voiceURI)).sort((a,b)=>vq(b)-vq(a))[0]||null;
+const FEMV=/anna|helena|petra|marlene|vicki|katja|hedda|sabine|sandy|shelley|grandma|\boma\b|female|weiblich/i, MALV=/martin|markus|yannick|viktor|hans|stefan|conrad|eddy|reed|rocko|grandpa|\bopa\b|\bflo\b|\bmale\b|männlich/i;
 function voiceFor(who){ const vs=deVoices(); if(!vs.length) return null; const s=sexOf(who);
   let h=0; for(const c of String(who)) h=(h*31+c.charCodeAt(0))|0; const pick=l=>l[Math.abs(h)%l.length];
   if(s==="f"||s==="m"){ const re=s==="f"?/anna/i:/yannick/i, pool=vs.filter(v=>(s==="f"?FEMV:MALV).test(v.name)); return bestNamed(vs,re)||pick(pool.length?pool:vs); }
   const siri=vs.filter(v=>/siri/i.test(v.name+" "+v.voiceURI)); if(siri.length) return pick(siri);
   const other=vs.filter(v=>!/anna|yannick/i.test(v.name)); return other.length?pick(other):bestNamed(vs,/anna/i)||vs[0]; }
 function voicePitch(who,v){ const s=sexOf(who); if(v&&/siri/i.test(v.name+" "+v.voiceURI)) return 1;
-  if(s==="m"&&v&&!MALV.test(v.name)) return .75;   /* 手机上找不到男声时，男角色压低音调 */
+  if(s==="m"&&!(v&&MALV.test(v.name+" "+v.voiceURI))) return .7;   /* 手机上找不到男声时，男角色压低音调 */
   return s==="k"?1.35:s==="n"&&v&&/anna|yannick/i.test(v.name)?1.15:1; }
 function sayAs(who,text,rate,cb){ const v=voiceFor(who); speakThen(text,cb,{rate:rate||.95,voice:v,pitch:voicePitch(who,v)}); }
+/* 首次进入时 iOS 的声音列表可能还是空的，提前取一次 */
+try{ speechSynthesis.getVoices(); }catch(e){}
 /* 声音检测：网址加 ?voices 时列出本机网页能用的德语声音和角色分配，点一行试听 */
 if(/[?&]voices\b/.test(location.search)) setTimeout(function vlist(){ DEV=null; const vs=deVoices(); if(!vs.length&&!(vlist.n=(vlist.n||0)+1>8)) return setTimeout(vlist,500);
   const box=document.createElement("div"); box.style.cssText="position:fixed;inset:0;z-index:9999;overflow:auto;background:#fff;color:#222;font:14px/1.5 -apple-system,sans-serif;padding:16px";
@@ -978,6 +984,8 @@ function immBgSpec(){ if(SM==="splash"){ const src="assets/art/splash.webp"; if(
     if(IMG_OK[src]) return {src,size:[1024,1536],inside:true,fy:.5,art:"splash"}; }
   if(SM==="radio"&&radioInCar()) return {src:"assets/art/scenes/taxi.webp",size:[768,1152],inside:true,fy:.36,art:"taxi"};
   if(SM==="inter"&&IX&&IX.kind==="tage") return {src:"assets/art/scenes/diary.webp",size:[768,1152],inside:true,fy:.3,art:"diary"};
+  if(SM==="lobby"){ const nx=nextPick(), T2=TOWNS[nx?nx.lv:"A1"], b2=nx&&buildingOfEp(nx);
+    if(T2&&T2.bg&&b2) return {T:T2,src:T2.bg,size:T2.size,x:b2.x,y:b2.y+(b2.h||0)*.15,w:b2.w*.9,lobby:1}; }
   const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):BG_B?(T.buildings||[]).find(x=>x.id===BG_B):(!DIARY?(T.buildings||[]).find(x=>x.id==="wg")||{id:"wg"}:null);
   const inn=interiorOf(T,b); if(inn&&IN_MODES.test(SM)) return inn;
   return b?{T,src:T.bg,size:T.size,x:b.x,y:b.y,w:b.w}:{T,src:T.bg,size:T.size,x:T.size[0]/2,y:T.size[1]*.42,w:T.size[0]*.7}; }
@@ -986,8 +994,8 @@ function immLayout(){ if(!document.body.classList.contains("imm")) return; const
   if(s.inside){ const k=Math.max(W/iw,H/ih); sceneBg.style.backgroundSize=`${iw*k}px ${ih*k}px`;
     /* fy：这张图的重点在多高（0–1），让它落在露出来的那块场景中间 */
     const py=s.fy?Math.min(0,Math.max(H-ih*k,(H-sh)/2-s.fy*ih*k)):0; sceneBg.style.backgroundPosition=`${(W-iw*k)/2}px ${py}px`; return; }
-  const k=Math.max(W/iw,H/ih,Math.min(3,W*.75/s.w));
-  const px=Math.min(0,Math.max(W-iw*k,W/2-s.x*k)), py=Math.min(0,Math.max(H-ih*k,Math.max(80,(H-sh)*.42)-s.y*k));
+  const k=s.lobby?Math.min(4,Math.max(W/iw,H/ih,Math.min(3,W*.8/s.w),(H-sh)*.42/s.y,(H-(H-sh)*.42)/(ih-s.y),W/2/s.x,W/2/(iw-s.x))):Math.max(W/iw,H/ih,Math.min(3,W*.75/s.w));
+  const px=Math.min(0,Math.max(W-iw*k,W/2-s.x*k)), py=Math.min(0,Math.max(H-ih*k,(s.lobby?(H-sh)*.42:Math.max(80,(H-sh)*.42))-s.y*k));
   sceneBg.style.backgroundSize=`${iw*k}px ${ih*k}px`; sceneBg.style.backgroundPosition=`${px}px ${py}px`; }
 function immSync(bgOnly){ const on=immOn(); document.body.classList.toggle("imm",on);
   if(!on){ IMM_BG=null; IMM_KEY=null; SHEET_MIN=false; sheetEl.classList.remove("min"); scene.classList.remove("inside"); scene.dataset.m=""; sceneBg.dataset.m=""; $("sceneFx").innerHTML=""; return; }
@@ -1221,17 +1229,15 @@ function home(){ leaveScene();
   townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; BG_B=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Abenteuer"; hearts(null);
   const due=dueList(), mtotal=Object.values(S.mist).filter(m=>!m.done).length;
   const nx=nextPick(), nxB=nx&&buildingOfEp(nx), nxSt=nx?stationOf(S.ep[nx.key]):0;
-  stage.innerHTML=`<i id="homeMark" hidden></i><div class="homerow">${nx?`<button class="bigcont" id="cont"><span class="stampic">${nx.item.e}</span><span class="t"><small>${nxSt?"继续":"出发"} · ${esc(nx.lv)} 第 ${nx.n} 集${nxSt?` · 第 ${nxSt+1} 站`:""}</small><b>${esc(nx.name)}</b><span>${nxB?esc(nxB.zh)+" · ":""}${esc(nx.zh)}</span></span><span class="pl">▶</span></button>`
+  stage.innerHTML=`<i id="homeMark" hidden></i><div class="homerow">${nx?`<button class="bigcont" id="cont"><span class="stampic">${nx.item.e}</span><span class="t"><small>${esc(nx.lv)}${nxB?" · "+esc(nxB.name):""}</small><b>${esc(nx.name)}</b></span><span class="pl">▶</span></button>`
       :`<button class="bigcont" id="cont"><span class="t"><small>全部通关</small><b>再玩一遍</b><span>每集都可以重玩刷星</span></span><span class="pl">▶</span></button>`}</div>
-    <div class="row" style="margin-top:6px"><button class="ghost" id="toSplash">‹ 封面</button></div>
     <p class="tap" style="margin:8px 0 0">${cloud.ready?"进度已同步到云端":"进度存在本机"} · 词汇与原声 DW Nicos Weg</p>`;
-  $("toSplash").onclick=splash;
   $("cont").onclick=()=>nx?townView(nx.lv,nxB&&nxB.id):levelMap(LEVELS[0].id,false,true);
   const r=$("rail")||document.body.appendChild(Object.assign(document.createElement("div"),{id:"rail"})), bk=wonN()>bkWon(), bookN=(S.book||[]).length;
   const ic=(id,e,lb,badge)=>`<button class="ri" id="${id}" aria-label="${lb}"><span class="e">${e}</span><b>${lb}</b>${badge?`<i class="bd">${badge}</i>`:""}</button>`;
-  r.innerHTML=`<div class="rl">${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="ri lv" data-lv="${l.id}" aria-label="${esc(l.name)}" style="--p:${l.episodes.length?won/l.episodes.length*100:0}%"><span class="e">${l.id}</span><b>${won}/${l.episodes.length}</b></button>`; }).join("")}</div>
+  r.innerHTML=`<div class="rl"><button class="ri" id="r-home" aria-label="回首页"><span class="e"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg></span></button>${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="ri lv" data-lv="${l.id}" aria-label="${esc(l.name)}" style="--p:${l.episodes.length?won/l.episodes.length*100:0}%"><span class="e">${l.id}</span><b>${won}/${l.episodes.length}</b></button>`; }).join("")}</div>
     <div class="rr">${ic("r-diary","☀️","回顾",due.length||"")}${ic("r-free","🎯","练习","")}${ic("r-book","📔","本子",bookN?"":"•")}${ic("r-mood","🙂","心情",moodToday()?"":"•")}${ic("r-bk","💾","备份",bk?"!":"")}${ic("r-rl","🔄","刷新","")}</div>`;
-  r.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>townView(b.dataset.lv));
+  r.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>townView(b.dataset.lv)); $("r-home").onclick=splash;
   $("r-diary").onclick=()=>due.length?diary(false):toast(mtotal?`今天没有到期的词 · 已学 ${mtotal} 个`:"学过的词会在 1→3→7→14→30 天后回来考你");
   $("r-free").onclick=freePage; $("r-book").onclick=bookPage; $("r-mood").onclick=askMood; $("r-rl").onclick=()=>location.reload();
   $("r-bk").onclick=async()=>{ if(bk&&await copyText(backupText())){ markBackup(); home(); toast("进度码已复制，去微信粘贴保存吧"); } else backupPage(); };
@@ -1276,6 +1282,18 @@ function backupPage(){ leaveScene(); E=null; theme(3); target(); setScene(6,70,f
 /* ---------- 城市地图视图：A1 / A2 卡片进来，点地标弹出这个地标的课时列表 ---------- */
 let TV={lv:null,sel:null,sc:.6,tx:0,ty:0,drag:null,pinch:null,raf:null,swiped:0};
 const townEl=()=>$("town");
+/* 脚印：从上一集所在的楼走到下一集所在的楼（同一栋楼就从下方走过来），点脚印直接选中下一栋楼 */
+function pawTrail(lv,T,nx,bg){ const nb=nx&&buildingOfEp(nx); if(!nb) return "";
+  const eps=levelOf(lv).episodes, i=eps.indexOf(nx), pb=i>0?buildingOfEp(eps[i-1]):null;
+  const cOf=b=>bg?[b.x,b.y,Math.min(b.w,b.h||b.w)]:[b.x+b.w/2,b.y+b.w*.55,b.w*.8];
+  const [x1,y1,r1]=cOf(nb); let x0,y0,r0;
+  if(pb&&pb!==nb) [x0,y0,r0]=cOf(pb); else { x0=x1; y0=Math.min(T.size[1]-20,y1+r1*.5+170); r0=0; }
+  const dx=x1-x0, dy=y1-y0, L=Math.hypot(dx,dy)||1, ux=dx/L, uy=dy/L, a0=r0*.45, a1=L-r1*.45, step=34;
+  if(a1-a0<step*2) return "";
+  const ang=Math.atan2(dy,dx)*180/Math.PI+90, n=Math.min(48,Math.floor((a1-a0)/step)), out=[];
+  for(let k=0;k<=n;k++){ const d=a0+k*step, s=k%2?7:-7, x=x0+ux*d-uy*s, y=y0+uy*d+ux*s;
+    out.push(`<i class="t-paw${k>n-3?" end":""}" data-b="${nb.id}" style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px;transform:translate(-50%,-50%) rotate(${ang.toFixed(0)}deg);animation-delay:${(k*.06).toFixed(2)}s"></i>`); }
+  return `<div class="t-trail">${out.join("")}</div>`; }
 function townView(lv,selId){ leaveScene();
   const T=TOWNS[lv], L=levelOf(lv); if(!T||!L) return levelMap(lv,false,false);   /* 没有城市地图配置的等级直接进护照列表；A2 没有水彩底图，用单栋楼的画 */
   stopTimer(); E=null; DIARY=false; BG_B=null; CUR_LV=lv; TV.lv=lv; const bg=!!T.bg; document.body.classList.remove("imm");
@@ -1287,11 +1305,11 @@ function townView(lv,selId){ leaveScene();
   const won=L.episodes.filter(e=>epState(e).won).length;
   $("townTitle").textContent=`${L.name} · 通关 ${won}/${L.episodes.length} · ★${starSum(L.episodes)}`;
   const nxL=nextEpOf(lv);
-  $("townBuildings").innerHTML=T.buildings.map(b=>{ const st=bState(lv,b); const eps=epsOfB(lv,b); const w=eps.filter(e=>epState(e).won).length, rg=epRange(eps), nxT=st==="cur"&&nxL?`▶ 下一集 第${nxL.n}集`:"";
-    if(bg){ const tag=st==="done"?`${rg} ★${starSum(eps)}/${eps.length*3}`:nxT||`${rg} · ${w}/${eps.length}`;
-      return `<div class="t-hs ${st}" data-b="${b.id}" style="left:${b.x-b.w/2}px;top:${b.y-b.h/2}px;width:${b.w}px;height:${b.h}px"><span class="t-tag"><em>${b.ic||""}</em>${esc(b.name)} <small>${tag}</small></span></div>`; }
-    const tag=st==="done"?`${rg} 全部通关`:nxT||`${rg} · ${w}/${eps.length}`;
-    return `<div class="t-b ${st}" data-b="${b.id}" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;z-index:${Math.round(b.y)}"><img src="assets/art/buildings/${b.id}.webp" alt="" onerror="this.onerror=null;this.src='assets/buildings/${b.id}.png'"><span class="t-tag">${esc(b.name)} · ${tag}</span></div>`; }).join("");
+  $("townBuildings").innerHTML=T.buildings.map(b=>{ const st=bState(lv,b); const eps=epsOfB(lv,b);
+    if(bg){ const tag=st==="done"?`★${starSum(eps)}/${eps.length*3}`:"";
+      return `<div class="t-hs ${st}" data-b="${b.id}" style="left:${b.x-b.w/2}px;top:${b.y-b.h/2}px;width:${b.w}px;height:${b.h}px"><span class="t-tag"><em>${b.ic||""}</em>${esc(b.name)}${tag?` <small>${tag}</small>`:""}</span></div>`; }
+    return `<div class="t-b ${st}" data-b="${b.id}" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;z-index:${Math.round(b.y)}"><img src="assets/art/buildings/${b.id}.webp" alt="" onerror="this.onerror=null;this.src='assets/buildings/${b.id}.png'"><span class="t-tag">${esc(b.name)}${st==="done"?" ★":""}</span></div>`; }).join("")+pawTrail(lv,T,nxL,bg);
+  $("townBuildings").querySelectorAll(".t-paw").forEach(el=>el.onclick=e=>{ e.stopPropagation(); if(TV.drag&&TV.drag.moved) return; townSelect(el.dataset.b); });
   $("townBuildings").querySelectorAll(".t-b,.t-hs").forEach(el=>el.onclick=()=>{ if(TV.drag&&TV.drag.moved) return; townSelect(el.dataset.b); });
   const cur=T.buildings.find(b=>b.id===selId)||T.buildings.find(b=>bState(lv,b)==="cur")||T.buildings[0];
   townScale(true);
@@ -1547,7 +1565,7 @@ function intro(){
   const say=(d,cb)=>{ const txt=chatPlain(d); let fired=false, safe=null; const go=()=>{ if(fired) return; fired=true; clearTimeout(safe); if(alive()) cb(); };
     if(P.chatMute||!txt){ CH.t=setTimeout(go,Math.max(1200,txt.length*55)); return; }
     safe=setTimeout(go,Math.max(4000,txt.length*120));
-    try{ const u=new SpeechSynthesisUtterance(txt), v=voiceFor(d.w); u.lang="de-DE"; u.rate=.9; if(v){ u.voice=v; u.pitch=voicePitch(d.w,v); } u.onend=go; u.onerror=go; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ go(); } };
+    try{ const u=new SpeechSynthesisUtterance(txt), v=voiceFor(d.w); u.lang="de-DE"; u.rate=.9; if(v) u.voice=v; u.pitch=voicePitch(d.w,v); u.onend=go; u.onerror=go; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ go(); } };
   const finish=()=>{ CH.done=true; prog("intro",IN.length); $("next").classList.remove("hidden"); $("chatPause").classList.add("hidden");
     $("chatAll").textContent="从头播放"; list.querySelectorAll(".cmsg.now").forEach(x=>x.classList.remove("now")); updFade(); };
   const step=()=>{ if(!alive()||CH.paused) return; if(CH.i>=IN.length) return finish();
@@ -1922,7 +1940,7 @@ const diaryAll=e=>((e.diary&&e.diary.lines)||[]).map(l=>l.gap?diaryPlain(l):l.de
 /* 逐句朗读，一句读完再读下一句；再次调用会打断上一轮 */
 function sayLines(ls){ const tok=sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} let k=0;
   const nx=()=>{ if(tok!==sayLines.t||k>=ls.length) return; const t=ls[k++]; let done=false; const go=()=>{ if(done) return; done=true; nx(); };
-    try{ const u=new SpeechSynthesisUtterance(t), v=voiceFor("Nico"); u.lang="de-DE"; u.rate=.9; if(v){ u.voice=v; u.pitch=voicePitch("Nico",v); } u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
+    try{ const u=new SpeechSynthesisUtterance(t), v=voiceFor("Nico"); u.lang="de-DE"; u.rate=.9; if(v) u.voice=v; u.pitch=voicePitch("Nico",v); u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
   nx(); }
 function diaryHTML(l,fill){ let h=esc(l.de).replace(/\*\*(.+?)\*\*/g,(m,x)=>`<button class="sl" data-s="${esc(slKey(x))}">${x}</button>`);
   return h.replace(/\{([^}]+)\}/,(m,w)=>fill===false?`<b id="gap" class="gapb">___ ___</b>`:`<b class="gapb">${esc(artCap(l,l.gap.g))} ${esc(w)}</b>`); }
