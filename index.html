@@ -505,7 +505,7 @@ body.imm .lifted{display:none!important}
 .fx-live .say.on{opacity:1;translate:-50% 0}
 .fx-bag{position:absolute;left:5%;bottom:34px;max-width:42%;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:7px 11px;background:rgba(246,235,207,.94);border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,.2);font-size:11px;line-height:1.35;color:#22304A;rotate:-2deg;animation:photoin .5s ease-out}
 .fx-bag .ic{font-size:20px;letter-spacing:1px}
-body.imm[data-m=lobby] .stage{max-height:min(46vh,calc(100vh - 300px));max-height:min(46dvh,calc(100dvh - 300px))}
+body.imm:is([data-m=lobby],[data-m=splash]) .stage{max-height:min(46vh,calc(100vh - 300px));max-height:min(46dvh,calc(100dvh - 300px))}
 .homerow{display:flex;gap:10px;align-items:stretch;width:100%}
 .bigcont{display:flex;align-items:center;gap:10px;flex:1;min-width:0;margin:0;min-height:0;background:var(--taxi);color:#fff;border:0;border-radius:16px;padding:8px 10px;text-align:left;box-shadow:0 4px 0 rgba(0,0,0,.2);animation:contpulse 2.4s ease-in-out infinite}
 .bigcont .stampic{width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:22px;background:rgba(255,255,255,.28);border:2px dashed rgba(255,255,255,.75);rotate:-6deg}
@@ -528,6 +528,7 @@ body.imm[data-m=lobby] .stage{max-height:min(46vh,calc(100vh - 300px));max-heigh
 #rail .ri .bd{position:absolute;top:-3px;right:0;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#E0533D;color:#fff;font-size:11px;font-style:normal;font-weight:700;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 #rail .ri.lv .e{font-family:var(--display);font-weight:800;font-size:17px;color:#fff;background:conic-gradient(var(--taxi) var(--p),rgba(34,48,74,.55) 0);border:3px solid rgba(246,235,207,.95)}
 #rail .ri:active .e{transform:scale(.92)}
+@media (max-height:760px){#rail .rl,#rail .rr{gap:5px}#rail .ri .e{width:40px;height:40px;font-size:19px}#rail .ri.lv .e{font-size:15px}}
 body.imm[data-m=desk] .stage>.card>.word{display:none}
 @media (prefers-reduced-motion:reduce){.fx-photo{animation:none}}
 .fx-phone .notch{position:absolute;left:50%;top:12px;width:34%;height:6px;transform:translateX(-50%);border-radius:3px;background:#0d1018;z-index:1}
@@ -607,7 +608,10 @@ body.imm .chat-list{height:min(46vh,430px)}
 .card .chat-list,.card .chat-list .zh{text-align:left}
 /* 正式美术：木招牌 logo、答题反应头像、出租车 / 日记背景 */
 .fx-title.logo{background:none;box-shadow:none;padding:0;rotate:0deg;top:calc(14px + env(safe-area-inset-top,0px));width:min(50%,200px);transform-origin:12% 0;animation:photoin .5s cubic-bezier(.3,1.4,.5,1),sway 5s ease-in-out .5s infinite}
-body.imm:is([data-m=lobby],[data-m=radio]) #gapLbl,body.imm .scene[data-art=diary] #gapLbl{display:none}
+body.imm:is([data-m=lobby],[data-m=splash],[data-m=radio]) #gapLbl,body.imm .scene[data-art=diary] #gapLbl{display:none}
+.fx-title.logo.big{width:min(72%,320px);top:calc(36px + env(safe-area-inset-top,0px))}
+body.imm .scene[data-art=splash] .fx-live{display:none}
+.chap .bldn{font-size:11px;font-weight:700;color:#fff;background:var(--taxi);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:1px}
 .fx-title.logo img{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 8px rgba(0,0,0,.25))}
 @keyframes sway{0%,100%{rotate:-1deg}50%{rotate:1.2deg}}
 #nicoReact{position:absolute;right:10px;bottom:10px;width:78px;height:78px;border-radius:50%;overflow:hidden;background:#FFF4DA;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.28);z-index:4;pointer-events:none;opacity:0;transform:translateY(24px) scale(.6);transition:opacity .2s,transform .3s cubic-bezier(.3,1.5,.5,1)}
@@ -677,14 +681,14 @@ body.imm .scene[data-art=diary] .fx-board{background:none;border:0;box-shadow:no
     <button class="t-pill" id="townBack">‹ 背包</button>
     <span class="t-pill" id="townTitle"></span>
     <button class="t-pill" id="townJournal" hidden>📖 手记</button>
-    <button class="t-pill" id="townList">☰ 全部集数</button>
+    <button class="t-pill" id="townList">护照</button>
   </div>
   <div class="t-sheet" id="townSheet"></div>
 </div>
 <div class="toast" id="toast"></div>
 <script>/* 加载太久时给一个重试按钮：主程序跑起来后 #loading 会被替换掉，这里就什么也不做 */
 setTimeout(function(){ var l=document.getElementById("loading"); if(l&&!document.getElementById("retry")) l.insertAdjacentHTML("beforeend",'<p class="tap">好像有点慢…</p><button class="primary" id="retry" onclick="location.reload()">🔄 重新加载</button>'); },15000);</script>
-<script>document.addEventListener("DOMContentLoaded",()=>{ const hb=document.getElementById("homebtn"); hb.onclick=()=>{ if(typeof stopTimer==="function") stopTimer(); home(); }; new MutationObserver(()=>{ /* 任何非首页都显示 */ if(!document.getElementById("homeMark")) hb.classList.remove("hidden"); if(typeof railSync==="function") railSync(); }).observe(document.getElementById("stage"),{childList:true}); });</script>
+<script>document.addEventListener("DOMContentLoaded",()=>{ const hb=document.getElementById("homebtn"); hb.onclick=()=>{ if(typeof stopTimer==="function") stopTimer(); home(); }; new MutationObserver(()=>{ /* 任何非首页都显示 */ if(!document.getElementById("homeMark")&&!document.getElementById("splashMark")) hb.classList.remove("hidden"); if(typeof railSync==="function") railSync(); }).observe(document.getElementById("stage"),{childList:true}); });</script>
 
 <script src="data/vocab.js?v=d62796cb"></script>
 <script src="data/levels.js?v=d62796cb"></script>
@@ -755,7 +759,13 @@ const TOWNS={
 const levelOf=lv=>LEVELS.find(l=>l.id===lv);
 const epsOfB=(lv,b)=>levelOf(lv).episodes.filter(e=>b.ch.includes(e._ch));
 const buildingOfEp=e=>TOWNS[e.lv]&&TOWNS[e.lv].buildings.find(b=>b.ch.includes(e._ch));
-const nextEpOf=lv=>levelOf(lv).episodes.find(e=>!epState(e).won)||null;
+const nextEpOf=lv=>{ const p=nextPick(); return p&&p.lv===lv?p:levelOf(lv).episodes.find(e=>!epState(e).won)||null; };
+/* 「继续」推荐：接着最后玩的那集，没打完就继续它，打完了就推荐它后面第一个没通关的；老存档没有记录时取第一个没通关的 */
+function nextPick(){ const L=S.lastEp&&EPISODES.find(e=>e.key===S.lastEp);
+  if(L){ if(!epState(L).won) return L; const n=EPISODES.slice(EPISODES.indexOf(L)+1).find(e=>!epState(e).won); if(n) return n; }
+  return EPISODES.find(e=>!epState(e).won)||null; }
+const epRange=eps=>{ const ns=[...new Set(eps.map(e=>e.n))].sort((a,b)=>a-b); if(!ns.length) return ""; const runs=[]; for(const n of ns){ const r=runs[runs.length-1]; if(r&&n===r[1]+1) r[1]=n; else runs.push([n,n]); }
+  return runs.map(([a,z])=>a===z?`${a}`:`${a}–${z}`).join("、")+"集"; };
 function bState(lv,b){
   const eps=epsOfB(lv,b); if(!eps.length) return "empty";
   if(eps.every(e=>epState(e).won)) return "done";
@@ -890,13 +900,15 @@ let DEV=null; try{ speechSynthesis.onvoiceschanged=()=>{ DEV=null; }; }catch(e){
 function deVoices(){ if(DEV&&DEV.length) return DEV; try{ DEV=speechSynthesis.getVoices().filter(v=>/^de([-_]|$)/i.test(v.lang)); }catch(e){ DEV=[]; } return DEV; }
 const vq=v=>/premium/i.test(v.voiceURI+v.name)?3:/enhanced|erweitert/i.test(v.voiceURI+v.name)?2:1;
 const bestNamed=(vs,re)=>vs.filter(v=>re.test(v.name)).sort((a,b)=>vq(b)-vq(a))[0]||null;
-const FEMV=/anna|helena|petra|marlene|vicki|katja|hedda|sabine|female|weiblich/i, MALV=/martin|markus|yannick|hans|stefan|conrad|\bmale\b|männlich/i;
+const FEMV=/anna|helena|petra|marlene|vicki|katja|hedda|sabine|female|weiblich/i, MALV=/martin|markus|yannick|viktor|hans|stefan|conrad|\bmale\b|männlich/i;
 function voiceFor(who){ const vs=deVoices(); if(!vs.length) return null; const s=sexOf(who);
   let h=0; for(const c of String(who)) h=(h*31+c.charCodeAt(0))|0; const pick=l=>l[Math.abs(h)%l.length];
   if(s==="f"||s==="m"){ const re=s==="f"?/anna/i:/yannick/i, pool=vs.filter(v=>(s==="f"?FEMV:MALV).test(v.name)); return bestNamed(vs,re)||pick(pool.length?pool:vs); }
   const siri=vs.filter(v=>/siri/i.test(v.name+" "+v.voiceURI)); if(siri.length) return pick(siri);
   const other=vs.filter(v=>!/anna|yannick/i.test(v.name)); return other.length?pick(other):bestNamed(vs,/anna/i)||vs[0]; }
-function voicePitch(who,v){ const s=sexOf(who); if(v&&/siri/i.test(v.name+" "+v.voiceURI)) return 1; return s==="k"?1.35:s==="n"&&v&&/anna|yannick/i.test(v.name)?1.15:1; }
+function voicePitch(who,v){ const s=sexOf(who); if(v&&/siri/i.test(v.name+" "+v.voiceURI)) return 1;
+  if(s==="m"&&v&&!MALV.test(v.name)) return .75;   /* 手机上找不到男声时，男角色压低音调 */
+  return s==="k"?1.35:s==="n"&&v&&/anna|yannick/i.test(v.name)?1.15:1; }
 function sayAs(who,text,rate,cb){ const v=voiceFor(who); speakThen(text,cb,{rate:rate||.95,voice:v,pitch:voicePitch(who,v)}); }
 /* 声音检测：网址加 ?voices 时列出本机网页能用的德语声音和角色分配，点一行试听 */
 if(/[?&]voices\b/.test(location.search)) setTimeout(function vlist(){ DEV=null; const vs=deVoices(); if(!vs.length&&!(vlist.n=(vlist.n||0)+1>8)) return setTimeout(vlist,500);
@@ -957,12 +969,14 @@ function sheetMin(on){ if(SHEET_MIN===on) return; SHEET_MIN=on; sheetEl.classLis
   if(on){ const a=document.activeElement; if(a&&stage.contains(a)) a.blur(); sheetEl.querySelector(".grip span").textContent=tInt?"▲ 展开，继续答题 · 计时已暂停":"▲ 展开，继续答题"; } immLayout(); }
 /* 背景：对话、热身、写下来、小课堂、Boss、结算在楼里，用室内图（进楼才加载，加载完前先用城市图里这栋楼的取景）；
    赶路、听写、本集首页在外面，用城市图取景；没有楼时取城市中部 */
-const IN_MODES=/^(vn|desk|phone|board|boss|win|lobby|inter)$/, IMG_OK={};
+const IN_MODES=/^(vn|desk|phone|board|boss|win|lobby|splash|inter)$/, IMG_OK={};
 function interiorOf(T,b){ if(!b||!(T.interiors||[]).includes(b.id)) return null; const src=`assets/interiors/${b.id}.webp`;
   if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(document.body.classList.contains("imm")) immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
   return IMG_OK[src]?{T,src,size:[1024,1536],inside:true}:null; }
 let BG_B=null;   /* 不在某一集里时（复习跑腿、自由练习）借用哪栋楼当背景 */
-function immBgSpec(){ if(SM==="radio"&&radioInCar()) return {src:"assets/art/scenes/taxi.webp",size:[768,1152],inside:true,fy:.36,art:"taxi"};
+function immBgSpec(){ if(SM==="splash"){ const src="assets/art/splash.webp"; if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(SM==="splash") immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
+    if(IMG_OK[src]) return {src,size:[1024,1536],inside:true,fy:.5,art:"splash"}; }
+  if(SM==="radio"&&radioInCar()) return {src:"assets/art/scenes/taxi.webp",size:[768,1152],inside:true,fy:.36,art:"taxi"};
   if(SM==="inter"&&IX&&IX.kind==="tage") return {src:"assets/art/scenes/diary.webp",size:[768,1152],inside:true,fy:.3,art:"diary"};
   const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):BG_B?(T.buildings||[]).find(x=>x.id===BG_B):(!DIARY?(T.buildings||[]).find(x=>x.id==="wg")||{id:"wg"}:null);
   const inn=interiorOf(T,b); if(inn&&IN_MODES.test(SM)) return inn;
@@ -989,7 +1003,7 @@ sceneBg.addEventListener("animationend",e=>{ if(e.animationName==="bgswap") scen
 let SM="home";
 const SMODE={episode:"home",intro:"vn",learn:"desk",chaseStart:"street",chaseSeg:"street",chaseSegDone:"street",chaseWin:"street",lose:"street",
   smsStart:"phone",smsWin:"phone",radioStart:"radio",radioWin:"radio",talkStart:"vn",talkWin:"vn",grammar:"board",stationBreak:"board",boss:"boss",win:"win",diary:"vn",mySentences:"vn",
-  home:"lobby",bookPage:"lobby",backupPage:"lobby",askMood:"vn",inter:"inter",interQ:"inter",interDone:"inter",hoerenStart:"inter",freePage:"inter",freeDone:"inter"};
+  home:"lobby",splash:"splash",bookPage:"lobby",backupPage:"lobby",askMood:"vn",inter:"inter",interQ:"inter",interDone:"inter",hoerenStart:"inter",freePage:"inter",freeDone:"inter"};
 for(const [f,m] of Object.entries(SMODE)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ SM=m; return o.apply(this,arguments); }; }
 const radioInCar=()=>{ if(!E) return false; const st=String(sceneText("radio")[0]||""), ic=st.split(/\s+/)[0]||""; return /📻|🚕|🚖/.test(ic)||/出租车|电台|收音机/.test(st); };
 function fxSync(){ const fx=$("sceneFx"), m=SM;
@@ -1001,8 +1015,10 @@ function fxSync(){ const fx=$("sceneFx"), m=SM;
       phone:isPhone?`<div class="fx-phone"><i class="notch"></i><div class="scr"><span>${ic}</span><em>${ti||"1 条新消息"}</em></div></div>`:`<div class="fx-pad"><span>${ic||"📝"}</span><b>${ti}</b><i></i><i></i><i></i></div>`,
       radio:inCar?`<div class="fx-dash"><div class="fx-radio"><b>${ic} ${ti||"FM 98.6"}</b><span class="eq">${"<i></i>".repeat(9)}</span></div></div>`:`<div class="fx-radio fx-spk"><span class="ic">${ic||"🎧"}</span><b>${ti}</b><span class="eq">${"<i></i>".repeat(9)}</span></div>`,
       board:`<div class="fx-board"><b></b><span></span></div>`,inter:`<div class="fx-board inter"><b></b><span></span></div>`,win:`<div class="fx-win"><span class="it"></span><span class="bag">👜</span></div>`,
-      lobby:`<div class="fx-title logo"><img src="assets/art/logo.webp" alt="Nicos Abenteuer" onerror="this.parentNode.classList.remove('logo');this.outerHTML='Nicos Abenteuer'"></div><div class="fx-bag"></div>`})[m]||"";
+      lobby:`<div class="fx-bag"></div>`,
+      splash:`<div class="fx-title logo big"><img src="assets/art/logo.webp" alt="Nicos Abenteuer" onerror="this.parentNode.classList.remove('logo');this.outerHTML='Nicos Abenteuer'"></div>`})[m]||"";
     if(m==="lobby") fx.insertBefore(liveNico(),fx.querySelector(".fx-bag"));
+    if(m==="splash") fx.appendChild(liveNico());
     fx.style.animation="none"; void fx.offsetWidth; fx.style.animation=""; stage.classList.remove("fade"); void stage.offsetWidth; stage.classList.add("fade"); }
   const q=s=>fx.querySelector(s), tx=s=>{ const el=stage.querySelector(s); return el?el.textContent.trim():""; };
   if(m==="vn"){ const d=stage.querySelector(".chat .cmsg.now:not(.typing)")||[...stage.querySelectorAll(".chat .cmsg[data-i]")].pop()||stage.querySelector(".dialog:not(.me)")||stage.querySelector(".dialog"); if(d){ const a=d.querySelector(".av"), w=a.dataset.w||a.textContent, im=a.querySelector("img"), em=w+(im?"|"+im.getAttribute("src"):""), nm=d.querySelector(".who").textContent;
@@ -1193,17 +1209,24 @@ function askMood(){ E=null; theme(3); target(); setScene(6,70,false); $("gapLbl"
   $("back").onclick=home; stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const m=MOODS[+b.dataset.i]; S.mood=S.mood||{}; S.mood[today()]=m[0]; save(); stage.querySelectorAll(".opt").forEach(x=>{x.disabled=true; if(x===b) x.classList.add("right");}); cheer(); speakThen(m[0],()=>setTimeout(home,400)); }); }
 
 /* ---------- 首页 ---------- */
+/* ---------- 首页第一层：开屏（logo + 开始 + 护照） ---------- */
+function splash(){ leaveScene();
+  townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; BG_B=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Abenteuer"; hearts(null);
+  const nx=nextPick();
+  stage.innerHTML=`<i id="splashMark" hidden></i><div class="homerow"><button class="bigcont" id="spGo"><span class="t"><b>开始</b><span>${wonN()?`已通关 ${wonN()} 集`:"Nico 的柏林之旅"}</span></span><span class="pl">▶</span></button>
+    <button class="ppbtn" id="wall" aria-label="护照"><span class="pp"><i>✦</i></span><b>护照</b><small>${wonN()}/${EPISODES.length}</small></button></div>`;
+  $("spGo").onclick=home; $("wall").onclick=()=>levelMap(nx?nx.lv:LEVELS[0].id,false,"splash"); railSync(); }
+/* ---------- 首页第二层：学习状态（继续 + 等级进度 + 功能图标） ---------- */
 function home(){ leaveScene();
   townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; BG_B=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Abenteuer"; hearts(null);
   const due=dueList(), mtotal=Object.values(S.mist).filter(m=>!m.done).length;
-  const nx=EPISODES.find(e=>!epState(e).won);
-  const stepN=nx?epState(nx).done:0;
-  stage.innerHTML=`<i id="homeMark" hidden></i><div class="homerow">${nx?`<button class="bigcont" id="cont"><span class="stampic">${nx.item.e}</span><span class="t"><small>${stepN?"继续":"出发"} · ${esc(nx.lv)} 第 ${nx.n} 集</small><b>${esc(nx.name)}</b><span>${esc(nx.zh)}</span></span><span class="pl">▶</span></button>`
-      :`<button class="bigcont" id="cont"><span class="t"><small>全部通关 🎉</small><b>再玩一遍</b><span>每集都可以重玩刷星</span></span><span class="pl">▶</span></button>`}
-    <button class="ppbtn" id="wall" aria-label="护照"><span class="pp"><i>✦</i></span><b>护照</b><small>${wonN()}/${EPISODES.length}</small></button></div>
+  const nx=nextPick(), nxB=nx&&buildingOfEp(nx), nxSt=nx?stationOf(S.ep[nx.key]):0;
+  stage.innerHTML=`<i id="homeMark" hidden></i><div class="homerow">${nx?`<button class="bigcont" id="cont"><span class="stampic">${nx.item.e}</span><span class="t"><small>${nxSt?"继续":"出发"} · ${esc(nx.lv)} 第 ${nx.n} 集${nxSt?` · 第 ${nxSt+1} 站`:""}</small><b>${esc(nx.name)}</b><span>${nxB?esc(nxB.zh)+" · ":""}${esc(nx.zh)}</span></span><span class="pl">▶</span></button>`
+      :`<button class="bigcont" id="cont"><span class="t"><small>全部通关</small><b>再玩一遍</b><span>每集都可以重玩刷星</span></span><span class="pl">▶</span></button>`}</div>
+    <div class="row" style="margin-top:6px"><button class="ghost" id="toSplash">‹ 封面</button></div>
     <p class="tap" style="margin:8px 0 0">${cloud.ready?"进度已同步到云端":"进度存在本机"} · 词汇与原声 DW Nicos Weg</p>`;
-  const cb=$("cont"); if(cb) cb.onclick=()=>nx?episode(nx.key):levelMap(LEVELS[0].id,false,true);
-  $("wall").onclick=()=>levelMap(nx?nx.lv:LEVELS[0].id,false,true);
+  $("toSplash").onclick=splash;
+  $("cont").onclick=()=>nx?townView(nx.lv,nxB&&nxB.id):levelMap(LEVELS[0].id,false,true);
   const r=$("rail")||document.body.appendChild(Object.assign(document.createElement("div"),{id:"rail"})), bk=wonN()>bkWon(), bookN=(S.book||[]).length;
   const ic=(id,e,lb,badge)=>`<button class="ri" id="${id}" aria-label="${lb}"><span class="e">${e}</span><b>${lb}</b>${badge?`<i class="bd">${badge}</i>`:""}</button>`;
   r.innerHTML=`<div class="rl">${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="ri lv" data-lv="${l.id}" aria-label="${esc(l.name)}" style="--p:${l.episodes.length?won/l.episodes.length*100:0}%"><span class="e">${l.id}</span><b>${won}/${l.episodes.length}</b></button>`; }).join("")}</div>
@@ -1254,7 +1277,7 @@ function backupPage(){ leaveScene(); E=null; theme(3); target(); setScene(6,70,f
 let TV={lv:null,sel:null,sc:.6,tx:0,ty:0,drag:null,pinch:null,raf:null,swiped:0};
 const townEl=()=>$("town");
 function townView(lv,selId){ leaveScene();
-  const T=TOWNS[lv], L=levelOf(lv); if(!T||!T.bg||!L) return levelMap(lv,false,false);   /* 没有水彩城市图的等级（A2）直接进闯关路线 */
+  const T=TOWNS[lv], L=levelOf(lv); if(!T||!L) return levelMap(lv,false,false);   /* 没有城市地图配置的等级直接进护照列表；A2 没有水彩底图，用单栋楼的画 */
   stopTimer(); E=null; DIARY=false; BG_B=null; CUR_LV=lv; TV.lv=lv; const bg=!!T.bg; document.body.classList.remove("imm");
   const tw=townEl(); tw.hidden=false; tw.classList.toggle("bgm",bg); document.body.style.overflow="hidden";
   tw.querySelectorAll(".t-modal").forEach(x=>x.remove());
@@ -1263,10 +1286,11 @@ function townView(lv,selId){ leaveScene();
   $("townFog").innerHTML=""; $("townJournal").hidden=!bg;
   const won=L.episodes.filter(e=>epState(e).won).length;
   $("townTitle").textContent=`${L.name} · 通关 ${won}/${L.episodes.length} · ★${starSum(L.episodes)}`;
-  $("townBuildings").innerHTML=T.buildings.map(b=>{ const st=bState(lv,b); const eps=epsOfB(lv,b); const w=eps.filter(e=>epState(e).won).length;
-    if(bg){ const tag=st==="done"?`★${starSum(eps)}/${eps.length*3}`:st==="cur"?`▶ ${w}/${eps.length}`:`${w}/${eps.length}`;
+  const nxL=nextEpOf(lv);
+  $("townBuildings").innerHTML=T.buildings.map(b=>{ const st=bState(lv,b); const eps=epsOfB(lv,b); const w=eps.filter(e=>epState(e).won).length, rg=epRange(eps), nxT=st==="cur"&&nxL?`▶ 下一集 第${nxL.n}集`:"";
+    if(bg){ const tag=st==="done"?`${rg} ★${starSum(eps)}/${eps.length*3}`:nxT||`${rg} · ${w}/${eps.length}`;
       return `<div class="t-hs ${st}" data-b="${b.id}" style="left:${b.x-b.w/2}px;top:${b.y-b.h/2}px;width:${b.w}px;height:${b.h}px"><span class="t-tag"><em>${b.ic||""}</em>${esc(b.name)} <small>${tag}</small></span></div>`; }
-    const tag=st==="done"?"⭐ 全部通关":st==="cur"?`▶ ${w}/${eps.length}`:`${w}/${eps.length}`;
+    const tag=st==="done"?`${rg} 全部通关`:nxT||`${rg} · ${w}/${eps.length}`;
     return `<div class="t-b ${st}" data-b="${b.id}" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;z-index:${Math.round(b.y)}"><img src="assets/art/buildings/${b.id}.webp" alt="" onerror="this.onerror=null;this.src='assets/buildings/${b.id}.png'"><span class="t-tag">${esc(b.name)} · ${tag}</span></div>`; }).join("");
   $("townBuildings").querySelectorAll(".t-b,.t-hs").forEach(el=>el.onclick=()=>{ if(TV.drag&&TV.drag.moved) return; townSelect(el.dataset.b); });
   const cur=T.buildings.find(b=>b.id===selId)||T.buildings.find(b=>bState(lv,b)==="cur")||T.buildings[0];
@@ -1400,14 +1424,14 @@ let LM_HOME=false;   /* 勋章墙是从首页进来的：返回直接回首页 *
 function levelMap(lv,keep,fromHome){
   if(fromHome!==undefined) LM_HOME=fromHome;
   const L=LEVELS.find(x=>x.id===lv); CUR_LV=lv; stopTimer(); E=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Weg "+lv; hearts(null);
-  const nx=L.episodes.find(e=>!epState(e).won), won=L.episodes.filter(e=>epState(e).won).length, hasMap=!!(TOWNS[lv]&&TOWNS[lv].bg);
+  const nx=nextEpOf(lv), won=L.episodes.filter(e=>epState(e).won).length, hasMap=!!TOWNS[lv];
   // 按章节分组（PDF 里的 "5 | 物品 | …"，缺失时沿用上一集）；整个等级都没有章节信息时每 4 集一组
   const hasCh=L.episodes.some(e=>e.ch);
   const groups=[]; L.episodes.forEach((e,i)=>{ const key=hasCh?e._ch:Math.floor(i/4); let g=groups[groups.length-1]; if(!g||g.key!==key){ g={key,name:hasCh?chapterName(lv,key):`第 ${key+1} 站`,eps:[]}; groups.push(g); } g.eps.push(e); });
-  const chapHead=g=>`<div class="chap"><b>${hasCh&&g.key===0?"起点":g.key}</b>${esc(g.name)}</div>`;
+  const chapHead=g=>{ const b=hasCh&&TOWNS[lv]&&TOWNS[lv].buildings.find(x=>x.ch.includes(g.key)); return `<div class="chap"><b>${hasCh&&g.key===0?"起点":g.key}</b>${b?`<span class="bldn">${esc(b.zh)}</span>`:""}${esc(g.name)}</div>`; };
   stage.innerHTML=`<div class="ptop"><button class="ghost bk" id="back" aria-label="返回">‹</button><h2>护照 · ${esc(lv)}<small>通关 ${won}/${L.episodes.length} · ★${starSum(L.episodes)}/${L.episodes.length*3}</small></h2>${LEVELS.length>1?`<div class="lvtab">${LEVELS.map(l=>`<button data-lt="${l.id}" class="${l.id===lv?"on":""}">${l.id}</button>`).join("")}</div>`:""}</div>
     ${groups.map(g=>chapHead(g)+pathHTML(g.eps,nx&&nx.key)).join("")}`;
-  $("back").onclick=()=>LM_HOME||!hasMap?home():townView(lv);
+  $("back").onclick=()=>LM_HOME==="splash"?splash():LM_HOME||!hasMap?home():townView(lv);
   stage.querySelectorAll("[data-lt]").forEach(b=>b.onclick=()=>{ if(b.dataset.lt!==lv){ levelMap(b.dataset.lt); stage.scrollTop=0; } });
   stage.querySelectorAll("[data-ep]").forEach(b=>b.onclick=()=>episode(b.dataset.ep));
   const el=stage.querySelector(".stp.cur"); if(el&&!keep) setTimeout(()=>el.scrollIntoView({block:"center",behavior:"instant"}),30);
@@ -1454,7 +1478,7 @@ function routeHTML(ep){ let found=!!ep.won, no=0; const sp=t=>{ const m=String(t
   return STATIONS.map(s=>`<div class="stn${so>=s.n?" done":""}"><div class="stn-h">第 ${s.n} 站 · ${esc(s.t)}${so>=s.n?" ✓":""}</div><div class="route">${s.acts.filter(a=>ACT[a].kind!=="info"&&!(ACT[a].hide&&ACT[a].hide())).map(item).join("")}</div></div>`).join(""); }
 function episode(key){
   { const e0=EPISODES.find(e=>e.key===key); if(e0&&!e0._full){ leaveScene(); stage.innerHTML=`<div class="center tap" id="epLoad" style="padding:30px 0">加载中…</div>`; return loadEp(key).then(()=>{ if($("epLoad")) episode(key); }).catch(()=>{ if($("epLoad")){ toast("加载失败，请检查网络后再试"); home(); } }); } }
-  leaveScene(); E=EPISODES.find(e=>e.key===key); CUR_LV=E.lv; LV=VOCAB.filter(v=>v.l===E.id); stopTimer(); theme(E.n); target(E.taxi?"🚕":E.item.e); setScene(6,70,false); $("gapLbl").textContent=`第 ${E.n} 集 · ${E.name}`; hearts(null); const ep=EP();
+  leaveScene(); E=EPISODES.find(e=>e.key===key); if(S.lastEp!==key){ S.lastEp=key; save(); } CUR_LV=E.lv; LV=VOCAB.filter(v=>v.l===E.id); stopTimer(); theme(E.n); target(E.taxi?"🚕":E.item.e); setScene(6,70,false); $("gapLbl").textContent=`第 ${E.n} 集 · ${E.name}`; hearts(null); const ep=EP();
   const done=SCENES.filter(([k])=>ep[k]).length;
   stage.innerHTML=`<h2 class="center">第 ${E.n} 集 · ${esc(E.name)}</h2><div class="tap">${esc(E.zh)} · ${LV.length} 个词 · 3 站</div>${E.synopsis?`<div class="card" style="text-align:left;font-size:14px;line-height:1.7">📖 ${esc(E.synopsis)}</div>`:""}
     ${routeHTML(ep)}
@@ -1898,7 +1922,7 @@ const diaryAll=e=>((e.diary&&e.diary.lines)||[]).map(l=>l.gap?diaryPlain(l):l.de
 /* 逐句朗读，一句读完再读下一句；再次调用会打断上一轮 */
 function sayLines(ls){ const tok=sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} let k=0;
   const nx=()=>{ if(tok!==sayLines.t||k>=ls.length) return; const t=ls[k++]; let done=false; const go=()=>{ if(done) return; done=true; nx(); };
-    try{ const u=new SpeechSynthesisUtterance(t), v=voiceFor("Nico"); u.lang="de-DE"; u.rate=.9; if(v) u.voice=v; u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
+    try{ const u=new SpeechSynthesisUtterance(t), v=voiceFor("Nico"); u.lang="de-DE"; u.rate=.9; if(v){ u.voice=v; u.pitch=voicePitch("Nico",v); } u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
   nx(); }
 function diaryHTML(l,fill){ let h=esc(l.de).replace(/\*\*(.+?)\*\*/g,(m,x)=>`<button class="sl" data-s="${esc(slKey(x))}">${x}</button>`);
   return h.replace(/\{([^}]+)\}/,(m,w)=>fill===false?`<b id="gap" class="gapb">___ ___</b>`:`<b class="gapb">${esc(artCap(l,l.gap.g))} ${esc(w)}</b>`); }
@@ -2140,7 +2164,7 @@ function horQ(it){ const v=it.v, typed=!it.o;
 const QS=new URLSearchParams(location.search), q=QS.get("ep"), lvq=QS.get("lv");
 if(q&&EPISODES.some(e=>e.key===q)) episode(q);
 else if(lvq&&TOWNS[lvq]&&levelOf(lvq)){ home(); townView(lvq,QS.get("b")); }
-else home();
+else splash();
 initCloud();
 try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}   /* 请浏览器别在空间紧张时自动清掉进度 */
 /* 离线可用：打开过的页面、数据和图片存进缓存（sw.js 由 build.py 生成） */
