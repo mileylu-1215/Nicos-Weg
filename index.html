@@ -614,7 +614,9 @@ body.imm .chat-list{height:min(46vh,430px)}
 .fx-title.logo{background:none;box-shadow:none;padding:0;rotate:0deg;top:calc(14px + env(safe-area-inset-top,0px));width:min(50%,200px);transform-origin:12% 0;animation:photoin .5s cubic-bezier(.3,1.4,.5,1),sway 5s ease-in-out .5s infinite}
 body.imm:is([data-m=lobby],[data-m=splash],[data-m=radio]) #gapLbl,body.imm .scene[data-art=diary] #gapLbl{display:none}
 .fx-title.logo.big{width:min(72%,320px);top:calc(36px + env(safe-area-inset-top,0px))}
-body.imm .scene[data-art=splash] .fx-live{display:none}
+body.imm .scene[data-art=splash] .fx-live,body.imm .scene[data-art=door] .fx-bag{display:none}
+body.imm .scene[data-art=door] .fx-live{left:60%;height:min(33%,230px)}
+body.imm .scene[data-art=door] .fx-live .sh{left:18%;right:18%;bottom:-3%;height:8%;background:radial-gradient(rgba(70,45,25,.45),transparent 70%)}
 .chap .bldn{font-size:11px;font-weight:700;color:#fff;background:var(--taxi);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:1px}
 .fx-title.logo img{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 8px rgba(0,0,0,.25))}
 @keyframes sway{0%,100%{rotate:-1deg}50%{rotate:1.2deg}}
@@ -985,6 +987,8 @@ function immBgSpec(){ if(SM==="splash"){ const src="assets/art/splash.webp"; if(
   if(SM==="radio"&&radioInCar()) return {src:"assets/art/scenes/taxi.webp",size:[768,1152],inside:true,fy:.36,art:"taxi"};
   if(SM==="inter"&&IX&&IX.kind==="tage") return {src:"assets/art/scenes/diary.webp",size:[768,1152],inside:true,fy:.3,art:"diary"};
   if(SM==="lobby"){ const nx=nextPick(), T2=TOWNS[nx?nx.lv:"A1"], b2=nx&&buildingOfEp(nx);
+    if(b2){ const src=`assets/art/doors/${b2.id}.webp`; if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(SM==="lobby") immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
+      if(IMG_OK[src]) return {src,size:[1024,1536],inside:true,fy:.4,art:"door"}; }   /* 建筑门口画（门开着，动态 Nico 站在门前空地上） */
     if(T2&&T2.bg&&b2) return {T:T2,src:T2.bg,size:T2.size,x:b2.x,y:b2.y+(b2.h||0)*.15,w:b2.w*.9,lobby:1}; }
   const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):BG_B?(T.buildings||[]).find(x=>x.id===BG_B):(!DIARY?(T.buildings||[]).find(x=>x.id==="wg")||{id:"wg"}:null);
   const inn=interiorOf(T,b); if(inn&&IN_MODES.test(SM)) return inn;
