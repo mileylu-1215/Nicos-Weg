@@ -1096,7 +1096,7 @@ function sheetMin(on){ if(SHEET_MIN===on) return; SHEET_MIN=on; sheetEl.classLis
 const IN_MODES=/^(vn|desk|phone|board|boss|win|lobby|splash|inter)$/, IMG_OK={};
 function interiorOf(T,b){ if(!b||!(T.interiors||[]).includes(b.id)) return null; const src=`assets/interiors/${b.id}.webp`;
   if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(document.body.classList.contains("imm")) immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
-  return IMG_OK[src]?{T,src,size:[1024,1536],inside:true,board:PAINTED_BOARD[b.id]}:null; }
+  return IMG_OK[src]?{T,src,size:[1024,1536],inside:true,board:PAINTED_BOARD[b.id],bid:b.id}:null; }
 /* 室内图里画好的黑板（原图像素 x0,y0,x1,y1）：黑板标题直接写在上面，不再另画一块 */
 const PAINTED_BOARD={sprachschule:[236,338,644,498]};
 let BG_B=null;   /* 不在某一集里时（复习跑腿、自由练习）借用哪栋楼当背景 */
@@ -1129,8 +1129,38 @@ function immSync(bgOnly){ const on=immOn(); document.body.classList.toggle("imm"
     if(s) sceneBg.style.backgroundImage=`url("${s.src}")`; scene.classList.toggle("inside",!!(s&&s.inside)); sceneBg.dataset.art=scene.dataset.art=s&&s.art||"";
     /* 换图（室外 ↔ 室内）时不做位置过渡，改成淡入，免得看到图片滑动缩放 */
     if(swap){ sceneBg.classList.remove("swap"); void sceneBg.offsetWidth; sceneBg.classList.add("swap"); } }
-  sceneBg.dataset.t=scene.dataset.t||"day"; immLayout(); if(bgOnly!==true) fxSync(); }
+  sceneBg.dataset.t=scene.dataset.t||"day"; immLayout(); if(bgOnly!==true) fxSync(); ambSync(); }
 sceneBg.addEventListener("animationend",e=>{ if(e.animationName==="bgswap") sceneBg.classList.remove("swap"); });
+/* 环境音：进了哪栋楼就循环放那栋楼的声音（assets/audio/amb/<楼>.mp3），地图和门口放街道声；
+   用 WebAudio 是因为 iPhone 上 <audio> 调不了音量。朗读时压低，电台 / 整段听时静音，切到后台暂停 */
+var AMB_IDS=new Set(["flughafen","cafe","wg","sprachschule","baeckerei","restaurant","bahnhof","supermarkt","fahrrad","boutique","park","arztpraxis","rathaus","street"]);
+var AMB={ctx:null,cur:null,node:null,buf:{},vol:0};
+const ambOn=()=>!(S.pref&&S.pref.ambOff);
+function ambWant(){ if(!ambOn()||document.hidden||!document.body.classList.contains("imm")) return null;
+  if(SM==="radio"||SM==="splash"||(IX&&IX.kind==="hoeren"&&SM==="inter")) return null;
+  const s=IMM_BG; if(!s) return null;
+  if(s.bid) return AMB_IDS.has(s.bid)?{id:s.bid,v:.55}:null;
+  if(s.inside&&s.art!=="door") return null;
+  return {id:"street",v:.32}; }
+function ambLoad(id){ const a=AMB.buf; if(a[id]) return a[id];
+  a[id]=fetch(`assets/audio/amb/${id}.mp3`).then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
+    .then(b=>new Promise((res,rej)=>AMB.ctx.decodeAudioData(b,res,rej))).catch(()=>{ delete a[id]; return null; });
+  return a[id]; }
+function ambStopNode(n,t){ if(!n) return; const c=AMB.ctx, now=c.currentTime; try{ n.g.gain.cancelScheduledValues(now); n.g.gain.setValueAtTime(n.g.gain.value,now); n.g.gain.linearRampToValueAtTime(0,now+t); n.s.stop(now+t+.05); }catch(e){} }
+function ambSync(){ const c=AMB&&AMB.ctx; if(!c) return; const w=ambWant();
+  if(!w){ if(AMB.node){ ambStopNode(AMB.node,.8); AMB.node=null; AMB.cur=null; } if(document.hidden&&c.state==="running") c.suspend().catch(()=>{}); return; }
+  if(c.state!=="running") c.resume().catch(()=>{});
+  let duck=false; try{ duck=!TAU.paused||speechSynthesis.speaking; }catch(e){}
+  const vol=w.v*(duck?.3:1);
+  if(AMB.cur===w.id){ if(AMB.node&&Math.abs(AMB.vol-vol)>.01){ const now=c.currentTime, g=AMB.node.g.gain; g.cancelScheduledValues(now); g.setValueAtTime(g.value,now); g.linearRampToValueAtTime(vol,now+(duck?.25:.9)); AMB.vol=vol; } return; }
+  AMB.cur=w.id; const id=w.id;
+  ambLoad(id).then(buf=>{ if(!buf||AMB.cur!==id) return; ambStopNode(AMB.node,1.2);
+    const s=c.createBufferSource(), g=c.createGain(); s.buffer=buf; s.loop=true; g.gain.value=0; s.connect(g); g.connect(c.destination);
+    s.start(0,Math.random()*buf.duration); g.gain.linearRampToValueAtTime(vol,c.currentTime+1.5); AMB.node={s,g}; AMB.vol=vol; }); }
+function ambUnlock(){ if(!AMB.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; try{ AMB.ctx=new AC(); }catch(e){ return; } setInterval(ambSync,400); }
+  if(AMB.ctx.state!=="running"&&ambWant()) AMB.ctx.resume().catch(()=>{}); ambSync(); }
+["pointerdown","touchend","keydown"].forEach(ev=>document.addEventListener(ev,ambUnlock,{capture:true,passive:true}));
+document.addEventListener("visibilitychange",ambSync);
 /* 各环节的专属画面：给环节入口函数套一层，记下当前环节；题目函数本身不动 */
 let SM="home";
 const SMODE={episode:"home",intro:"vn",learn:"desk",chaseStart:"street",chaseSeg:"street",chaseSegDone:"street",chaseWin:"street",lose:"street",
@@ -1634,10 +1664,11 @@ function episode(key){
     <div class="row"><button class="ghost" id="back">‹ 地图</button><button class="primary" id="go">${done===0?"看剧情 ›":ep.won?"从头再玩":`继续第 ${stationOf(ep)+1} 站 ›`}</button></div>
     ${ep.won?`<div class="center" style="font-size:24px;color:var(--taxi);letter-spacing:3px">${starStr(starsOf(E))}</div>${starHints(E)}`:""}
     ${E.grammar?`<div class="row"><button id="gram">Lisa 的小课堂：${esc(E.grammar.title||"语法")}</button></div>`:""}
-    <div class="row"><button id="mn">${manualNext()?"👆 答对后：总是手点":"⏩ 答对后：自动下一题"}</button></div>${RMQ.matches?`<div class="tap">系统开了「减少动态效果」，一律手点</div>`:""}
+    <div class="row"><button id="mn">${manualNext()?"👆 答对后：总是手点":"⏩ 答对后：自动下一题"}</button><button id="amb">${ambOn()?"环境音：开":"环境音：关"}</button></div>${RMQ.matches?`<div class="tap">系统开了「减少动态效果」，一律手点</div>`:""}
     ${ep.won?`<div class="row"><button id="hard">${S.hard?"⚡ 挑战模式：开":"⚡ 挑战模式：关"}</button></div><div class="tap">挑战模式：时间减半，答错直接重来；挑战模式通关直接拿 ⭐3</div>`:""}`;
   const cur=E; $("back").onclick=()=>{ const b=buildingOfEp(cur); townView(cur.lv,b&&b.id); }; $("go").onclick=()=>{ if(done===0||ep.won){ RUN={key:E.key,wrong:new Set()}; intro(0); } else startStation(stationOf(ep)+1); };
   $("mn").onclick=()=>{ if(RMQ.matches) return toast("系统设置了减少动态效果"); S.pref=S.pref||{}; S.pref.manualNext=!S.pref.manualNext; save(); episode(key); };
+  $("amb").onclick=()=>{ S.pref=S.pref||{}; S.pref.ambOff=!S.pref.ambOff; save(); $("amb").textContent=ambOn()?"环境音：开":"环境音：关"; ambUnlock(); };
   const gb=$("gram"); if(gb) gb.onclick=()=>grammar(()=>episode(cur.key));
   stage.querySelectorAll(".rt[data-a]").forEach(b=>b.onclick=()=>ACT[b.dataset.a].start(()=>episode(cur.key)));
   const h=$("hard"); if(h) h.onclick=()=>{ S.hard=!S.hard; save(); episode(key); };
