@@ -595,6 +595,9 @@ body.imm .chat-list{height:min(46vh,430px)}
 .chat-new{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.18);z-index:2}
 .chat-tools{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0 2px}
 .chat-tools button{padding:5px 11px;font-size:13px;border-radius:999px;min-height:0}
+.spd{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);padding:0 6px}
+.spd input{width:96px;accent-color:var(--taxi);margin:0}
+.spd b{font-weight:600;min-width:2.4em;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.cmsg{animation:none}.cmsg.typing .bub i{animation:none;opacity:.6}}
 .tg-l .sl,.word .sl{display:inline;background:none;border:0;padding:0;margin:0;font:inherit;font-weight:800;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;min-height:0;box-shadow:none}
 .slcard{display:block;margin:4px 0 6px;padding:8px 10px;border-radius:10px;background:var(--bubble);border:1px solid var(--line);font-size:14px;line-height:1.5;font-weight:400;font-family:var(--body);color:var(--ink)}
@@ -893,10 +896,14 @@ function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show");
 let cur=null,onEnd=null;
 function play(v,cb){ if(!v) return; if(cur){try{cur.pause();}catch(e){}} onEnd=cb||null; const a=new Audio("media/"+v.snd); cur=a; const done=()=>{ if(onEnd&&cur===a){ const f=onEnd; onEnd=null; f(); } }; a.onended=done; const fb=()=>{ try{ const u=new SpeechSynthesisUtterance(v.ans); u.lang="de-DE"; u.onend=done; speechSynthesis.speak(u);}catch(e){ done(); } }; a.onerror=fb; a.play().catch(fb); a.onloadedmetadata=()=>{ setTimeout(done,Math.min(4000,(a.duration||2)*1000+300)); }; setTimeout(done,2500); }
 /* 德语朗读：读完（或出错、或超时兜底）只回调一次；o 可选 {rate, voice, pitch, queue} */
+/* 全局语速倍数（页面上的“语速”滑块），录好的 mp3 和手机自带声音都按它变速 */
+const SPD=()=>{ const v=+(S.pref&&S.pref.spd); return v>=.5&&v<=1.5?v:1; };
+const spdUI=()=>`<label class="spd">语速<input type="range" min="0.6" max="1.3" step="0.1" value="${SPD()}" aria-label="语速"><b>${SPD().toFixed(1)}×</b></label>`;
+document.addEventListener("input",e=>{ const t=e.target; if(!t.matches||!t.matches(".spd input")) return; S.pref=S.pref||{}; S.pref.spd=+t.value; save(); t.nextElementSibling.textContent=(+t.value).toFixed(1)+"×"; try{ TAU.playbackRate=Math.min(1,TAU.dataset.r||1)*SPD(); }catch(err){} });
 function speakThen(t,cb,o){ o=o||{}; const txt=String(t||""); let done=false;
   const fin=()=>{ if(done) return; done=true; clearTimeout(tm); cb&&cb(); };
   const tm=setTimeout(fin,Math.max(2500,txt.length*110/(o.rate||.9)+800));
-  try{ const u=new SpeechSynthesisUtterance(txt); u.lang="de-DE"; u.rate=o.rate||.9; if(o.voice) u.voice=o.voice; if(o.pitch) u.pitch=o.pitch;
+  try{ const u=new SpeechSynthesisUtterance(txt); u.lang="de-DE"; u.rate=(o.rate||.9)*SPD(); if(o.voice) u.voice=o.voice; if(o.pitch) u.pitch=o.pitch;
     u.onend=fin; u.onerror=fin; if(!o.queue) speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ fin(); } }
 /* 角色声音：女角色 Anna（Premium 优先），男角色 Yannick（Enhanced 优先），小孩 / 广播 / 旁白轮流用 Siri 声音；
    网页拿不到 Siri 时退回其他德语声音，再不行用 Anna 调音高 */
@@ -925,8 +932,8 @@ function ttsStop(){ TAU_TOK++; TAU.onended=TAU.onerror=null; try{ TAU.pause(); }
 function ttsPlay(who,text,rate,cb){ const h=TTSSET.size&&ttsKey(who,text); if(!h||!TTSSET.has(h)) return false;
   ttsStop(); const tok=TAU_TOK; let done=false;
   const fin=ok=>{ if(done||tok!==TAU_TOK) return; done=true; clearTimeout(tm); TAU.onended=TAU.onerror=null; ok?cb&&cb():synthSay(who,text,rate,cb); };
-  const tm=setTimeout(()=>fin(true),Math.max(5000,ttsNorm(text).length*160/(rate||.95)+3000));
-  TAU.onended=()=>fin(true); TAU.onerror=()=>fin(false); TAU.src=`tts/${h}.mp3`; TAU.playbackRate=Math.min(1,(rate||.95)/.95);
+  const r0=Math.min(1,(rate||.95)/.95), tm=setTimeout(()=>fin(true),Math.max(5000,ttsNorm(text).length*160/(r0*SPD())+3000));
+  TAU.onended=()=>fin(true); TAU.onerror=()=>fin(false); TAU.src=`tts/${h}.mp3`; TAU.dataset.r=r0; TAU.defaultPlaybackRate=TAU.playbackRate=r0*SPD();
   const p=TAU.play(); if(p&&p.catch) p.catch(()=>fin(false)); return true; }
 /* 第一次点屏幕时用一段静音解锁这个播放器，之后自动连播不会被 iOS 拦下 */
 document.addEventListener("touchend",function unlock(){ document.removeEventListener("touchend",unlock,true); if(TAU.src) return;
@@ -1563,7 +1570,7 @@ function intro(){
   /* iOS：第一次朗读必须在点击里触发，先空读一次解锁 */
   try{ speechSynthesis.speak(new SpeechSynthesisUtterance("")); }catch(e){}
   stage.innerHTML=`<div class="chat${P.chatNoZh?" nozh":""}" id="chat"><div class="chat-list" id="chatList" aria-live="polite"></div><button class="chat-new hidden" id="chatNew">↓ 新消息</button></div>
-    <div class="chat-tools"><button id="chatZh">${P.chatNoZh?"显示中文":"隐藏中文"}</button><button id="chatMute">${P.chatMute?"打开朗读":"静音"}</button><button id="chatPause">暂停</button><button id="chatAll">全部显示</button></div>
+    <div class="chat-tools"><button id="chatZh">${P.chatNoZh?"显示中文":"隐藏中文"}</button><button id="chatMute">${P.chatMute?"打开朗读":"静音"}</button><button id="chatPause">暂停</button><button id="chatAll">全部显示</button>${spdUI()}</div>
     <div class="row"><button class="ghost" id="back">‹ 返回</button><button class="primary hidden" id="next">出发！</button></div>`;
   const list=$("chatList"), box=$("chat"), alive=()=>CH&&CH.tok===my&&list.isConnected;
   const nearBottom=()=>list.scrollHeight-list.scrollTop-list.clientHeight<60;
@@ -1589,7 +1596,7 @@ function intro(){
     if(P.chatMute||!txt){ CH.t=setTimeout(go,Math.max(1200,txt.length*55)); return; }
     safe=setTimeout(go,Math.max(4000,txt.length*120));
     try{ speechSynthesis.cancel(); }catch(e){} if(ttsPlay(d.w,txt,.9,go)){ clearTimeout(safe); return; }
-    try{ const u=new SpeechSynthesisUtterance(txt), v=voiceFor(d.w); u.lang="de-DE"; u.rate=.9; if(v) u.voice=v; u.pitch=voicePitch(d.w,v); u.onend=go; u.onerror=go; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ go(); } };
+    try{ const u=new SpeechSynthesisUtterance(txt), v=voiceFor(d.w); u.lang="de-DE"; u.rate=.9*SPD(); if(v) u.voice=v; u.pitch=voicePitch(d.w,v); u.onend=go; u.onerror=go; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){ go(); } };
   const finish=()=>{ CH.done=true; prog("intro",IN.length); $("next").classList.remove("hidden"); $("chatPause").classList.add("hidden");
     $("chatAll").textContent="从头播放"; list.querySelectorAll(".cmsg.now").forEach(x=>x.classList.remove("now")); updFade(); };
   const step=()=>{ if(!alive()||CH.paused) return; if(CH.i>=IN.length) return finish();
@@ -1618,7 +1625,9 @@ function intro(){
       msg.insertAdjacentHTML("afterend",`<div class="chat-word" data-i="${i}">${wordCard(v)}</div>`);
       const w=list.querySelector(".chat-word"), sp=w.querySelector("#sp"); if(sp){ sp.removeAttribute("id"); sp.onclick=ev=>{ ev.stopPropagation(); play(v); }; }
       play(v); updFade(); return; }
-    if(msg&&!msg.classList.contains("typing")&&(CH.done||CH.paused)){ try{ speechSynthesis.cancel(); }catch(err){} const d=IN[+msg.dataset.i]; sayAs(d.w,chatPlain(d),.9,()=>{}); } });
+    if(msg&&!msg.classList.contains("typing")){ if(!CH.done&&!CH.paused) $("chatPause").click();
+      try{ speechSynthesis.cancel(); }catch(err){} list.querySelectorAll(".cmsg.now").forEach(x=>x.classList.remove("now")); msg.classList.add("now");
+      const d=IN[+msg.dataset.i]; sayAs(d.w,chatPlain(d),.9,()=>{ if(CH.done) msg.classList.remove("now"); }); } });
 
   const vis=()=>{ if(!list.isConnected){ document.removeEventListener("visibilitychange",vis); return; } if(document.hidden&&!CH.done&&!CH.paused) $("chatPause").click(); };
   document.addEventListener("visibilitychange",vis);
@@ -1965,7 +1974,7 @@ const diaryAll=e=>((e.diary&&e.diary.lines)||[]).map(l=>l.gap?diaryPlain(l):l.de
 function sayLines(ls){ const tok=sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} let k=0;
   const nx=()=>{ if(tok!==sayLines.t||k>=ls.length) return; const t=ls[k++]; let done=false; const go=()=>{ if(done) return; done=true; nx(); };
     if(ttsPlay("Nico",t,.9,go)) return;
-    try{ const u=new SpeechSynthesisUtterance(t), v=voiceFor("Nico"); u.lang="de-DE"; u.rate=.9; if(v) u.voice=v; u.pitch=voicePitch("Nico",v); u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
+    try{ const u=new SpeechSynthesisUtterance(t), v=voiceFor("Nico"); u.lang="de-DE"; u.rate=.9*SPD(); if(v) u.voice=v; u.pitch=voicePitch("Nico",v); u.onend=go; u.onerror=go; speechSynthesis.speak(u); setTimeout(go,2000+t.length*120); }catch(e){ go(); } };
   nx(); }
 function diaryHTML(l,fill){ let h=esc(l.de).replace(/\*\*(.+?)\*\*/g,(m,x)=>`<button class="sl" data-s="${esc(slKey(x))}">${x}</button>`);
   return h.replace(/\{([^}]+)\}/,(m,w)=>fill===false?`<b id="gap" class="gapb">___ ___</b>`:`<b class="gapb">${esc(artCap(l,l.gap.g))} ${esc(w)}</b>`); }
@@ -2043,14 +2052,14 @@ function hoerenItems(e){
   return {lines:IN,qs:out.slice(0,7)}; }
 /* 把句子里那个生词（整词，不是别的词的一部分）换成空格 */
 function hxGap(de,w,rep){ const ew=w.replace(/[.*+?^$()|[\]\\{}]/g,"\\$&"), m=new RegExp("(^|[^\\p{L}])("+ew+")(?![\\p{L}])","u").exec(de); return m?de.slice(0,m.index+m[1].length)+(rep??"")+de.slice(m.index+m[0].length):de; }
-const hxRate=()=>(S.pref&&S.pref.hRate)||1, hxRateLb=()=>hxRate()<1?"慢速 0.8×":"正常 1×";
+const hxRate=()=>1;
 function hoerenStart(next){ stopTimer(); const H=hoerenItems(E); if(H.qs.length<3||!H.lines.length) return next();
   const P=S.pref=S.pref||{}, side=chatSides(H.lines);
   IX={slot:"h",kind:"hoeren",qs:H.qs,n:0,right:0,states:[],next,bt:"Hör zu!",bs:"整段听",diary:[],lines:H.lines,rate:hxRate};
   setScene(60,70,false); $("gapLbl").textContent="整段听"; hearts(null);
   stage.innerHTML=`${bubble("Lisa","Hör gut zu!",`这一集的对话，先只听声音、不看字。听一到两遍，然后答 ${H.qs.length} 道题，最后再看原文。`)}
     <div class="chat"><div class="chat-list hx" id="hxList">${H.lines.map((d,i)=>`<div class="dialog cmsg${side[i]?" me":""}${i>0&&H.lines[i-1].w===d.w?" same":""}" data-i="${i}"><div class="av" data-w="${esc(d.w)}">${avHTML(d.w)}</div><div class="bub"><div class="who">${esc(d.w)}</div><span class="hx-bar" style="width:${Math.min(200,36+d.de.length*3)}px"></span></div></div>`).join("")}</div></div>
-    <div class="chat-tools"><button id="hxPlay">播放全文</button><button id="hxRate">${hxRateLb()}</button></div>
+    <div class="chat-tools"><button id="hxPlay">播放全文</button>${spdUI()}</div>
     <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="skip">跳过</button><button class="primary" id="go">开始答题 ›</button></div>`;
   const list=$("hxList"); let tok=0;
   const playing=()=>tok&&tok===sayLines.t;
@@ -2060,7 +2069,8 @@ function hoerenStart(next){ stopTimer(); const H=hoerenItems(E); if(H.qs.length<
     tok=sayChain(H.lines,hxRate(),250,()=>{ clear(); tok=0; const b=$("hxPlay"); if(b) b.textContent="再听一遍"; },i=>{ if(!list.isConnected) return; clear(); const el=list.querySelector(`[data-i="${i}"]`); el.classList.add("now"); el.scrollIntoView({block:"nearest",behavior:RMQ.matches?"auto":"smooth"}); }); };
   try{ speechSynthesis.speak(new SpeechSynthesisUtterance("")); }catch(e){}
   $("hxPlay").onclick=()=>playing()?stopAll():playAll();
-  $("hxRate").onclick=()=>{ P.hRate=hxRate()<1?1:.8; save(); $("hxRate").textContent=hxRateLb(); };
+  /* 点哪一句就重播哪一句 */
+  list.addEventListener("click",e=>{ const el=e.target.closest(".cmsg[data-i]"); if(!el) return; stopAll(); el.classList.add("now"); const d=H.lines[+el.dataset.i]; sayAs(d.w,d.de,hxRate(),()=>el.classList.remove("now")); });
   $("back").onclick=()=>{ stopAll(); episode(E.key); }; $("skip").onclick=()=>{ stopAll(); next(); }; $("go").onclick=()=>{ stopAll(); interQ(); }; }
 const hxSpk=()=>`<button class="spk" id="sp" style="position:static;width:64px;height:64px;font-size:28px;margin:0 auto">🔊</button>`;
 function hwerQ(it){ const d=it.d, say=cb=>sayAs(d.w,d.de,IX.rate(),cb);
@@ -2095,7 +2105,9 @@ function interDone(){ const ep=EP(), acc=IX.qs.length?IX.right/IX.qs.length:1, k
   stage.innerHTML=`${hx?`<div class="card"><div class="brand">原文</div><div class="chat-list" id="hxList" style="height:auto;max-height:46vh">${hx.map((d,i)=>chatMsg({w:d.w,de:esc(d.de),zh:d.zh},i,hxSide[i],i>0&&hx[i-1].w===d.w)).join("")}</div><div class="row"><button id="hxAgain">再听一遍全文</button></div></div>`:""}${diary?`<div class="card tg-book"><div class="tg-h">Liebes Tagebuch …</div>${diary.join("")}<div class="tg-l" style="text-align:right">— Nico</div><button id="rd" style="margin-top:8px">再读一遍</button></div>`:""}${bubble("Lisa",acc>=.8?"Prima!":"Weiter üben!",`${IX.right}/${IX.qs.length} 题一次答对（${Math.round(acc*100)}%）。${acc>=.8?"":IX.slot==="h"?"":"正确率会算进 ⭐2，可以从本集首页再玩一次提高。"}`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="again">再玩一次</button><button class="primary" id="go">继续 ›</button></div>`;
   $("go").onclick=nx; $("back").onclick=()=>episode(E.key); const sl=IX.slot; $("again").onclick=()=>sl==="h"?hoerenStart(nx):inter(sl,nx);
   if(diary){ slBind(stage); const rd=()=>sayLines(["Liebes Tagebuch.",...diaryAll(E)]); $("rd").onclick=rd; rd(); }
-  if(hx){ const L=$("hxList"), rate=IX.rate||hxRate; $("hxAgain").onclick=()=>sayChain(hx,rate(),200,()=>L.querySelectorAll(".now").forEach(x=>x.classList.remove("now")),i=>{ L.querySelectorAll(".now").forEach(x=>x.classList.remove("now")); const el=L.querySelector(`[data-i="${i}"]`); if(el){ el.classList.add("now"); el.scrollIntoView({block:"nearest",behavior:RMQ.matches?"auto":"smooth"}); } }); } }
+  if(hx){ const L=$("hxList"), rate=IX.rate||hxRate; $("hxAgain").onclick=()=>sayChain(hx,rate(),200,()=>L.querySelectorAll(".now").forEach(x=>x.classList.remove("now")),i=>{ L.querySelectorAll(".now").forEach(x=>x.classList.remove("now")); const el=L.querySelector(`[data-i="${i}"]`); if(el){ el.classList.add("now"); el.scrollIntoView({block:"nearest",behavior:RMQ.matches?"auto":"smooth"}); } });
+    L.addEventListener("click",e=>{ const el=e.target.closest(".cmsg[data-i]"); if(!el) return; sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(err){}
+      L.querySelectorAll(".now").forEach(x=>x.classList.remove("now")); el.classList.add("now"); const d=hx[+el.dataset.i]; sayAs(d.w,d.de,rate(),()=>el.classList.remove("now")); }); } }
 function interQ(){ if(IX.n>=IX.qs.length) return IX.free?freeDone():interDone(); const it=IX.qs[IX.n], k=it.kind||IX.kind;
   $("gapLbl").textContent=`${IX.free?"自由练习 · ":""}${INTER_NAME[k]} ${IX.n+1}/${IX.qs.length}`;
   const r=({satz:satzQ,zahl:zahlQ,wort:wortQ,tage:tageQ,art:artQ,hor:horQ,hwer:hwerQ,hluecke:hlueckeQ,hordnen:hordnenQ,hrf:hrfQ})[k](it);
