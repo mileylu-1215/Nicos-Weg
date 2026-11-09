@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Nicos Abenteuer"><meta name="theme-color" content="#FFB300"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-180.png?v=2"><link rel="icon" type="image/png" href="assets/icons/icon-192.png?v=2"><title>Nicos Abenteuer</title><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Nicos Abenteuer"><meta name="theme-color" content="#FFB300"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-180.png?v=2"><link rel="icon" type="image/png" href="assets/icons/icon-192.png?v=2"><title>Nicos Abenteuer</title><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout: one phone screen — a comic scene on top (sky, road, target, Nico), the "stage" card below where dialog and mini-games happen. */
@@ -26,6 +26,8 @@ input[type=text]{font-family:var(--display);font-size:22px;width:100%;border:2px
 .keys button{flex:1;font-family:var(--display);font-size:18px;padding:8px 0;box-shadow:0 2px 0 var(--line)}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:52px}
+.stage>.tiles,.stage>.arts,.stage>.opts,.stage>.pad,.stage>.keys,.stage>#fb,.stage>.built{flex-shrink:0}
+html{touch-action:manipulation}
 .tile{font-family:var(--display);font-size:20px;padding:10px 14px;background:var(--bubble);border:2px solid var(--line);box-shadow:0 3px 0 var(--line);border-radius:14px}
 .tile.used{opacity:.25;pointer-events:none}
 .tile.hit{background:#E8F4E1;border-color:var(--ok);box-shadow:0 3px 0 var(--ok)}
@@ -632,7 +634,7 @@ body.imm .scene[data-art=door] .fx-live .sh{left:18%;right:18%;bottom:-3%;height
 body:not(.imm) #nicoReact{display:none}
 body.imm #sceneBg[data-art]:not([data-art=""]){filter:none}
 body.imm .scene[data-art=taxi] .fx-dash{display:none}
-body.imm .scene[data-art=diary] .fx-board{background:none;border:0;box-shadow:none;color:#5A4030;top:26%;left:12%;right:12%;rotate:-1.5deg}
+body.imm .scene[data-art=diary] .fx-board{display:none}
 @media (prefers-reduced-motion:reduce){.fx-title.logo{animation:none}#nicoReact.no.on{animation:none}}
 </style>
 
@@ -894,7 +896,14 @@ const $=id=>document.getElementById(id); const stage=$("stage"), scene=$("scene"
 function esc(s){ return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
 let cur=null,onEnd=null;
-function play(v,cb){ if(!v) return; if(cur){try{cur.pause();}catch(e){}} onEnd=cb||null; const a=new Audio("media/"+v.snd); cur=a; const done=()=>{ if(onEnd&&cur===a){ const f=onEnd; onEnd=null; f(); } }; a.onended=done; const fb=()=>{ try{ const u=new SpeechSynthesisUtterance(v.ans); u.lang="de-DE"; u.onend=done; speechSynthesis.speak(u);}catch(e){ done(); } }; a.onerror=fb; a.play().catch(fb); a.onloadedmetadata=()=>{ setTimeout(done,Math.min(4000,(a.duration||2)*1000+300)); }; setTimeout(done,2500); }
+/* 单词原声也走那个已解锁的共用播放器：新的一条会打断旧的，不会在 iOS 上被拦下后退回系统声音、一句句排队连播 */
+function play(v,cb){ if(!v) return; ttsStop(); try{ SC0(); }catch(e){} const tok=TAU_TOK; let fired=false, t1=null; onEnd=cb||null; cur=TAU;
+  const done=()=>{ if(fired||tok!==TAU_TOK) return; fired=true; clearTimeout(t1); TAU.onended=TAU.onerror=TAU.onloadedmetadata=null; const f=onEnd; onEnd=null; if(f) f(); };
+  const fb=()=>{ if(fired||tok!==TAU_TOK) return; TAU.onended=TAU.onerror=TAU.onloadedmetadata=null; clearTimeout(t1); t1=setTimeout(done,2500+String(v.ans||"").length*120);
+    try{ SC0(); const u=new SpeechSynthesisUtterance(v.ans); u.lang="de-DE"; u.rate=.9*SPD(); u.onend=done; u.onerror=done; speechSynthesis.speak(u); }catch(e){ done(); } };
+  TAU.onended=done; TAU.onerror=fb; TAU.onloadedmetadata=()=>{ clearTimeout(t1); t1=setTimeout(done,(TAU.duration||2)*1000/SPD()+800); };
+  t1=setTimeout(done,6000); TAU.src="media/"+v.snd; TAU.dataset.r=1; TAU.defaultPlaybackRate=TAU.playbackRate=SPD();
+  const p=TAU.play(); if(p&&p.catch) p.catch(fb); }
 /* 德语朗读：读完（或出错、或超时兜底）只回调一次；o 可选 {rate, voice, pitch, queue} */
 /* 全局语速倍数（页面上的“语速”滑块），录好的 mp3 和手机自带声音都按它变速 */
 const SPD=()=>{ const v=+(S.pref&&S.pref.spd); return v>=.5&&v<=1.5?v:1; };
@@ -928,7 +937,7 @@ function synthSay(who,text,rate,cb){ const v=voiceFor(who); speakThen(text,cb,{r
 const TTSSET=new Set(String(window.TTS||"").split(" ").filter(Boolean)), TAU=new Audio(); TAU.preload="auto"; let TAU_TOK=0;
 const ttsNorm=t=>String(t||"").replace(/<[^>]+>/g,"").replace(/\*\*/g,"").replace(/\s+/g," ").trim();
 function ttsKey(who,t){ const s=who+"|"+ttsNorm(t); let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return ("0000000"+h.toString(16)).slice(-8); }
-function ttsStop(){ TAU_TOK++; TAU.onended=TAU.onerror=null; try{ TAU.pause(); }catch(e){} }
+function ttsStop(){ TAU_TOK++; TAU.onended=TAU.onerror=TAU.onloadedmetadata=null; try{ TAU.pause(); }catch(e){} }
 function ttsPlay(who,text,rate,cb){ const h=TTSSET.size&&ttsKey(who,text); if(!h||!TTSSET.has(h)) return false;
   ttsStop(); const tok=TAU_TOK; let done=false;
   const fin=ok=>{ if(done||tok!==TAU_TOK) return; done=true; clearTimeout(tm); TAU.onended=TAU.onerror=null; ok?cb&&cb():synthSay(who,text,rate,cb); };
@@ -940,7 +949,7 @@ document.addEventListener("touchend",function unlock(){ document.removeEventList
   const b=new Uint8Array(46), dv=new DataView(b.buffer), w=(o,s)=>[...s].forEach((c,i)=>b[o+i]=c.charCodeAt(0));
   w(0,"RIFF"); dv.setUint32(4,38,true); w(8,"WAVEfmt "); dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true); dv.setUint32(24,8000,true); dv.setUint32(28,16000,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true); w(36,"data"); dv.setUint32(40,2,true);
   try{ TAU.src=URL.createObjectURL(new Blob([b],{type:"audio/wav"})); const p=TAU.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} },true);
-try{ const sc=speechSynthesis.cancel.bind(speechSynthesis); speechSynthesis.cancel=()=>{ ttsStop(); sc(); }; }catch(e){}
+let SC0=()=>{}; try{ SC0=speechSynthesis.cancel.bind(speechSynthesis); speechSynthesis.cancel=()=>{ ttsStop(); SC0(); }; }catch(e){}
 function sayAs(who,text,rate,cb){ if(!ttsPlay(who,text,rate||.95,cb)) synthSay(who,text,rate,cb); }
 /* 首次进入时 iOS 的声音列表可能还是空的，提前取一次 */
 try{ speechSynthesis.getVoices(); }catch(e){}
@@ -2057,9 +2066,9 @@ function hoerenStart(next){ stopTimer(); const H=hoerenItems(E); if(H.qs.length<
   const P=S.pref=S.pref||{}, side=chatSides(H.lines);
   IX={slot:"h",kind:"hoeren",qs:H.qs,n:0,right:0,states:[],next,bt:"Hör zu!",bs:"整段听",diary:[],lines:H.lines,rate:hxRate};
   setScene(60,70,false); $("gapLbl").textContent="整段听"; hearts(null);
-  stage.innerHTML=`${bubble("Lisa","Hör gut zu!",`这一集的对话，先只听声音、不看字。听一到两遍，然后答 ${H.qs.length} 道题，最后再看原文。`)}
+  stage.innerHTML=`${bubble("Lisa","Hör gut zu!",`这一集的对话，先只听声音、不看字。点上面的播放听全文，点某一句可以单独重听。然后答 ${H.qs.length} 道题，最后再看原文。`)}
+    <div class="chat-tools"><button class="primary" id="hxPlay">播放全文</button>${spdUI()}</div>
     <div class="chat"><div class="chat-list hx" id="hxList">${H.lines.map((d,i)=>`<div class="dialog cmsg${side[i]?" me":""}${i>0&&H.lines[i-1].w===d.w?" same":""}" data-i="${i}"><div class="av" data-w="${esc(d.w)}">${avHTML(d.w)}</div><div class="bub"><div class="who">${esc(d.w)}</div><span class="hx-bar" style="width:${Math.min(200,36+d.de.length*3)}px"></span></div></div>`).join("")}</div></div>
-    <div class="chat-tools"><button id="hxPlay">播放全文</button>${spdUI()}</div>
     <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="skip">跳过</button><button class="primary" id="go">开始答题 ›</button></div>`;
   const list=$("hxList"); let tok=0;
   const playing=()=>tok&&tok===sayLines.t;
