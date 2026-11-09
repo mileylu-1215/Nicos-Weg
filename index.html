@@ -750,13 +750,13 @@ body.imm .scene[data-art=diary] .fx-board{display:none}
 setTimeout(function(){ var l=document.getElementById("loading"); if(l&&!document.getElementById("retry")) l.insertAdjacentHTML("beforeend",'<p class="tap">好像有点慢…</p><button class="primary" id="retry" onclick="location.reload()">🔄 重新加载</button>'); },15000);</script>
 <script>document.addEventListener("DOMContentLoaded",()=>{ const hb=document.getElementById("homebtn"); hb.onclick=()=>{ if(typeof stopTimer==="function") stopTimer(); home(); }; new MutationObserver(()=>{ /* 任何非首页都显示 */ if(!document.getElementById("homeMark")&&!document.getElementById("splashMark")) hb.classList.remove("hidden"); if(typeof railSync==="function") railSync(); }).observe(document.getElementById("stage"),{childList:true}); });</script>
 
-<script src="data/vocab.js?v=9dce9eca"></script>
-<script src="data/levels.js?v=9dce9eca"></script>
-<script src="data/grammar.js?v=9dce9eca"></script>
-<script src="data/tts.js?v=9dce9eca" onerror="window.TTS=''"></script>
+<script src="data/vocab.js?v=a64ba18e"></script>
+<script src="data/levels.js?v=a64ba18e"></script>
+<script src="data/grammar.js?v=a64ba18e"></script>
+<script src="data/tts.js?v=a64ba18e" onerror="window.TTS=''"></script>
 <script>
 /* ---------- 数据：词表和剧集目录在 data/*.js 里，先于本脚本加载 ---------- */
-const BUILD="9dce9eca";
+const BUILD="a64ba18e";
 const VOCAB=window.VOCAB||[];
 const LEVELS=window.LEVELS||[];
 const EPISODES=LEVELS.flatMap(l=>l.episodes.map(e=>Object.assign(e,{lv:l.id,key:l.id+"-"+e.n})));

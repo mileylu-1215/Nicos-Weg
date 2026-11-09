@@ -1,5 +1,5 @@
-const V="nw-9dce9eca";
-const CORE=["./","index.html","data/vocab.js?v=9dce9eca","data/levels.js?v=9dce9eca","data/grammar.js?v=9dce9eca","manifest.webmanifest"];
+const V="nw-a64ba18e";
+const CORE=["./","index.html","data/vocab.js?v=a64ba18e","data/levels.js?v=a64ba18e","data/grammar.js?v=a64ba18e","manifest.webmanifest"];
 self.addEventListener("install",e=>{ self.skipWaiting(); e.waitUntil(caches.open(V).then(c=>c.addAll(CORE))); });
 /* 只清理本游戏的旧缓存（同一个 github.io 域名下可能还有别的网站） */
 self.addEventListener("activate",e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith("nw-")&&k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
