@@ -2331,7 +2331,7 @@ function bossQ(){ const b=B.b; if(B.n>=B.qs.length){ if(B.right>=b.need&&B.right
   else if(b.type==="gender"){ body=`<div class="q">${pic(it)}<div class="hint">${esc(it.zh)}</div><div class="cloze" style="font-size:28px">${esc(it.ans.replace(/^(der|die|das) /,""))}</div></div><div class="opts three">${["der","die","das"].map(g=>`<button class="opt ${g}" data-a="${g}">${g}</button>`).join("")}</div>`; ans=it.g; }
   else if(b.type==="cloze"){ body=`<div class="q"><div class="hint">${it.who?esc(it.who)+" 说":"台词里少了一个词"}</div><div class="cloze">${esc(it.t).replace("___","<u>&nbsp;</u>")}</div></div><div class="opts">${rot(it.o.slice(),B.n).map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div>`; ans=it.a; }
   else if(b.type==="pick"){ body=`<div class="q"><div class="num">${esc(it.q)}</div></div><div class="opts">${rot(it.o.slice(),B.n).map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div>`; ans=it.a; }
-  else { body=`<div class="q"><div class="hint">${b.who==="Radio"?"广播说":esc(b.who)+" 说"}</div><div class="cloze">${esc(it.say)}</div><button id="sp" style="margin-top:6px">🔊 再听</button><div class="num" id="dial" style="font-size:36px;min-height:48px;letter-spacing:4px">&nbsp;</div></div><div class="pad">${["1","2","3","4","5","6","7","8","9","⌫","0","✓"].map(d=>`<button data-d="${d}">${d}</button>`).join("")}</div>`; ans=it.a; }
+  else { body=`<div class="q"><div class="hint">${b.who==="Radio"?"广播说":esc(b.who)+" 说"}</div><button id="sp" style="margin-top:6px">🔊 再听</button><div class="num" id="dial" style="font-size:36px;min-height:48px;letter-spacing:4px">&nbsp;</div></div><div class="pad">${["1","2","3","4","5","6","7","8","9","⌫","0","✓"].map(d=>`<button data-d="${d}">${d}</button>`).join("")}</div>`; ans=it.a; }
   stage.innerHTML=`${dots(B.n,B.qs.length,B.states)}${body}`;
   const pv=b.type==="gender"?it:b.type==="pick"?LV.find(x=>x.ans===it.a):null; let first=true, done=false, nMiss=0;
   const firstMiss=()=>{ if(!first) return; first=false; B.states[B.n]="bad"; if(pv) markWrong(pv); };
@@ -2349,7 +2349,7 @@ function bossQ(){ const b=B.b; if(B.n>=B.qs.length){ if(B.right>=b.need&&B.right
     if(b.type==="sort") fb=`<div class="tap">${head}${got?"":(it.k==="formal"?"Sie 正式":"du 非正式")}${/Herr|Frau/.test(it.t)?"（Herr/Frau + 姓 → 正式）":/\bdu\b|dir|dein|Tschüss|Mach/.test(it.t)?"（du/dir/dein、Tschüss、Mach’s gut → 非正式）":/\bSie\b|Ihnen|Ihr/.test(it.t)?"（Sie/Ihnen/Ihre → 正式）":""}</div>`;
     else if(b.type==="gender") fb=wordCard(it,got?okHead(first,"对"):'<div class="bad">⏱ 时间到</div>',{noPic:true,noZh:true});
     else if(b.type==="pick"||b.type==="cloze") fb=`<div class="tap">${head}${got?"":esc(it.a)}</div>${!first&&b.type==="cloze"&&whyOf(it)?`<div class="note">💡 ${esc(whyOf(it))}</div>`:""}`;
-    else fb=`<div class="tap">${head}${got?"":esc(it.a)}</div>`;
+    else fb=`<div class="tap">${head}${got?"":esc(it.a)}</div><div class="note">${esc(it.say)}</div>`;
     stage.insertAdjacentHTML("beforeend",fb+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go;
     if(b.type==="gender") $("sp").onclick=()=>play(it);
     autoNext(go,cb=>pv?play(pv,cb):speakThen(b.type==="sort"?it.t:b.type==="cloze"?it.t.replace("___",it.a):b.type==="pick"?it.a:it.say,cb),got);
