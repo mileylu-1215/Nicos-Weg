@@ -1104,7 +1104,7 @@ function ttsPlay(who,text,rate,cb){ const h=TTSSET.size&&ttsKey(who,text); if(!h
 document.addEventListener("touchend",function unlock(){ document.removeEventListener("touchend",unlock,true); if(TAU.src) return;
   const b=new Uint8Array(46), dv=new DataView(b.buffer), w=(o,s)=>[...s].forEach((c,i)=>b[o+i]=c.charCodeAt(0));
   w(0,"RIFF"); dv.setUint32(4,38,true); w(8,"WAVEfmt "); dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true); dv.setUint32(24,8000,true); dv.setUint32(28,16000,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true); w(36,"data"); dv.setUint32(40,2,true);
-  try{ TAU.src=URL.createObjectURL(new Blob([b],{type:"audio/wav"})); const p=TAU.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} },true);
+  try{ TAU.src=URL.createObjectURL(new Blob([b],{type:"audio/wav"})); const p=TAU.play(); if(p&&p.catch) p.catch(()=>{}); setTimeout(()=>{ if(/^blob:/.test(TAU.src)) TAU.pause(); },300); }catch(e){} },true);
 let SC0=()=>{}; try{ SC0=speechSynthesis.cancel.bind(speechSynthesis); speechSynthesis.cancel=()=>{ ttsStop(); SC0(); }; }catch(e){}
 function sayAs(who,text,rate,cb){ if(!ttsPlay(who,text,rate||.95,cb)) synthSay(who,text,rate,cb); }
 /* 首次进入时 iOS 的声音列表可能还是空的，提前取一次 */
@@ -1263,7 +1263,7 @@ function ambSync(){ const mc=$("musCue"); if(mc&&(SM!=="splash"||AMB.node||!ambO
   const c=AMB&&AMB.ctx; if(!c) return; const w=ambWant();
   if(!w){ if(AMB.node){ ambStopNode(AMB.node,.8); AMB.node=null; AMB.cur=null; } if(document.hidden&&c.state==="running") c.suspend().catch(()=>{}); return; }
   if(c.state!=="running") c.resume().catch(()=>{});
-  let duck=false; try{ duck=!TAU.paused||speechSynthesis.speaking; }catch(e){}
+  let duck=false; try{ duck=(!TAU.paused&&!TAU.ended&&!/^blob:/.test(TAU.src))||speechSynthesis.speaking; }catch(e){}   /* 解锁用的静音片段不算朗读 */
   const vol=w.v*(duck?.3:1);
   if(AMB.cur===w.id){ if(AMB.node&&Math.abs(AMB.vol-vol)>.01){ const now=c.currentTime, g=AMB.node.g.gain; g.cancelScheduledValues(now); g.setValueAtTime(g.value,now); g.linearRampToValueAtTime(vol,now+(duck?.25:.9)); AMB.vol=vol; } return; }
   AMB.cur=w.id; const id=w.id;
