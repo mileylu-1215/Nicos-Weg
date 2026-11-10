@@ -19,4 +19,7 @@ CC0 (public domain) recordings from freesound.org. Attribution is not required b
 | amb/arztpraxis.mp3 | [small clock in room by Yuval](https://freesound.org/s/211192/) | Yuval | CC0 1.0 |
 | amb/rathaus.mp3 | [Room Tone with Bird Outside.m4a by ciccarelli](https://freesound.org/s/568943/) | ciccarelli | CC0 1.0 |
 | amb/street.mp3 | [Ambience - morning - window - city - calm - pigeon.wav by ValentinPetiteau](https://freesound.org/s/563546/) | ValentinPetiteau | CC0 1.0 |
-| amb/dusk.mp3 | [Crickets in a grass field and birds at the edge of a forest by crwurmbrand](https://freesound.org/s/740645/) | crwurmbrand | CC0 1.0 |
+| amb/bgm.mp3 | [Town Theme RPG](https://opengameart.org/content/town-theme-rpg) | cynicmusic | CC0 1.0 |
+| amb/bgm_cider.mp3 | [Apple Cider](https://opengameart.org/content/apple-cider) | Zane Little Music | CC0 1.0 |
+| amb/bgm_spring.mp3 | [Hot Springs Town](https://opengameart.org/content/hot-springs-town) | Kistol | CC0 1.0 |
+| amb/bgm_fishin.mp3 | [Gone Fishin'](https://opengameart.org/content/gone-fishin) | memoraphile | CC0 1.0 |

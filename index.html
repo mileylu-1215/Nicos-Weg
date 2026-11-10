@@ -1236,17 +1236,19 @@ function immSync(bgOnly){ const on=immOn(); document.body.classList.toggle("imm"
     if(swap){ sceneBg.classList.remove("swap"); void sceneBg.offsetWidth; sceneBg.classList.add("swap"); } }
   sceneBg.dataset.t=scene.dataset.t||"day"; immLayout(); if(bgOnly!==true) fxSync(); ambSync(); }
 sceneBg.addEventListener("animationend",e=>{ if(e.animationName==="bgswap") sceneBg.classList.remove("swap"); });
-/* 环境音：进了哪栋楼就循环放那栋楼的声音（assets/audio/amb/<楼>.mp3，都是没有人声的轻底噪：窗外鸟叫、雨声、钟声、远处火车），地图和门口放清晨街道声；
-   用 WebAudio 是因为 iPhone 上 <audio> 调不了音量。朗读时压低，电台 / 整段听时静音，切到后台暂停 */
-var AMB_IDS=new Set(["flughafen","cafe","wg","sprachschule","baeckerei","restaurant","bahnhof","supermarkt","fahrrad","boutique","park","arztpraxis","rathaus","street","dusk"]);
+/* 声音：开屏和第二页放 Town Theme RPG；进了楼按楼的气质放背景音乐（温暖吃喝 → Apple Cider，安静室内 → Hot Springs Town，出行户外 → Gone Fishin'）；
+   地图和门口放清晨街道声。用 WebAudio 是因为 iPhone 上 <audio> 调不了音量。朗读时压低，电台 / 整段听时静音，切到后台暂停 */
+var BGM_OF={baeckerei:"bgm_cider",restaurant:"bgm_cider",cafe:"bgm_cider",supermarkt:"bgm_cider",
+  wg:"bgm_spring",sprachschule:"bgm_spring",arztpraxis:"bgm_spring",rathaus:"bgm_spring",boutique:"bgm_spring",
+  flughafen:"bgm_fishin",bahnhof:"bgm_fishin",park:"bgm_fishin",fahrrad:"bgm_fishin"};
 var AMB={ctx:null,cur:null,node:null,buf:{},vol:0};
 const ambOn=()=>!(S.pref&&S.pref.ambOff);
 function ambWant(){ if(!ambOn()||document.hidden||!document.body.classList.contains("imm")) return null;
-  if(SM==="splash") return {id:"dusk",v:.28};   /* 开屏看夕阳：傍晚虫鸣鸟叫 */
-  if(SM==="lobby"){ const nx=nextPick(), b=nx&&buildingOfEp(nx); return b&&AMB_IDS.has(b.id)?{id:b.id,v:.3}:{id:"street",v:.25}; }   /* 第二页：当前关卡那栋楼的声音 */
+  if(SM==="splash"||SM==="lobby") return {id:"bgm",v:.35,music:1};
   if(SM==="radio"||(IX&&IX.kind==="hoeren"&&SM==="inter")) return null;
   const s=IMM_BG; if(!s) return null;
-  if(s.bid) return AMB_IDS.has(s.bid)?{id:s.bid,v:.3}:null;
+  const bb=(E&&(buildingOfEp(E)||{}).id)||s.bid||BG_B;   /* 进了某栋楼（本集任何页面）就放这栋楼的音乐 */
+  if(BGM_OF[bb]) return {id:BGM_OF[bb],v:.28,music:1};
   if(s.inside&&s.art!=="door") return null;
   return {id:"street",v:.18}; }
 function ambLoad(id){ const a=AMB.buf; if(a[id]) return a[id];
@@ -1263,7 +1265,7 @@ function ambSync(){ const c=AMB&&AMB.ctx; if(!c) return; const w=ambWant();
   AMB.cur=w.id; const id=w.id;
   ambLoad(id).then(buf=>{ if(!buf||AMB.cur!==id) return; ambStopNode(AMB.node,1.2);
     const s=c.createBufferSource(), g=c.createGain(); s.buffer=buf; s.loop=true; g.gain.value=0; s.connect(g); g.connect(c.destination);
-    s.start(0,Math.random()*buf.duration); g.gain.linearRampToValueAtTime(vol,c.currentTime+1.5); AMB.node={s,g}; AMB.vol=vol; }); }
+    s.start(0,w.music?0:Math.random()*buf.duration); g.gain.linearRampToValueAtTime(vol,c.currentTime+1.5); AMB.node={s,g}; AMB.vol=vol; }); }
 function ambUnlock(){ if(!AMB.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; try{ AMB.ctx=new AC(); }catch(e){ return; } setInterval(ambSync,400); }
   if(AMB.ctx.state!=="running"&&ambWant()) AMB.ctx.resume().catch(()=>{}); ambSync(); }
 ["pointerdown","touchend","keydown"].forEach(ev=>document.addEventListener(ev,ambUnlock,{capture:true,passive:true}));
