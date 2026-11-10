@@ -432,7 +432,34 @@ body.imm .sheet.min .grip{height:48px}
 body.imm .sheet.min .grip span{display:inline}
 body.imm .sheet.min{padding-bottom:env(safe-area-inset-bottom,0px)}
 body.imm .sheet.min .stage{display:none}
-body.imm .stage{flex:none;background:transparent;box-shadow:none;border-radius:0;padding-top:0;max-height:min(64vh,calc(100vh - 230px));max-height:min(64dvh,calc(100dvh - 230px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+body.imm{--stmax:min(70vh,calc(100vh - 190px))}
+@supports (height:100dvh){ body.imm{--stmax:min(70dvh,calc(100dvh - 190px))} }
+body.imm .stage{flex:none;background:transparent;box-shadow:none;border-radius:0;padding-top:0;max-height:var(--stmax);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+/* 有对话列表的页面（剧情、整段听）：面板固定高度、自己不滚，只让对话列表滚，免得滑两次 */
+body.imm .stage:has(>.chat){height:var(--stmax);overflow:hidden}
+body.imm .stage>.chat{flex:1;min-height:0;display:flex;flex-direction:column}
+body.imm .stage>.chat>.chat-list{flex:1;height:auto;min-height:0}
+/* 底部主按钮条：内容再长也贴在面板底部 */
+body.nav-in .stage>.row:not(:has(>:not(.hidden))){display:none}
+body.imm.nav-in .stage>.row.bar{position:sticky;bottom:calc(-20px - env(safe-area-inset-bottom,0px));z-index:3;margin-top:auto;padding:12px 0 calc(20px + env(safe-area-inset-bottom,0px));background:var(--grain),linear-gradient(transparent,var(--parch) 12px)}
+/* 面板右上角：「‹ 上一个」（本集流程里的上一项）和「‹ 楼名 / 地图」（回上一层）；羊皮纸上方：答对后自动下一题、环境音两个开关 */
+.snav,.tgl{display:none}
+body.imm.nav-in .snav{display:flex;position:absolute;top:6px;right:12px;z-index:3;gap:6px}
+body.imm.nav-in .sheet.min .snav{display:none}
+.snav button{padding:3px 11px;font-size:12.5px;font-weight:600;line-height:20px;border-radius:14px;background:rgba(255,255,255,.5);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+body.imm.nav-in .tgl{display:flex;position:absolute;right:12px;top:-54px;z-index:3;gap:8px}
+body.imm.nav-in[data-m=street] .tgl{top:-98px}
+.tgl button{width:36px;height:36px;padding:0;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(34,48,74,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 2px 6px rgba(0,0,0,.22)}
+.tgl button.off{color:rgba(255,255,255,.5)}
+.tgl svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tgl button:not(.off) .sl{display:none}
+/* 先逛逛看题：只列题目，不作答 */
+.peek{margin:0;padding:0 0 0 24px;display:flex;flex-direction:column;gap:9px;text-align:left;font-size:14px;line-height:1.55}
+.peek b{display:block;font-size:12px;color:var(--muted);font-weight:600}
+/* 本集页面：剧情简介整块可点，点了就看剧情 */
+button.syn{display:flex;gap:10px;align-items:center;width:100%;text-align:left;font-size:14px;line-height:1.65;font-weight:400;padding:12px 14px;background:var(--bubble);border:1px solid var(--line);border-radius:18px;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+button.syn span{flex:1}
+button.syn svg{flex:none;width:30px;height:30px;color:var(--taxi)}
 body.imm .stage h2{font-family:Georgia,"Noto Serif SC","Songti SC",var(--display)}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) body.imm .grip i{background:#6A5F4B} }
 :root[data-theme="dark"] body.imm .grip i{background:#6A5F4B}
@@ -647,7 +674,13 @@ body.imm .scene[data-art=taxi] .fx-dash{display:none}
 body.imm .scene[data-art=diary] .fx-board{display:none}
 @media (prefers-reduced-motion:reduce){.fx-title.logo{animation:none}#nicoReact.no.on{animation:none}}
 /* ---------- 语法题、单元总结、关卡 ---------- */
-.g-tag{display:inline-block;margin:2px 0 6px;padding:2px 10px;border-radius:999px;background:var(--bubble);border:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.g-focus{text-align:left;margin:2px 0 8px}
+.g-tag{display:inline-block;margin:0 0 4px;padding:3px 12px;border-radius:999px;background:var(--bubble);border:1px solid var(--taxi);font-size:13px;font-weight:700;color:var(--ink);min-height:0;box-shadow:none;width:auto}
+.g-task{font-size:14.5px;font-weight:600;color:var(--ink)}
+.g-rule{margin-top:6px;padding:8px 10px;border-radius:10px;background:var(--bubble);border:1px dashed var(--line);font-size:13px;line-height:1.6;color:var(--ink)}
+.stage.gq>.q>.hint,.stage.gq>.q>.zh,.stage.gq #fb .card>.word,.stage.gq #fb .card>.zh{display:block!important}
+.stage.gq>#built{display:flex!important}
+.stage.gq>.q>.zh{font-size:15px;font-weight:500;color:var(--muted)}
 .g-blank{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--taxi);text-decoration:none}
 .g-src{font-family:var(--display);font-size:18px;opacity:.75}
 .g-cue{font-size:13px;color:var(--taxi);font-weight:800;margin:4px 0}
@@ -707,7 +740,9 @@ body.imm .scene[data-art=diary] .fx-board{display:none}
     <button class="homebtn" id="homebtn" title="回到背包">🏠</button>
   </div>
   <div class="sheet" id="sheet"><button class="grip" id="grip" aria-label="收起或展开题目" aria-expanded="true"><i></i><span>▲ 展开，继续答题 · 计时已暂停</span></button>
-  <div class="stage" id="stage"><div id="loading" class="center" style="margin:auto"><div class="big">🚕</div><h2>加载中…</h2><div class="tap">第一次打开要下载约 2.5 MB，网络慢时请稍等</div></div></div></div>
+  <div class="stage" id="stage"><div id="loading" class="center" style="margin:auto"><div class="big">🚕</div><h2>加载中…</h2><div class="tap">第一次打开要下载约 2.5 MB，网络慢时请稍等</div></div></div>
+  <div class="snav" id="snav"><button id="navPrev" class="hidden" type="button">‹ 上一个</button><button id="navUp" type="button"></button></div>
+  <div class="tgl" id="tgl"><button id="tgAuto" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l7 6-7 6zM13 6l7 6-7 6z"/><path class="sl" d="M3 3l18 18"/></svg></button><button id="tgAmb" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5c3-3 6 3 9 0s6 3 9 0M3 15.5c3-3 6 3 9 0s6 3 9 0"/><path class="sl" d="M3 3l18 18"/></svg></button></div></div>
 </div>
 <div id="town" hidden>
   <div id="townWorld"><div id="townMap">
@@ -1055,7 +1090,7 @@ function combo(txt){ const c=$("combo"); c.textContent=txt; c.classList.remove("
 let tInt=null; function timer(sec,onEndT){ clearInterval(tInt); const bar=$("tbar"); let left=sec; bar.style.width="100%"; tInt=setInterval(()=>{ if(SHEET_MIN) return; left-=.1; bar.style.width=Math.max(0,left/sec*100)+"%"; if(left<=0){ clearInterval(tInt); onEndT(); } },100); }
 function stopTimer(){ clearInterval(tInt); tInt=null; $("tbar").style.width="0"; }
 /* 离开当前画面时统一清理：计时器、朗读、音频、聊天剧情播放 */
-function leaveScene(){ stopTimer(); try{ if(CH) CH.stop(); }catch(e){} sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} if(cur){ try{ cur.pause(); }catch(e){} } }
+function leaveScene(){ stopTimer(); stage.classList.remove("gq"); try{ if(CH) CH.stop(); }catch(e){} sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){} if(cur){ try{ cur.pause(); }catch(e){} } }
 function dots(n,total,states){ return `<div class="dots" data-n="${n}" data-t="${total}">${Array.from({length:total},(_,i)=>`<i class="${states&&states[i]?states[i]:(i<n?'on':i===n?'cur':'')}"></i>`).join("")}</div>`; }
 /* 进度点：按住左右滑（或鼠标悬停）放大手指下的点，并在上方显示这题的状态和题目；做过的题显示完整答案，没做的不剧透 */
 function dotSrc(n,t){ for(const o of [typeof IX!=="undefined"&&IX,typeof M!=="undefined"&&M,typeof R!=="undefined"&&R,typeof B!=="undefined"&&B,typeof K!=="undefined"&&K]) if(o&&o.qs&&o.qs.length===t&&o.n===n) return o; return null; }
@@ -1131,7 +1166,7 @@ function immSync(bgOnly){ const on=immOn(); document.body.classList.toggle("imm"
     if(swap){ sceneBg.classList.remove("swap"); void sceneBg.offsetWidth; sceneBg.classList.add("swap"); } }
   sceneBg.dataset.t=scene.dataset.t||"day"; immLayout(); if(bgOnly!==true) fxSync(); ambSync(); }
 sceneBg.addEventListener("animationend",e=>{ if(e.animationName==="bgswap") sceneBg.classList.remove("swap"); });
-/* 环境音：进了哪栋楼就循环放那栋楼的声音（assets/audio/amb/<楼>.mp3），地图和门口放街道声；
+/* 环境音：进了哪栋楼就循环放那栋楼的声音（assets/audio/amb/<楼>.mp3，都是没有人声的轻底噪：窗外鸟叫、雨声、钟声、远处火车），地图和门口放清晨街道声；
    用 WebAudio 是因为 iPhone 上 <audio> 调不了音量。朗读时压低，电台 / 整段听时静音，切到后台暂停 */
 var AMB_IDS=new Set(["flughafen","cafe","wg","sprachschule","baeckerei","restaurant","bahnhof","supermarkt","fahrrad","boutique","park","arztpraxis","rathaus","street"]);
 var AMB={ctx:null,cur:null,node:null,buf:{},vol:0};
@@ -1139,11 +1174,11 @@ const ambOn=()=>!(S.pref&&S.pref.ambOff);
 function ambWant(){ if(!ambOn()||document.hidden||!document.body.classList.contains("imm")) return null;
   if(SM==="radio"||SM==="splash"||(IX&&IX.kind==="hoeren"&&SM==="inter")) return null;
   const s=IMM_BG; if(!s) return null;
-  if(s.bid) return AMB_IDS.has(s.bid)?{id:s.bid,v:.55}:null;
+  if(s.bid) return AMB_IDS.has(s.bid)?{id:s.bid,v:.3}:null;
   if(s.inside&&s.art!=="door") return null;
-  return {id:"street",v:.32}; }
+  return {id:"street",v:.18}; }
 function ambLoad(id){ const a=AMB.buf; if(a[id]) return a[id];
-  a[id]=fetch(`assets/audio/amb/${id}.mp3`).then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
+  a[id]=fetch(`assets/audio/amb/${id}.mp3?v=2`).then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
     .then(b=>new Promise((res,rej)=>AMB.ctx.decodeAudioData(b,res,rej))).catch(()=>{ delete a[id]; return null; });
   return a[id]; }
 function ambStopNode(n,t){ if(!n) return; const c=AMB.ctx, now=c.currentTime; try{ n.g.gain.cancelScheduledValues(now); n.g.gain.setValueAtTime(n.g.gain.value,now); n.g.gain.linearRampToValueAtTime(0,now+t); n.s.stop(now+t+.05); }catch(e){} }
@@ -1168,6 +1203,35 @@ const SMODE={episode:"home",intro:"vn",learn:"desk",chaseStart:"street",chaseSeg
   home:"lobby",splash:"splash",bookPage:"lobby",backupPage:"lobby",askMood:"vn",inter:"inter",interQ:"inter",interDone:"inter",hoerenStart:"inter",freePage:"inter",freeDone:"inter",
   gramStart:"inter",gBossStart:"boss",unitPage:"board",unitTestStart:"inter",unitDone:"inter",gateCard:"vn"};
 for(const [f,m] of Object.entries(SMODE)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ SM=m; return o.apply(this,arguments); }; }
+/* 导航：面板右上角「‹ 上一个」回本集流程里的上一项，「‹ 楼名」回本集页面（本集页面上是「‹ 地图」）。
+   各页面照旧在底部写 <button class="ghost" id="back">‹ 返回 / 退出 / 场景</button>，这里把它藏起来，右上角的标签代它点 */
+let NAVC={c:"out",a:null};
+const NAVW={episode:()=>({c:"ep"}),intro:()=>({c:"act",a:"intro"}),learn:()=>({c:"act",a:"learn"}),chaseStart:()=>({c:"act",a:"chase"}),smsStart:()=>({c:"act",a:"sms"}),radioStart:()=>({c:"act",a:"radio"}),
+  hoerenStart:()=>({c:"act",a:"hoeren"}),gramStart:()=>({c:"act",a:"gram"}),talkStart:()=>({c:"act",a:"talk"}),boss:()=>({c:"act",a:"boss"}),gBossStart:()=>({c:"act",a:"boss"}),inter:s=>({c:"act",a:"i"+s}),
+  grammar:(af,fl)=>({c:"act",a:fl?"grammar":null}),stationBreak:()=>({c:"act",a:NAVC.a,self:true}),
+  home:()=>({c:"out"}),splash:()=>({c:"out"}),bookPage:()=>({c:"out"}),backupPage:()=>({c:"out"}),levelMap:()=>({c:"out"}),townView:()=>({c:"out"}),unitPage:()=>({c:"out"}),unitTestStart:()=>({c:"out"}),freePage:()=>({c:"out"}),gateCard:()=>({c:"out"})};
+for(const [f,g] of Object.entries(NAVW)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ NAVC=g.apply(this,arguments); return o.apply(this,arguments); }; }
+const NAV_RE=/^‹\s*(返回|退出|场景|地图)$/;
+const navBack=()=>[...stage.querySelectorAll(".row>#back")].find(x=>NAV_RE.test(x.textContent.trim()));
+const navIn=()=>!!E&&(NAVC.c==="ep"||NAVC.c==="act");
+function navPrevId(){ if(NAVC.c!=="act"||!NAVC.a||!E) return null; const o=["intro","learn",...FLOW.filter(a=>!(ACT[a].hide&&ACT[a].hide()))], i=o.indexOf(NAVC.a);
+  return i<0?null:NAVC.self?NAVC.a:i>0?o[i-1]:null; }
+function navSync(){ const inn=navIn(); document.body.classList.toggle("nav-in",inn); if(!inn) return;
+  const real=navBack(); if(real){ real.classList.add("hidden"); }
+  const b=E&&buildingOfEp(E); $("navUp").textContent=NAVC.c==="ep"?"‹ 地图":`‹ ${b?b.zh:`第 ${E.n} 集`}`;
+  const pid=navPrevId(); $("navPrev").classList.toggle("hidden",!pid); $("navPrev").dataset.to=pid||"";
+  stage.querySelectorAll(":scope>.row.bar").forEach(x=>x.classList.remove("bar"));
+  const bar=[...stage.children].filter(x=>x.classList.contains("row")&&!x.classList.contains("hidden")&&x.querySelector(".primary")).pop(); if(bar) bar.classList.add("bar");
+  tglSync(); }
+new MutationObserver(navSync).observe(stage,{childList:true});
+$("navUp").onclick=()=>{ const r=navBack(); if(r) return r.click(); if(!E) return home(); if(NAVC.c==="ep") return toTownFromEp(); leaveScene(); episode(E.key); };
+$("navPrev").onclick=()=>{ const id=$("navPrev").dataset.to; if(!id||!E) return; leaveScene(); if(!RUN||RUN.key!==E.key) RUN={key:E.key,wrong:new Set()};
+  if(id==="intro") return intro(); if(id==="learn") return learn(0); flowGo(id); };
+function tglSync(){ const a=$("tgAuto"), m=$("tgAmb"), au=!manualNext(), am=ambOn();
+  a.classList.toggle("off",!au); a.setAttribute("aria-pressed",String(au)); a.setAttribute("aria-label",au?"答对后自动下一题：开":"答对后自动下一题：关"); a.title=a.getAttribute("aria-label");
+  m.classList.toggle("off",!am); m.setAttribute("aria-pressed",String(am)); m.setAttribute("aria-label",am?"环境音：开":"环境音：关"); m.title=m.getAttribute("aria-label"); }
+$("tgAuto").onclick=()=>{ if(RMQ.matches) return toast("系统开了「减少动态效果」，答对后一律手点"); S.pref=S.pref||{}; S.pref.manualNext=!S.pref.manualNext; save(); tglSync(); toast(manualNext()?"答对后：手点下一题":"答对后：自动下一题"); };
+$("tgAmb").onclick=()=>{ S.pref=S.pref||{}; S.pref.ambOff=!S.pref.ambOff; save(); tglSync(); ambUnlock(); ambSync(); toast(ambOn()?"环境音：开":"环境音：关"); };
 const radioInCar=()=>{ if(!E) return false; const st=String(sceneText("radio")[0]||""), ic=st.split(/\s+/)[0]||""; return /📻|🚕|🚖/.test(ic)||/出租车|电台|收音机/.test(st); };
 function fxSync(){ const fx=$("sceneFx"), m=SM;
   if(scene.dataset.m!==m){ scene.dataset.m=m; sceneBg.dataset.m=m;
@@ -1659,16 +1723,16 @@ function episode(key){
     if(lk){ if(gateStrict()){ E=null; return gateCard(e0,lk); } toast(`建议先过「${unitLabel(lk)}」的关卡`); } }
   leaveScene(); E=EPISODES.find(e=>e.key===key); if(S.lastEp!==key){ S.lastEp=key; save(); } CUR_LV=E.lv; LV=VOCAB.filter(v=>v.l===E.id); stopTimer(); theme(E.n); target(E.taxi?"🚕":E.item.e); setScene(6,70,false); $("gapLbl").textContent=`第 ${E.n} 集 · ${E.name}`; hearts(null); const ep=EP();
   const done=SCENES.filter(([k])=>ep[k]).length;
-  stage.innerHTML=`<h2 class="center">第 ${E.n} 集 · ${esc(E.name)}</h2><div class="tap">${esc(E.zh)} · ${LV.length} 个词 · 3 站</div>${E.synopsis?`<div class="card" style="text-align:left;font-size:14px;line-height:1.7">📖 ${esc(E.synopsis)}</div>`:""}
+  stage.innerHTML=`<h2 class="center">第 ${E.n} 集 · ${esc(E.name)}</h2><div class="tap">${esc(E.zh)} · ${LV.length} 个词 · 3 站</div>
+    <button class="syn" id="syn" type="button" aria-label="看剧情"><span>${esc(E.synopsis||"从头看这一集的剧情")}</span><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 10.5l9 5.5-9 5.5z" fill="currentColor"/></svg></button>
     ${routeHTML(ep)}
-    <div class="row"><button class="ghost" id="back">‹ 地图</button><button class="primary" id="go">${done===0?"看剧情 ›":ep.won?"从头再玩":`继续第 ${stationOf(ep)+1} 站 ›`}</button></div>
     ${ep.won?`<div class="center" style="font-size:24px;color:var(--taxi);letter-spacing:3px">${starStr(starsOf(E))}</div>${starHints(E)}`:""}
     ${E.grammar?`<div class="row"><button id="gram">Lisa 的小课堂：${esc(E.grammar.title||"语法")}</button></div>`:""}
-    <div class="row"><button id="mn">${manualNext()?"👆 答对后：总是手点":"⏩ 答对后：自动下一题"}</button><button id="amb">${ambOn()?"环境音：开":"环境音：关"}</button></div>${RMQ.matches?`<div class="tap">系统开了「减少动态效果」，一律手点</div>`:""}
-    ${ep.won?`<div class="row"><button id="hard">${S.hard?"⚡ 挑战模式：开":"⚡ 挑战模式：关"}</button></div><div class="tap">挑战模式：时间减半，答错直接重来；挑战模式通关直接拿 ⭐3</div>`:""}`;
-  const cur=E; $("back").onclick=()=>{ const b=buildingOfEp(cur); townView(cur.lv,b&&b.id); }; $("go").onclick=()=>{ if(done===0||ep.won){ RUN={key:E.key,wrong:new Set()}; intro(0); } else startStation(stationOf(ep)+1); };
-  $("mn").onclick=()=>{ if(RMQ.matches) return toast("系统设置了减少动态效果"); S.pref=S.pref||{}; S.pref.manualNext=!S.pref.manualNext; save(); episode(key); };
-  $("amb").onclick=()=>{ S.pref=S.pref||{}; S.pref.ambOff=!S.pref.ambOff; save(); $("amb").textContent=ambOn()?"环境音：开":"环境音：关"; ambUnlock(); };
+    ${ep.won?`<div class="row"><button id="hard">${S.hard?"⚡ 挑战模式：开":"⚡ 挑战模式：关"}</button></div><div class="tap">挑战模式：时间减半，答错直接重来；挑战模式通关直接拿 ⭐3</div>`:""}
+    <div class="row"><button class="ghost" id="back">‹ 地图</button>${done>0?`<button class="primary" id="go">${ep.won?"从头再玩":`继续第 ${stationOf(ep)+1} 站 ›`}</button>`:""}</div>`;
+  const cur=E, story=()=>{ RUN={key:E.key,wrong:new Set()}; intro(0); };
+  $("back").onclick=()=>{ const b=buildingOfEp(cur); townView(cur.lv,b&&b.id); }; $("syn").onclick=story;
+  const go=$("go"); if(go) go.onclick=()=>{ if(ep.won) story(); else startStation(stationOf(ep)+1); };
   const gb=$("gram"); if(gb) gb.onclick=()=>grammar(()=>episode(cur.key));
   stage.querySelectorAll(".rt[data-a]").forEach(b=>b.onclick=()=>ACT[b.dataset.a].start(()=>episode(cur.key)));
   const h=$("hard"); if(h) h.onclick=()=>{ S.hard=!S.hard; save(); episode(key); };
@@ -1773,7 +1837,7 @@ function learn(k){
   const words=LV; if(k>=words.length) return chaseStart();
   const v=words[k]; setScene(6,70,false); $("gapLbl").textContent=`热身 ${k+1}/${words.length}`;
   stage.innerHTML=`${k===0?bubble("Lisa","Noch einmal, langsam.",`${words.length} 个词，每 ${LG} 个一组：先听、跟读，再做两道小题`):""}${wordCard(v)}
-    <div class="row"><button class="ghost" id="back">‹ 上一个</button><button id="skip">跳过热身</button><button class="primary" id="next">记住了 ›</button></div>`;
+    <div class="row"><button class="ghost" id="back">${k===0?"‹ 剧情":"‹ 上个词"}</button><button id="skip">跳过热身</button><button class="primary" id="next">记住了 ›</button></div>`;
   play(v); $("sp").onclick=()=>play(v);
   const endOfGroup=(k+1)%LG===0||k===words.length-1;
   $("next").onclick=()=>endOfGroup?learnCheck(k-(k%LG),k,()=>learn(k+1)):learn(k+1);
@@ -1932,8 +1996,11 @@ function gFull(it){ if(it.t==="order") return it.a; if(it.t==="sort") return "";
   let done=false; return it.s.split(" ").map(w=>{ if(done) return w; const c=gTok(w); if(c===it.bad){ done=true; return w.replace(c,it.a); } return w; }).join(" "); }
 const gSay=it=>{ if(it.say) return it.say; const f=gFull(it); return /[\u4e00-\u9fff]/.test(f)?String(it.a||""):f; };   /* 题干是中文情景时只读答案 */
 function gRecord(it,ok){ IX.pts=IX.pts||{}; const r=IX.pts[it.p]||(IX.pts[it.p]=[0,0]); r[1]++; if(ok) r[0]++; if(!ok){ IX.gmiss=IX.gmiss||[]; IX.gmiss.push(it.id); } }
+/* 每道语法题都写明：考哪个语法点 + 这题要你做什么；点“考点”能展开规则 */
+function gTask(it){ return ({pick:"选出空格里正确的形式",type:it.say?"听一听，把听到的写出来":"在空格里写出正确的形式",trans:"按箭头的要求改写这句话",fix:"句子里有一个错：先点错的词，再选改法",order:"把词按正确语序排成一句",sort:it.q||"把每个词分到正确的类别"})[it.t]||""; }
 function gHead(it,body){ const pt=IX.uk?pointOf(IX.uk,it.p):null;
-  return `${dots(IX.n,IX.qs.length,IX.states)}${pt?`<div class="g-tag">${esc(pt.title)}</div>`:""}${body}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`; }
+  return `${dots(IX.n,IX.qs.length,IX.states)}<div class="g-focus">${pt?`<button class="g-tag" id="gpt" type="button">考点：${esc(pt.title)}${pt.rule?" ▾":""}</button>`:""}<div class="g-task">${esc(gTask(it))}</div>${pt&&pt.rule?`<div class="g-rule" id="grule" hidden>${esc(pt.rule)}</div>`:""}</div>${body}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`; }
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("#gpt"); if(!b) return; const r=$("grule"); if(!r) return; r.hidden=!r.hidden; b.textContent=b.textContent.replace(/[▾▴]$/,r.hidden?"▾":"▴"); });
 function gPrompt(it){ if(!it.say) return; const s=()=>speakThen(it.say,null,{rate:.75}); const b=$("gsp"); if(b) b.onclick=s; s(); }
 function gDone(it,ok,why){ if(IX.done===IX.n) return; gRecord(it,ok);
   stage.querySelectorAll(".opt,.tile,#chk,#ans,.keys button").forEach(x=>x.disabled=true);
@@ -1983,7 +2050,8 @@ function gSort(it){ const items=shuf(it.items,rng(it.id+"sort"+(IX.seed||0))); l
   stage.querySelectorAll("#gcats .opt").forEach(b=>b.onclick=()=>{ if(k>=items.length) return; const x=items[k], ok=+b.dataset.c===x.c, chip=stage.querySelector(`.g-chip[data-i="${k}"]`);
     chip.classList.remove("on"); chip.classList.add(ok?"ok":"bad"); chip.textContent=`${x.w} → ${it.cats[x.c]}`; if(ok) cheer(); else { miss++; stumble(); }
     k++; const nx=stage.querySelector(`.g-chip[data-i="${k}"]`); if(nx) nx.classList.add("on"); else gDone(it,miss===0,`分错 ${miss} 个`); }); }
-function gramQ(it){ if(IX.boss) SM="boss"; interBoard(IX.bt||"Grammatik",IX.bs||"");
+function gramQ(it){ if(IX.boss) SM="boss"; const pt=IX.uk?pointOf(IX.uk,it.p):null;
+  if(!IX.bt0){ IX.bt0=IX.bt||"Grammatik"; } interBoard(pt?esc(pt.title):IX.bt0,esc(gTask(it)));
   return ({pick:gPick,type:gType,trans:x=>gPick(x,`<div class="g-src">${esc(x.src)}</div><div class="g-cue">↓ ${esc(x.cue)}</div>`),fix:gFix,order:gOrder,sort:gSort})[it.t](it); }
 /* 本集语法小练习：小课堂之后马上做；没有题的集直接跳过 */
 function gramStart(next){ leaveScene(); const B=gramEp(E); if(!B||!B.items||!B.items.length) return next();
@@ -1991,8 +2059,8 @@ function gramStart(next){ leaveScene(); const B=gramEp(E); if(!B||!B.items||!B.i
   IX={slot:"g",kind:"gram",uk,seed:ep.gplays,qs:shuf(B.items,rng(E.key+"g"+ep.gplays)),n:0,right:0,states:[],next,bt:"Grammatik",bs:pts.map(p=>esc(p.title)).join(" · "),diary:[],pts:{}};
   setScene(60,70,false); $("gapLbl").textContent="语法小练习"; hearts(null);
   stage.innerHTML=`${bubble("Lisa","Kurz üben!",`刚讲的语法马上用一用：${IX.bs}。${IX.qs.length} 题，每题都有讲解。`)}
-    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="skip">跳过</button><button class="primary" id="go">开始</button></div><div class="tap">小练习的首答正确率会算进 ⭐2</div>`;
-  $("back").onclick=()=>episode(E.key); $("skip").onclick=next; $("go").onclick=interQ; }
+    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="peek">先逛逛看题</button><button class="primary" id="go">开始</button></div><div class="tap">小练习的首答正确率会算进 ⭐2</div>`;
+  $("back").onclick=()=>episode(E.key); $("peek").onclick=ixPeek; $("go").onclick=interQ; }
 /* 语法 Boss：本集 4 题 + 本单元前面几集 2 题，限时；答对 70% 过关，全对记 b3 */
 function gBossStart(){ leaveScene(); const uk=unitKeyOf(E), mine=(gramEp(E)||{}).items||[];
   const before=unitEps(uk).filter(e=>e.n<E.n).flatMap(e=>(gramEp(e)||{}).items||[]), r=rng(E.key+"gboss"+(EP().plays||0));
@@ -2140,8 +2208,11 @@ function bossQ(){ const b=B.b; if(B.n>=B.qs.length){ if(B.right>=b.need&&B.right
     if(b.type==="gender") $("sp").onclick=()=>play(it);
     autoNext(go,cb=>pv?play(pv,cb):speakThen(b.type==="sort"?it.t:b.type==="cloze"?it.t.replace("___",it.a):b.type==="pick"?it.a:it.say,cb),ok);
     combo(ok?"✓":"✗"); if(ok) cheer(); else stumble(); };
-  if(b.type==="dial"){ let d=""; const say=()=>speakThen(it.say); $("sp").onclick=say; say();
-    stage.querySelectorAll(".pad button").forEach(x=>x.onclick=()=>{ const k=x.dataset.d; if(k==="⌫") d=d.slice(0,-1); else if(k==="✓"){ if(d) finishQ(d); return; } else d+=k; $("dial").textContent=d||" "; }); timer(B.sec,()=>finishQ(d||null)); }
+  if(b.type==="dial"){ let d="", started=false; const n=String(it.a).length, sec=S.hard?4+n:8+n*2;
+    /* 先完整读完号码再开始倒计时；按满位数自动提交 */
+    const go=()=>{ if(started||B.qs[B.n]!==it) return; started=true; timer(sec,()=>finishQ(d||null)); };
+    const say=cb=>speakThen(it.say,cb,{rate:.8}); $("sp").onclick=()=>say(); stopTimer(); const tb=$("tbar"); if(tb) tb.style.width="100%"; say(go); setTimeout(go,Math.max(4000,it.say.length*160));
+    stage.querySelectorAll(".pad button").forEach(x=>x.onclick=()=>{ const k=x.dataset.d; if(k==="⌫") d=d.slice(0,-1); else if(k==="✓"){ if(d) finishQ(d); return; } else if(d.length<n+2) d+=k; $("dial").textContent=d||" "; if(d.length===n&&k!=="⌫") setTimeout(()=>{ if(B.qs[B.n]===it&&d.length===n) finishQ(d); },350); }); }
   else { stage.querySelectorAll(".opt").forEach(x=>x.onclick=()=>finishQ(x.dataset.a)); timer(B.sec,()=>finishQ(null)); } }
 
 function win(){ stopTimer(); settleRun(); const ep=EP(), before=starsOf(E); ep.won=true; ep.plays=(ep.plays||0)+1; if(S.hard) ep.s3=true; sceneDone("boss"); if(!S.items.includes(E.key)) S.items.push(E.key); save(); setScene(60,70,false,E.item.e); $("gapLbl").textContent="拿到了！";
@@ -2331,8 +2402,8 @@ const INTER_INFO={
 function inter(slot,next){ stopTimer(); const kind=interPlan(E)[slot], qs=({satz:()=>satzItems(E,slot),zahl:()=>zahlItems(E),wort:()=>wortItems(E),tage:()=>tageItems(E)})[kind](), I=INTER_INFO[kind];
   if(!qs.length) return next();
   IX={slot,kind,qs,n:0,right:0,states:[],next,bt:I.bt,bs:I.bs,diary:[]}; setScene(60,70,false); $("gapLbl").textContent=INTER_NAME[kind]; hearts(null);
-  stage.innerHTML=`${bubble("Lisa",I.hi,I.d(qs.length))}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="skip">跳过</button><button class="primary" id="go">开始</button></div><div class="tap">插曲的首答正确率会算进 ⭐2</div>`;
-  $("back").onclick=()=>episode(E.key); $("skip").onclick=next; $("go").onclick=interQ; }
+  stage.innerHTML=`${bubble("Lisa",I.hi,I.d(qs.length))}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="peek">先逛逛看题</button><button class="primary" id="go">开始</button></div><div class="tap">插曲的首答正确率会算进 ⭐2</div>`;
+  $("back").onclick=()=>episode(E.key); $("peek").onclick=ixPeek; $("go").onclick=interQ; }
 /* ---------- 整段听：先只听不看字，再答题，最后看原文 ---------- */
 function hoerenItems(e){
   const IN=(e.intro||[]).map(d=>({w:d.w,de:String(d.de||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim(),zh:d.zh||"",mk:(String(d.de||"").match(/<mark>(.*?)<\/mark>/)||[])[1]||""})).filter(d=>d.w&&d.de.split(" ").length>=2);
@@ -2352,7 +2423,7 @@ function hoerenStart(next){ stopTimer(); const H=hoerenItems(E); if(H.qs.length<
   stage.innerHTML=`${bubble("Lisa","Hör gut zu!",`这一集的对话，先只听声音、不看字。点上面的播放听全文，点某一句可以单独重听。然后答 ${H.qs.length} 道题，最后再看原文。`)}
     <div class="chat-tools"><button class="primary" id="hxPlay">播放全文</button>${spdUI()}</div>
     <div class="chat"><div class="chat-list hx" id="hxList">${H.lines.map((d,i)=>`<div class="dialog cmsg${side[i]?" me":""}${i>0&&H.lines[i-1].w===d.w?" same":""}" data-i="${i}"><div class="av" data-w="${esc(d.w)}">${avHTML(d.w)}</div><div class="bub"><div class="who">${esc(d.w)}</div><span class="hx-bar" style="width:${Math.min(200,36+d.de.length*3)}px"></span></div></div>`).join("")}</div></div>
-    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="skip">跳过</button><button class="primary" id="go">开始答题 ›</button></div>`;
+    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="peek">先逛逛看题</button><button class="primary" id="go">开始答题 ›</button></div>`;
   const list=$("hxList"); let tok=0;
   const playing=()=>tok&&tok===sayLines.t;
   const clear=()=>list.querySelectorAll(".now").forEach(x=>x.classList.remove("now"));
@@ -2363,7 +2434,21 @@ function hoerenStart(next){ stopTimer(); const H=hoerenItems(E); if(H.qs.length<
   $("hxPlay").onclick=()=>playing()?stopAll():playAll();
   /* 点哪一句就重播哪一句 */
   list.addEventListener("click",e=>{ const el=e.target.closest(".cmsg[data-i]"); if(!el) return; stopAll(); el.classList.add("now"); const d=H.lines[+el.dataset.i]; sayAs(d.w,d.de,hxRate(),()=>el.classList.remove("now")); });
-  $("back").onclick=()=>{ stopAll(); episode(E.key); }; $("skip").onclick=()=>{ stopAll(); next(); }; $("go").onclick=()=>{ stopAll(); interQ(); }; }
+  $("back").onclick=()=>{ stopAll(); episode(E.key); }; $("peek").onclick=()=>{ stopAll(); ixPeek(); }; $("go").onclick=()=>{ stopAll(); interQ(); }; }
+/* 先逛逛看题：把这一项的题目列一遍，只看不答、不计分；看完可以开始答题，也可以这项先不做、接着往下走 */
+function ixPeekLine(it,k){ const plain=s=>esc(String(s||"").replace(/<[^>]+>/g,""));
+  if(k==="gram"){ const pt=IX.uk?pointOf(IX.uk,it.p):null;
+    const body=it.t==="order"?plain(it.zh):it.t==="fix"?plain(it.s):it.t==="sort"?(it.items||[]).map(x=>esc(x.w)).join(" · "):it.t==="trans"?`${plain(it.src)} → ${plain(it.cue)}`:plain(it.q).replace("___","_____");
+    return [pt?pt.title:"语法",`${esc(gTask(it))}：${body}`]; }
+  const f=({satz:()=>["排句子",plain(it.zh)],zahl:()=>[({num:"听数字",time:"听时间",price:"听价格"})[it.k]||"听数字",({num:"把听到的数在数轴上点出来",time:"选出听到的钟点",price:"选出听到的价格"})[it.k]||""],
+    wort:()=>[it.k==="noun"?"抓名词":"抓冠词",plain(it.zh)],tage:()=>["日记填空",esc(String(it.line.de).replace(/\*\*(.+?)\*\*/g,"$1")).replace(/\{[^}]+\}/,"_____")],
+    hwer:()=>["谁说的","听一句台词，选出是谁说的"],hluecke:()=>["听写填空",hxGap(esc(it.d.de),esc(it.a),"_____")],hordnen:()=>["排顺序",`听 ${it.ds.length} 句，按听到的顺序点出来`],hrf:()=>["对还是错",plain(it.q.de)]})[k];
+  return f?f():[INTER_NAME[k]||"题目",""]; }
+function ixPeek(){ stopTimer(); const nx=IX.next;
+  stage.innerHTML=`${bubble("Lisa","Schau mal!",`先逛逛：这一项 ${IX.qs.length} 题，先看看都考什么，不用作答，也不计分。`)}
+    <ol class="peek">${IX.qs.map(it=>{ const [a,b]=ixPeekLine(it,it.kind||IX.kind); return `<li><b>${esc(a)}</b>${b}</li>`; }).join("")}</ol>
+    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="pskip">这项先不做 ›</button><button class="primary" id="go">开始答题 ›</button></div>`;
+  $("back").onclick=()=>episode(E.key); $("pskip").onclick=()=>nx?nx():episode(E.key); $("go").onclick=interQ; }
 const hxSpk=()=>`<button class="spk" id="sp" style="position:static;width:64px;height:64px;font-size:28px;margin:0 auto">🔊</button>`;
 function hwerQ(it){ const d=it.d, say=cb=>sayAs(d.w,d.de,IX.rate(),cb);
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">这句话是谁说的？</div>${hxSpk()}</div><div class="opts">${it.o.map(w=>`<button class="opt" data-w="${esc(w)}">${esc(w)}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
@@ -2402,8 +2487,10 @@ function interDone(){ const ep=EP(), acc=IX.qs.length?IX.right/IX.qs.length:1, k
       L.querySelectorAll(".now").forEach(x=>x.classList.remove("now")); el.classList.add("now"); const d=hx[+el.dataset.i]; sayAs(d.w,d.de,rate(),()=>el.classList.remove("now")); }); } }
 function interQ(){ if(IX.n>=IX.qs.length) return IX.unit?unitDone():IX.boss?gBossDone():IX.free?freeDone():interDone(); const it=IX.qs[IX.n], k=it.kind||IX.kind;
   $("gapLbl").textContent=`${IX.unit?"单元关卡 · ":IX.free?"自由练习 · ":""}${INTER_NAME[k]} ${IX.n+1}/${IX.qs.length}`;
+  stage.classList.toggle("gq",k==="gram");
   const r=({satz:satzQ,zahl:zahlQ,wort:wortQ,tage:tageQ,art:artQ,hor:horQ,hwer:hwerQ,hluecke:hlueckeQ,hordnen:hordnenQ,hrf:hrfQ,gram:gramQ})[k](it);
-  if(IX.timed&&IX_LIM[k]) timer(IX_LIM[k],()=>ixTimeout(it,k)); return r; }
+  /* 听写题要先听完再作答，多给听的时间 */
+  if(IX.timed&&IX_LIM[k]) timer(IX_LIM[k]+(k==="gram"&&it.say?Math.ceil(String(it.say).length/5)+4:0),()=>ixTimeout(it,k)); return r; }
 function interNext(ok,say,v){ if(IX.done===IX.n) return; IX.done=IX.n; stopTimer();
   if(!IX.states[IX.n]){ IX.states[IX.n]=ok?"ok":"bad"; if(ok) IX.right++; }
   if(IX.free&&v){ freeSrs(v,ok); if(!ok) IX.miss.push(v); }
