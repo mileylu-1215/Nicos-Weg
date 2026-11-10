@@ -192,10 +192,10 @@ html{touch-action:manipulation}
 .syl .dot{color:var(--muted);padding:0 1px}
 .ok{color:var(--ok)}.bad{color:var(--bad)}
 .ans s{color:var(--bad)}
-.dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:8px 4px;margin:-4px 0 0;touch-action:none;cursor:pointer;-webkit-user-select:none;user-select:none}
-.dots i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:transform .12s}
-.dots i.cur{box-shadow:0 0 0 2px var(--taxi)}
-.dots.scrub i.h0{transform:scale(2.2)}.dots.scrub i.h1{transform:scale(1.6)}.dots.scrub i.h2{transform:scale(1.25)}
+.dots{display:flex;gap:3px;justify-content:center;flex-wrap:nowrap;padding:10px 2px;margin:-4px 0 0;touch-action:none;cursor:pointer;-webkit-user-select:none;user-select:none}
+.dots i{flex:1 1 0;min-width:2px;max-width:44px;height:6px;border-radius:3px;background:var(--line);transition:transform .12s}
+.dots i.cur{box-shadow:0 0 0 1.5px var(--taxi)}
+.dots.scrub i.h0{transform:scaleY(2.6)}.dots.scrub i.h1{transform:scaleY(1.8)}.dots.scrub i.h2{transform:scaleY(1.3)}
 .dot-tip{position:fixed;z-index:9999;max-width:min(86vw,360px);padding:9px 12px;border-radius:12px;background:#FFFBF0;color:#22304A;box-shadow:0 8px 24px rgba(0,0,0,.28);border:1.5px solid rgba(0,0,0,.08);pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .15s,transform .15s;font-size:14px;line-height:1.4;text-align:left}
 .dot-tip.on{opacity:1;transform:none}
 .dot-tip .dt-h{font-size:12px;opacity:.7;margin-bottom:2px}.dot-tip em{font-style:normal;margin-left:4px;font-weight:700}.dot-tip em.ok{color:var(--ok)}.dot-tip em.bad{color:var(--bad)}
@@ -442,18 +442,41 @@ body.imm .stage>.chat>.chat-list{flex:1;height:auto;min-height:0}
 /* 底部主按钮条：内容再长也贴在面板底部 */
 body.nav-in .stage>.row:not(:has(>:not(.hidden))){display:none}
 body.imm.nav-in .stage>.row.bar{position:sticky;bottom:calc(-20px - env(safe-area-inset-bottom,0px));z-index:3;margin-top:auto;padding:12px 0 calc(20px + env(safe-area-inset-bottom,0px));background:var(--grain),linear-gradient(transparent,var(--parch) 12px)}
-/* 面板右上角：「‹ 上一个」（本集流程里的上一项）和「‹ 楼名 / 地图」（回上一层）；羊皮纸上方：答对后自动下一题、环境音两个开关 */
-.snav,.tgl{display:none}
-body.imm.nav-in .snav{display:flex;position:absolute;top:6px;right:12px;z-index:3;gap:6px}
-body.imm.nav-in .sheet.min .snav{display:none}
-.snav button{padding:3px 11px;font-size:12.5px;font-weight:600;line-height:20px;border-radius:14px;background:rgba(255,255,255,.5);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+/* 面板左上角弯钩返回（一次退一层：题目 → 板块首页 → 本集 → 建筑）；右上角 DE | 中；羊皮纸上方：答对后自动下一题、环境音两个开关 */
+.snav,.tgl,.lz{display:none}
+body.imm.nav-in .snav{display:flex;position:absolute;top:6px;left:12px;z-index:3}
+body.imm.nav-in .sheet.min .snav,body.imm.nav-in .sheet.min .lz{display:none}
+.snav button{display:flex;align-items:center;gap:4px;max-width:58vw;padding:3px 11px 3px 8px;font-size:12.5px;font-weight:600;line-height:20px;border-radius:14px;background:rgba(255,255,255,.5);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.snav button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snav button span:empty{display:none}
+.snav button:has(span:empty){padding:3px 9px}
+.snav svg{flex:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+body.imm.nav-in .stage:has(.zh.zhq)~.lz{display:flex;position:absolute;top:6px;right:12px;z-index:3;padding:2px;border-radius:14px;background:rgba(255,255,255,.5);box-shadow:inset 0 0 0 1px var(--line)}
+.lz button{min-height:0;padding:1px 10px;font-size:12px;font-weight:700;line-height:20px;border-radius:12px;background:none;box-shadow:none;color:var(--muted)}
+.lz button[aria-pressed=true]{background:var(--ink);color:var(--parch)}
+body.qnozh .stage .zh.zhq,body.qnozh .stage.gq>.q>.zh.zhq{display:none!important}
 body.imm.nav-in .tgl{display:flex;position:absolute;right:12px;top:-54px;z-index:3;gap:8px}
 body.imm.nav-in[data-m=street] .tgl{top:-98px}
 .tgl button{width:36px;height:36px;padding:0;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(34,48,74,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 2px 6px rgba(0,0,0,.22)}
 .tgl button.off{color:rgba(255,255,255,.5)}
 .tgl svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tgl button:not(.off) .sl{display:none}
-/* 先逛逛看题：只列题目，不作答 */
+/* 题目左右翻页箭头；有箭头时「继续」按钮藏起来，由 › 代替（自动下一题的倒计时也画在 › 上） */
+.qa{display:none}
+body.qarw .qa{display:grid;place-items:center;position:absolute;top:50%;z-index:4;width:30px;height:46px;margin-top:-23px;padding:0;border-radius:15px;background:rgba(255,255,255,.62);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line),0 2px 6px rgba(0,0,0,.12);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);overflow:hidden}
+body.qarw .qp{left:3px} body.qarw .qn{right:3px}
+body.qarw .stage{padding-left:38px!important;padding-right:38px!important}
+body.qarw .sheet.min .qa{display:none}
+.qa svg{position:relative;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.qa:disabled{opacity:.3}
+.qn.ready{background:var(--taxi);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.qn.cd::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.35);transform-origin:bottom;animation:qacd var(--cd,2s) linear forwards}
+@keyframes qacd{from{transform:scaleY(1)}to{transform:scaleY(0)}}
+body.qarw .stage #go{display:none}
+body.qarw .stage .row:has(>#go):not(:has(>:not(#go,.hidden))){display:none}
+.rvw{pointer-events:none;display:flex;flex-direction:column;gap:inherit}
+.rvtag{align-self:center;font-size:12px;font-weight:600;color:var(--muted);padding:1px 10px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line)}
+/* 看题：只列题目，不作答 */
 .peek{margin:0;padding:0 0 0 24px;display:flex;flex-direction:column;gap:9px;text-align:left;font-size:14px;line-height:1.55}
 .peek b{display:block;font-size:12px;color:var(--muted);font-weight:600}
 /* 本集页面：剧情简介整块可点，点了就看剧情 */
@@ -568,6 +591,20 @@ body.imm:is([data-m=lobby],[data-m=splash]) .stage{max-height:min(46vh,calc(100v
 #rail .ri.lv .e{font-family:var(--display);font-weight:800;font-size:17px;color:#fff;background:conic-gradient(var(--taxi) var(--p),rgba(34,48,74,.55) 0);border:3px solid rgba(246,235,207,.95)}
 #rail .ri:active .e{transform:scale(.92)}
 @media (max-height:760px){#rail .rl,#rail .rr{gap:5px}#rail .ri .e{width:40px;height:40px;font-size:19px}#rail .ri.lv .e{font-size:15px}}
+#rail .rm{position:absolute;right:10px;top:-108px}
+#rail .more{pointer-events:auto;position:relative;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 2px 6px rgba(0,0,0,.15);display:grid;place-items:center;color:#22304A}
+#rail .more svg{width:22px;height:22px;fill:currentColor}
+#rail .more .rd{position:absolute;top:1px;right:1px;width:10px;height:10px;border-radius:50%;background:#E0533D;box-shadow:0 0 0 2px #fff}
+.mm{position:fixed;inset:0;z-index:60}
+.mm-bg{position:absolute;inset:0;background:rgba(20,24,34,.45);opacity:0;transition:opacity .2s}
+.mm-sh{position:absolute;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;padding:8px 18px calc(18px + env(safe-area-inset-bottom,0px));border-radius:22px 22px 0 0;background:var(--parch);box-shadow:0 -6px 20px rgba(0,0,0,.2);transform:translateY(100%);transition:transform .2s;display:flex;flex-direction:column}
+.mm.on .mm-bg{opacity:1}.mm.on .mm-sh{transform:none}
+.mm-grip{align-self:center;width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 0 8px}
+.mm-sh button{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;margin:0;padding:0 4px;border:0;border-radius:0;background:none;box-shadow:none;color:var(--ink);font-size:15px;font-weight:600;text-align:left}
+.mm-sh button+button{border-top:1px solid var(--line)}
+.mm-sh button span{flex:1}
+.mm-sh svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mm-sh em{font-style:normal;font-size:12px;font-weight:700;color:#fff;background:#E0533D;padding:2px 9px;border-radius:10px}
 body.imm[data-m=desk] .stage>.card>.word{display:none}
 @media (prefers-reduced-motion:reduce){.fx-photo{animation:none}}
 .fx-phone .notch{position:absolute;left:50%;top:12px;width:34%;height:6px;transform:translateX(-50%);border-radius:3px;background:#0d1018;z-index:1}
@@ -579,8 +616,9 @@ body.imm[data-m=desk] .stage>.card>.word{display:none}
 .fx-radio .eq i{width:6px;border-radius:2px;background:#FFC86B;animation:eq .9s ease-in-out infinite alternate}
 .fx-radio .eq i:nth-child(2n){animation-duration:.6s}.fx-radio .eq i:nth-child(3n){animation-duration:1.2s}
 @keyframes eq{from{height:4px}to{height:24px}}
-.fx-board{position:absolute;left:8%;right:8%;top:calc(52px + env(safe-area-inset-top,0px));height:min(46%,170px);background:#2F4A3A radial-gradient(ellipse at 30% 30%,rgba(255,255,255,.08),transparent 60%);border:8px solid #8A6440;border-radius:6px;box-shadow:0 10px 22px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#F4F1E6;font-family:Georgia,"Noto Serif SC",serif;text-align:center;padding:8px}
-.fx-board b{font-size:24px;font-style:italic;letter-spacing:.04em;opacity:.95}
+.fx-board{position:absolute;left:8%;right:8%;top:calc(52px + env(safe-area-inset-top,0px));height:min(46%,170px);background:#2F4A3A radial-gradient(ellipse at 30% 30%,rgba(255,255,255,.08),transparent 60%);border:8px solid #8A6440;border-radius:6px;box-shadow:0 10px 22px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#F4F1E6;font-family:var(--display);text-align:center;padding:8px}
+.fx-board b{font-size:24px;font-weight:600;letter-spacing:.02em;opacity:.95}
+body.imm .fx-board.rule{pointer-events:auto;cursor:pointer}
 .fx-board span{font-size:14px;opacity:.75}
 body.imm[data-m=inter] .stage>.q>.zh,body.imm[data-m=inter] .stage>.q>.hint,body.imm[data-m=inter] .stage>#built,body.imm[data-m=inter] #fb .card>.word,body.imm[data-m=inter] #fb .card>.zh{display:none}
 .fx-board.inter b{font-size:22px;font-style:normal;line-height:1.3;padding:0 6px;overflow-wrap:anywhere}
@@ -680,12 +718,28 @@ body.imm .scene[data-art=diary] .fx-board{display:none}
 .g-rule{margin-top:6px;padding:8px 10px;border-radius:10px;background:var(--bubble);border:1px dashed var(--line);font-size:13px;line-height:1.6;color:var(--ink)}
 .stage.gq>.q>.hint,.stage.gq>.q>.zh,.stage.gq #fb .card>.word,.stage.gq #fb .card>.zh{display:block!important}
 .stage.gq>#built{display:flex!important}
-.stage.gq>.q>.zh{font-size:15px;font-weight:500;color:var(--muted)}
+.stage.gq>.q>.zh,.stage .q>.zh.zhq{font-size:15px!important;font-weight:500;color:var(--muted)}
 .g-blank{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--taxi);text-decoration:none}
 .g-src{font-family:var(--display);font-size:18px;opacity:.75}
 .g-cue{font-size:13px;color:var(--taxi);font-weight:800;margin:4px 0}
 .g-fix{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
-.g-fix .tile.wrong{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.g-fix .tile.wrong{border-color:var(--bad);color:var(--bad);text-decoration:line-through;opacity:1}
+.g-fix .tile.g-no,.opt.g-no{opacity:.45}
+.opt.nope{animation:nope .35s;border-color:#D2553F}
+.hint.g-err{color:var(--bad)!important;font-weight:800}
+.hint.nope{animation:nope .35s}
+.opt,.tile{position:relative}
+.opt.g-no,.tile.g-no{opacity:.4;border-color:var(--line);box-shadow:none}
+.fz{position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-style:normal;font:800 13px var(--display);color:#fff;background:#D2553F;border-radius:999px;padding:2px 9px;white-space:nowrap;pointer-events:none;animation:fz .9s ease-out forwards;z-index:3}
+@keyframes fz{0%{opacity:0;transform:translate(-50%,6px)}20%{opacity:1;transform:translate(-50%,-10px)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-26px)}}
+input.nope,.built.nope,.dial.nope,#dial.nope,.nl.nope{animation:nope .35s;border-color:#D2553F!important}
+.mut{color:var(--muted);font-weight:600;font-size:.82em}
+.g-done{position:relative;font-family:var(--display);font-size:22px;line-height:1.35;text-align:center;padding:10px 14px;border-radius:14px;background:var(--bubble);border:2px solid var(--ok);box-shadow:0 3px 0 var(--ok);animation:gjoin .5s ease-out}
+.g-done b{color:var(--ok)}
+@keyframes gjoin{0%{transform:scale(.88);opacity:.2;letter-spacing:.25em}100%{transform:none;opacity:1;letter-spacing:normal}}
+.g-sp{position:absolute;left:50%;top:50%;font-style:normal;font-size:20px;color:var(--taxi);pointer-events:none;opacity:0;animation:gsp 1.1s ease-out forwards;text-shadow:0 0 6px rgba(255,200,60,.7)}
+.g-sp:nth-child(3n){color:var(--ok);font-size:15px}
+@keyframes gsp{0%{transform:translate(-50%,-50%) scale(.3);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.2) rotate(180deg);opacity:0}}
 .g-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
 .g-chip{padding:6px 12px;border-radius:999px;border:2px solid var(--line);background:var(--bubble);font-family:var(--display);font-size:16px;opacity:.55}
 .g-chip.on{opacity:1;border-color:var(--taxi);box-shadow:0 0 0 3px rgba(255,179,0,.3)}
@@ -741,7 +795,9 @@ body.imm .scene[data-art=diary] .fx-board{display:none}
   </div>
   <div class="sheet" id="sheet"><button class="grip" id="grip" aria-label="收起或展开题目" aria-expanded="true"><i></i><span>▲ 展开，继续答题 · 计时已暂停</span></button>
   <div class="stage" id="stage"><div id="loading" class="center" style="margin:auto"><div class="big">🚕</div><h2>加载中…</h2><div class="tap">第一次打开要下载约 2.5 MB，网络慢时请稍等</div></div></div>
-  <div class="snav" id="snav"><button id="navPrev" class="hidden" type="button">‹ 上一个</button><button id="navUp" type="button"></button></div>
+  <div class="snav" id="snav"><button id="navUp" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span></span></button></div>
+  <div class="lz" id="lz" role="group" aria-label="题目中文提示"><button type="button" data-v="de">DE</button><button type="button" data-v="zh">中</button></div>
+  <button class="qa qp" id="qPrev" type="button" aria-label="回看上一题"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="qa qn" id="qNext" type="button" aria-label="下一题"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
   <div class="tgl" id="tgl"><button id="tgAuto" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l7 6-7 6zM13 6l7 6-7 6z"/><path class="sl" d="M3 3l18 18"/></svg></button><button id="tgAmb" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5c3-3 6 3 9 0s6 3 9 0M3 15.5c3-3 6 3 9 0s6 3 9 0"/><path class="sl" d="M3 3l18 18"/></svg></button></div></div>
 </div>
 <div id="town" hidden>
@@ -785,13 +841,13 @@ body.imm .scene[data-art=diary] .fx-board{display:none}
 setTimeout(function(){ var l=document.getElementById("loading"); if(l&&!document.getElementById("retry")) l.insertAdjacentHTML("beforeend",'<p class="tap">好像有点慢…</p><button class="primary" id="retry" onclick="location.reload()">🔄 重新加载</button>'); },15000);</script>
 <script>document.addEventListener("DOMContentLoaded",()=>{ const hb=document.getElementById("homebtn"); hb.onclick=()=>{ if(typeof stopTimer==="function") stopTimer(); home(); }; new MutationObserver(()=>{ /* 任何非首页都显示 */ if(!document.getElementById("homeMark")&&!document.getElementById("splashMark")) hb.classList.remove("hidden"); if(typeof railSync==="function") railSync(); }).observe(document.getElementById("stage"),{childList:true}); });</script>
 
-<script src="data/vocab.js?v=a64ba18e"></script>
-<script src="data/levels.js?v=a64ba18e"></script>
-<script src="data/grammar.js?v=a64ba18e"></script>
-<script src="data/tts.js?v=a64ba18e" onerror="window.TTS=''"></script>
+<script src="data/vocab.js?v=fc888758"></script>
+<script src="data/levels.js?v=fc888758"></script>
+<script src="data/grammar.js?v=fc888758"></script>
+<script src="data/tts.js?v=fc888758" onerror="window.TTS=''"></script>
 <script>
 /* ---------- 数据：词表和剧集目录在 data/*.js 里，先于本脚本加载 ---------- */
-const BUILD="a64ba18e";
+const BUILD="fc888758";
 const VOCAB=window.VOCAB||[];
 const LEVELS=window.LEVELS||[];
 const EPISODES=LEVELS.flatMap(l=>l.episodes.map(e=>Object.assign(e,{lv:l.id,key:l.id+"-"+e.n})));
@@ -971,9 +1027,17 @@ const streakN=()=>{ const s=S.streak; return s&&(s.last===today()||s.last===addD
 const RMQ=window.matchMedia?matchMedia("(prefers-reduced-motion: reduce)"):{matches:false};
 const manualNext=()=>!!(S.pref&&S.pref.manualNext)||RMQ.matches;
 const AUTO_MS=4000;
+/* 答错不揭晓：选错的那个抖一下、浮出 Falsch!、置灰禁用，直到点对为止；不展示错误写法 */
+function shake(el){ if(!el) return; el.classList.remove("nope"); void el.offsetWidth; el.classList.add("nope"); }
+function falsch(b){ if(!b) return; shake(b); b.querySelectorAll(".fz").forEach(x=>x.remove()); const f=document.createElement("i"); f.className="fz"; f.textContent="Falsch!"; b.appendChild(f); setTimeout(()=>f.remove(),950); }
+function missPick(b,quiet){ if(!b) return; falsch(b); b.disabled=true; setTimeout(()=>b.classList.add("g-no"),360); if(!quiet) stumble(); }
+/* 输入类答错：抖输入框、清空重来；第 3 次起给首字母提示 */
+function missType(inp,ans,n,fb){ shake(inp); stumble(); inp.value=""; inp.focus(); const a=String(ans||"");
+  if(fb) fb.innerHTML=`<div class="card"><div class="bad">Falsch! 再试一次</div>${n>=3&&a?`<div class="note">提示：以 <b>${esc(a.slice(0,a.startsWith("der ")||a.startsWith("die ")||a.startsWith("das ")?5:1))}</b> 开头</div>`:""}</div>`; }
+const okHead=(first,txt)=>`<div class="ok">✓ ${txt||"对了"}${first?"":'<span class="mut"> · 第一次没对，不计分</span>'}</div>`;
 function autoNext(go,sound,ok){ const mark=stage.firstElementChild, auto=ok&&!manualNext(); let fired=false, sndDone=false, timeUp=false;
   const off=()=>stage.removeEventListener("click",tap,true);
-  const fire=()=>{ if(fired) return; if(!mark||!mark.isConnected){ off(); return; } fired=true; off(); go(); };
+  const fire=()=>{ if(fired) return; if(!mark||!mark.isConnected){ off(); return; } fired=true; off(); qaSnap(); go(); };
   const tap=e=>{ if(!mark||!mark.isConnected) return off(); if(e.target.closest("#sp,.spk,button,a,input,textarea")) return; fire(); };
   sound(()=>{ if(sndDone) return; sndDone=true; if(auto&&timeUp) setTimeout(fire,1000); });
   if(auto){ const b=$("go"); if(b){ b.classList.add("cd"); b.style.setProperty("--cd",AUTO_MS+"ms"); }
@@ -1135,14 +1199,20 @@ function interiorOf(T,b){ if(!b||!(T.interiors||[]).includes(b.id)) return null;
 /* 室内图里画好的黑板（原图像素 x0,y0,x1,y1）：黑板标题直接写在上面，不再另画一块 */
 const PAINTED_BOARD={sprachschule:[236,338,644,498]};
 let BG_B=null;   /* 不在某一集里时（复习跑腿、自由练习）借用哪栋楼当背景 */
-function immBgSpec(){ if(SM==="splash"){ const src="assets/art/splash.webp"; if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(SM==="splash") immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
-    if(IMG_OK[src]) return {src,size:[1024,1536],inside:true,fy:.5,art:"splash"}; }
+/* 开屏 / 首页的整张画：加载失败过一会儿再试（手机网络抖一下不至于一直缺图） */
+function artReady(src,m){ if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(SM===m) immSync(true); };
+    im.onerror=()=>{ IMG_OK[src]=false; setTimeout(()=>{ delete IMG_OK[src]; if(SM===m) immSync(true); },3000); }; im.src=src; }
+  return !!IMG_OK[src]; }
+function immBgSpec(){ if(SM==="splash"){ const src="assets/art/splash.webp";
+    if(artReady(src,"splash")) return {src,size:[1024,1536],inside:true,fy:.5,art:"splash"};
+    const T0=TOWNS.A1; return T0&&T0.bg?{T:T0,src:T0.bg,size:T0.size,x:T0.size[0]/2,y:T0.size[1]*.42,w:T0.size[0]*.7}:null; }   /* 画没到之前先用城市图，不要落到 WG 卧室 */
   if(SM==="radio"&&radioInCar()) return {src:"assets/art/scenes/taxi.webp",size:[768,1152],inside:true,fy:.36,art:"taxi"};
   if(SM==="inter"&&IX&&IX.kind==="tage") return {src:"assets/art/scenes/diary.webp",size:[768,1152],inside:true,fy:.3,art:"diary"};
   if(SM==="lobby"){ const nx=nextPick(), T2=TOWNS[nx?nx.lv:"A1"], b2=nx&&buildingOfEp(nx);
-    if(b2){ const src=`assets/art/doors/${b2.id}.webp`; if(!(src in IMG_OK)){ IMG_OK[src]=null; const im=new Image(); im.onload=()=>{ IMG_OK[src]=true; if(SM==="lobby") immSync(true); }; im.onerror=()=>{ IMG_OK[src]=false; }; im.src=src; }
-      if(IMG_OK[src]) return {src,size:[1024,1536],inside:true,fy:.4,art:"door"}; }   /* 建筑门口画（门开着，动态 Nico 站在门前空地上） */
-    if(T2&&T2.bg&&b2) return {T:T2,src:T2.bg,size:T2.size,x:b2.x,y:b2.y+(b2.h||0)*.15,w:b2.w*.9,lobby:1}; }
+    if(b2){ const src=`assets/art/doors/${b2.id}.webp`;
+      if(artReady(src,"lobby")) return {src,size:[1024,1536],inside:true,fy:.4,art:"door"}; }   /* 建筑门口画（门开着，动态 Nico 站在门前空地上） */
+    if(T2&&T2.bg&&b2) return {T:T2,src:T2.bg,size:T2.size,x:b2.x,y:b2.y+(b2.h||0)*.15,w:b2.w*.9,lobby:1};
+    if(T2&&T2.bg) return {T:T2,src:T2.bg,size:T2.size,x:T2.size[0]/2,y:T2.size[1]*.42,w:T2.size[0]*.7}; }
   const T=TOWNS[E?E.lv:"A1"]; if(!T||!T.bg) return null; const b=E?buildingOfEp(E):BG_B?(T.buildings||[]).find(x=>x.id===BG_B):(!DIARY?(T.buildings||[]).find(x=>x.id==="wg")||{id:"wg"}:null);
   const inn=interiorOf(T,b); if(inn&&IN_MODES.test(SM)) return inn;
   return b?{T,src:T.bg,size:T.size,x:b.x,y:b.y,w:b.w}:{T,src:T.bg,size:T.size,x:T.size[0]/2,y:T.size[1]*.42,w:T.size[0]*.7}; }
@@ -1203,30 +1273,61 @@ const SMODE={episode:"home",intro:"vn",learn:"desk",chaseStart:"street",chaseSeg
   home:"lobby",splash:"splash",bookPage:"lobby",backupPage:"lobby",askMood:"vn",inter:"inter",interQ:"inter",interDone:"inter",hoerenStart:"inter",freePage:"inter",freeDone:"inter",
   gramStart:"inter",gBossStart:"boss",unitPage:"board",unitTestStart:"inter",unitDone:"inter",gateCard:"vn"};
 for(const [f,m] of Object.entries(SMODE)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ SM=m; return o.apply(this,arguments); }; }
-/* 导航：面板右上角「‹ 上一个」回本集流程里的上一项，「‹ 楼名」回本集页面（本集页面上是「‹ 地图」）。
-   各页面照旧在底部写 <button class="ghost" id="back">‹ 返回 / 退出 / 场景</button>，这里把它藏起来，右上角的标签代它点 */
+/* 导航：面板左上角弯钩，一次退一层——题目页「↶ 板块名」回这个板块的首页；板块首页、剧情、认词、站点休息回本集；本集页面回所在建筑。
+   各页面照旧在底部写 <button class="ghost" id="back">‹ 返回 / 退出 / 场景</button>，这里把它藏起来，左上角的弯钩代它点 */
 let NAVC={c:"out",a:null};
 const NAVW={episode:()=>({c:"ep"}),intro:()=>({c:"act",a:"intro"}),learn:()=>({c:"act",a:"learn"}),chaseStart:()=>({c:"act",a:"chase"}),smsStart:()=>({c:"act",a:"sms"}),radioStart:()=>({c:"act",a:"radio"}),
   hoerenStart:()=>({c:"act",a:"hoeren"}),gramStart:()=>({c:"act",a:"gram"}),talkStart:()=>({c:"act",a:"talk"}),boss:()=>({c:"act",a:"boss"}),gBossStart:()=>({c:"act",a:"boss"}),inter:s=>({c:"act",a:"i"+s}),
-  grammar:(af,fl)=>({c:"act",a:fl?"grammar":null}),stationBreak:()=>({c:"act",a:NAVC.a,self:true}),
+  grammar:(af,fl)=>({c:"act",a:fl?"grammar":null}),stationBreak:()=>({c:"act",a:null}),
   home:()=>({c:"out"}),splash:()=>({c:"out"}),bookPage:()=>({c:"out"}),backupPage:()=>({c:"out"}),levelMap:()=>({c:"out"}),townView:()=>({c:"out"}),unitPage:()=>({c:"out"}),unitTestStart:()=>({c:"out"}),freePage:()=>({c:"out"}),gateCard:()=>({c:"out"})};
-for(const [f,g] of Object.entries(NAVW)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ NAVC=g.apply(this,arguments); return o.apply(this,arguments); }; }
+/* 记下进入板块时调用的函数和参数，以及它画出的首页；首页被换掉了，就说明已经进了题目 */
+for(const [f,g] of Object.entries(NAVW)){ const o=window[f]; if(typeof o==="function") window[f]=function(){ const c=g.apply(this,arguments); c.fn=f; c.args=[...arguments]; NAVC=c;
+  const r=o.apply(this,arguments); if(NAVC===c) c.page=stage.firstElementChild; return r; }; }
 const NAV_RE=/^‹\s*(返回|退出|场景|地图)$/;
 const navBack=()=>[...stage.querySelectorAll(".row>#back")].find(x=>NAV_RE.test(x.textContent.trim()));
 const navIn=()=>!!E&&(NAVC.c==="ep"||NAVC.c==="act");
-function navPrevId(){ if(NAVC.c!=="act"||!NAVC.a||!E) return null; const o=["intro","learn",...FLOW.filter(a=>!(ACT[a].hide&&ACT[a].hide()))], i=o.indexOf(NAVC.a);
-  return i<0?null:NAVC.self?NAVC.a:i>0?o[i-1]:null; }
+const NAV_NOHOME=new Set(["intro","learn"]);
+function navInQ(){ return NAVC.c==="act"&&!!NAVC.a&&!NAV_NOHOME.has(NAVC.a)&&!!ACT[NAVC.a]&&!!NAVC.page&&!NAVC.page.isConnected; }
 function navSync(){ const inn=navIn(); document.body.classList.toggle("nav-in",inn); if(!inn) return;
   const real=navBack(); if(real){ real.classList.add("hidden"); }
-  const b=E&&buildingOfEp(E); $("navUp").textContent=NAVC.c==="ep"?"‹ 地图":`‹ ${b?b.zh:`第 ${E.n} 集`}`;
-  const pid=navPrevId(); $("navPrev").classList.toggle("hidden",!pid); $("navPrev").dataset.to=pid||"";
+  const q=navInQ(), lb=q?String(ACT[NAVC.a].name()||"").replace(EMO_RE,"").trim():"", b=E&&buildingOfEp(E);
+  $("navUp").querySelector("span").textContent=lb;
+  $("navUp").setAttribute("aria-label",q?`返回「${lb}」首页`:NAVC.c==="ep"?`返回${b?b.zh:"小镇"}`:`返回第 ${E.n} 集`);
   stage.querySelectorAll(":scope>.row.bar").forEach(x=>x.classList.remove("bar"));
   const bar=[...stage.children].filter(x=>x.classList.contains("row")&&!x.classList.contains("hidden")&&x.querySelector(".primary")).pop(); if(bar) bar.classList.add("bar");
-  tglSync(); }
+  tglSync(); lzSync(); }
 new MutationObserver(navSync).observe(stage,{childList:true});
-$("navUp").onclick=()=>{ const r=navBack(); if(r) return r.click(); if(!E) return home(); if(NAVC.c==="ep") return toTownFromEp(); leaveScene(); episode(E.key); };
-$("navPrev").onclick=()=>{ const id=$("navPrev").dataset.to; if(!id||!E) return; leaveScene(); if(!RUN||RUN.key!==E.key) RUN={key:E.key,wrong:new Set()};
-  if(id==="intro") return intro(); if(id==="learn") return learn(0); flowGo(id); };
+$("navUp").onclick=()=>{ if(!E) return home();
+  if(navInQ()){ const {fn,args}=NAVC; leaveScene(); return window[fn].apply(null,args); }
+  const r=navBack(); if(r) return r.click(); if(NAVC.c==="ep") return toTownFromEp(); leaveScene(); episode(E.key); };
+/* 题目左右翻页：› 下一题（答完 = 原来的「继续」；没答 = 跳过，算答错并亮出答案），‹ 回看已做过的题（只读快照）。
+   每种题型画完一道题调用 qaSet(状态对象, 跳过函数)；前进时 qaSnap() 存下这道题答完的样子 */
+let QA=null;
+function qaSet(st,skip){ if(!QA||QA.st!==st) QA={st,snaps:[]}; QA.mark=stage.firstElementChild; QA.skip=skip; QA.view=null; QA.live=null; QA.snapped=null; arwSync(); }
+const qaLive=()=>!!QA&&!!QA.mark&&QA.mark.isConnected;
+function qaSnap(){ if(!qaLive()||QA.snapped===QA.mark) return; QA.snapped=QA.mark; const c=stage.cloneNode(true);
+  c.querySelectorAll("#go").forEach(x=>{ const r=x.closest(".row"); x.remove(); if(r&&!r.querySelector("button")) r.remove(); });
+  c.querySelectorAll(".row").forEach(r=>{ if(r.querySelector("#back")) r.remove(); });
+  QA.snaps.push(c.innerHTML); }
+function qaShow(i){ QA.view=i; stage.innerHTML=`<div class="rvw"><div class="rvtag">回看 · 只读</div>${QA.snaps[i]}</div>`; stage.scrollTop=0; arwSync(); }
+function qaPrev(){ if(!QA) return; if(QA.view==null){ if(!qaLive()||!QA.snaps.length||(tInt&&!$("go"))) return; QA.live=document.createDocumentFragment(); QA.live.append(...stage.childNodes); return qaShow(QA.snaps.length-1); }
+  if(QA.view>0) qaShow(QA.view-1); }
+function qaNext(){ if(!QA) return; if(QA.view!=null){ if(QA.view+1<QA.snaps.length) return qaShow(QA.view+1); QA.view=null; stage.replaceChildren(QA.live); QA.live=null; return arwSync(); }
+  if(!qaLive()) return; const g=$("go"); if(g) return g.click(); if(QA.skip) QA.skip(); }
+function arwSync(){ const rv=!!QA&&QA.view!=null&&!!stage.querySelector(":scope>.rvw"), on=qaLive()||rv; document.body.classList.toggle("qarw",on); if(!on) return;
+  const p=$("qPrev"), n=$("qNext"), g=rv?null:$("go");
+  p.disabled=rv?QA.view===0:!QA.snaps.length||(!!tInt&&!g);
+  n.classList.toggle("ready",!!g); n.setAttribute("aria-label",rv?"往后看":g?"下一题":"跳过这题（算答错）");
+  n.classList.toggle("cd",!!g&&g.classList.contains("cd")); if(g) n.style.setProperty("--cd",g.style.getPropertyValue("--cd")); }
+new MutationObserver(arwSync).observe(stage,{childList:true,subtree:true});
+stage.addEventListener("click",e=>{ if(e.target.closest("#go")) qaSnap(); },true);
+$("qPrev").onclick=qaPrev; $("qNext").onclick=qaNext;
+{ let sx=null, sy=0; stage.addEventListener("touchstart",e=>{ sx=null; if(!document.body.classList.contains("qarw")||e.touches.length>1||e.target.closest(".tile,.pad,.keys,input,textarea,#nl,.dots,.chat-list")) return; sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
+  stage.addEventListener("touchend",e=>{ if(sx==null) return; const t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy; sx=null; if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5) return; dx<0?qaNext():qaPrev(); },{passive:true}); }
+/* 题目里的中文提示（.zh.zhq）：DE 只看德语，中 显示中文 */
+function lzSync(){ const de=!!(S.pref&&S.pref.qNoZh); document.body.classList.toggle("qnozh",de);
+  $("lz").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String((x.dataset.v==="de")===de))); }
+$("lz").onclick=e=>{ const x=e.target.closest("button"); if(!x) return; S.pref=S.pref||{}; S.pref.qNoZh=x.dataset.v==="de"; save(); lzSync(); };
 function tglSync(){ const a=$("tgAuto"), m=$("tgAmb"), au=!manualNext(), am=ambOn();
   a.classList.toggle("off",!au); a.setAttribute("aria-pressed",String(au)); a.setAttribute("aria-label",au?"答对后自动下一题：开":"答对后自动下一题：关"); a.title=a.getAttribute("aria-label");
   m.classList.toggle("off",!am); m.setAttribute("aria-pressed",String(am)); m.setAttribute("aria-label",am?"环境音：开":"环境音：关"); m.title=m.getAttribute("aria-label"); }
@@ -1415,7 +1516,7 @@ function assemble(item,opts,cb){ const isSpell=!!item.spell; const target=isSpel
   $("undo").onclick=()=>{ const last=picked.pop(); if(last){ const el=stage.querySelector(`.tile[data-i="${last.i}"]`); if(el) el.classList.remove("used"); } render(); };
   const grade=()=>{ if(!picked.length){ toast("先拼出来"); return; } const said=picked.map(x=>x.t).join(isSpell?"":" "); const ok=isSpell?said.toLowerCase()===target.toLowerCase():norm(said)===norm(target);
     if(ok){ combo("✓"); cheer(); $("fb").innerHTML=`<div class="card"><div class="ok">✓</div><div class="word" style="font-size:22px">${esc(isSpell?target.split("").join("-"):target)}</div>${isSpell?"":`<div class="zh">${esc(item.zh)}</div>`}</div>`; $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; cb(true); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go; autoNext(go,c=>speakThen(isSpell?target.split("").join(". "):target,c),true); }
-    else { tries++; stumble(); if(opts.onWrong) opts.onWrong(); picked=[]; stage.querySelectorAll(".tile").forEach(y=>y.classList.remove("used")); render(); $("fb").innerHTML=`<div class="card"><div class="ans"><s>${esc(said)}</s></div><div class="bad">${tries>=2?"正确说法是：":"再试一次。"}</div>${tries>=2?`<div class="word" style="font-size:22px">${esc(target)}</div>`:""}</div>`; if(tries>=2) speakThen(isSpell?target.split("").join(". "):target); } };
+    else { tries++; shake($("built")); stumble(); if(opts.onWrong) opts.onWrong(); picked=[]; stage.querySelectorAll(".tile").forEach(y=>y.classList.remove("used")); render(); $("fb").innerHTML=`<div class="card"><div class="bad">Falsch! 再拼一次</div>${tries>=3?'<div class="note">提示：先点跳动的那块</div>':""}</div>`; if(tries>=3){ const w=[...stage.querySelectorAll(".tile")].find(y=>y.textContent===need[0]); if(w){ w.classList.remove("hintme"); void w.offsetWidth; w.classList.add("hintme"); } } } };
   $("chk").onclick=grade; }
 function mySentences(after){ const miss=missingFor(E.n); if(miss.length) return profileForm(()=>mySentences(after),miss);
   const items=mySentencesFor(E.n); if(!items.length) return after(); let n=0; const allWords=items.filter(x=>x.de).flatMap(x=>x.de.split(/\s+/));
@@ -1455,17 +1556,27 @@ function home(){ leaveScene();
   const r=$("rail")||document.body.appendChild(Object.assign(document.createElement("div"),{id:"rail"})), bk=wonN()>bkWon(), bookN=(S.book||[]).length;
   const ic=(id,e,lb,badge)=>`<button class="ri" id="${id}" aria-label="${lb}"><span class="e">${e}</span><b>${lb}</b>${badge?`<i class="bd">${badge}</i>`:""}</button>`;
   r.innerHTML=`<div class="rl"><button class="ri" id="r-home" aria-label="回首页"><span class="e"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg></span></button>${LEVELS.map(l=>{ const won=l.episodes.filter(e=>epState(e).won).length; return `<button class="ri lv" data-lv="${l.id}" aria-label="${esc(l.name)}" style="--p:${l.episodes.length?won/l.episodes.length*100:0}%"><span class="e">${l.id}</span><b>${won}/${l.episodes.length}</b></button>`; }).join("")}</div>
-    <div class="rr">${ic("r-diary","☀️","回顾",due.length||"")}${ic("r-free","🎯","练习","")}${ic("r-book","📔","本子",bookN?"":"•")}${ic("r-mood","🙂","心情",moodToday()?"":"•")}${ic("r-bk","💾","备份",bk?"!":"")}${ic("r-rl","🔄","刷新","")}</div>`;
+    <div class="rr">${ic("r-diary","☀️","回顾",due.length||"")}${ic("r-free","🎯","练习","")}${ic("r-book","📔","本子",bookN?"":"•")}${ic("r-mood","🙂","心情",moodToday()?"":"•")}</div>
+    <div class="rm"><button class="more" id="r-more" type="button" aria-label="更多：备份、刷新"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>${bk?'<i class="rd"></i>':""}</button></div>`;
   r.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>townView(b.dataset.lv)); $("r-home").onclick=splash;
   $("r-diary").onclick=()=>due.length?diary(false):toast(mtotal?`今天没有到期的词 · 已学 ${mtotal} 个`:"学过的词会在 1→3→7→14→30 天后回来考你");
-  $("r-free").onclick=freePage; $("r-book").onclick=bookPage; $("r-mood").onclick=askMood; $("r-rl").onclick=()=>location.reload();
-  $("r-bk").onclick=async()=>{ if(bk&&await copyText(backupText())){ markBackup(); home(); toast("进度码已复制，去微信粘贴保存吧"); } else backupPage(); };
+  $("r-free").onclick=freePage; $("r-book").onclick=bookPage; $("r-mood").onclick=askMood; $("r-more").onclick=()=>moreMenu(bk);
   railSync();
   try{ const ios=/iPhone|iPad|iPod/.test(navigator.userAgent), standalone=navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
     S.pref=S.pref||{}; if(ios&&!standalone&&!S.pref.a2hs&&wonN()>=1){ S.pref.a2hs=true; save();
       setTimeout(()=>toast("小提示：Safari 底部「分享 → 添加到主屏幕」，进度更不容易丢"),1200); } }catch(e){}
 }
 function railSync(){ const r=$("rail"); if(r) r.hidden=!stage.querySelector("#homeMark"); }
+/* 大厅右上角「…」：备份 / 恢复、刷新页面；该备份时「…」和备份一行上有红点 */
+function moreMenu(bk){ const old=$("mm"); if(old) old.remove();
+  const m=Object.assign(document.createElement("div"),{id:"mm",className:"mm"}); const close=()=>{ m.classList.remove("on"); setTimeout(()=>m.remove(),200); };
+  m.innerHTML=`<div class="mm-bg"></div><div class="mm-sh" role="dialog" aria-label="更多"><i class="mm-grip"></i>
+    <button type="button" id="mmBk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>备份 / 恢复进度</span>${bk?'<em>该备份了</em>':""}</button>
+    <button type="button" id="mmRl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg><span>刷新页面</span></button></div>`;
+  document.body.appendChild(m); requestAnimationFrame(()=>m.classList.add("on"));
+  m.querySelector(".mm-bg").onclick=close;
+  $("mmRl").onclick=()=>location.reload();
+  $("mmBk").onclick=async()=>{ close(); if(bk&&await copyText(backupText())){ markBackup(); home(); toast("进度码已复制，去微信粘贴保存吧"); } else backupPage(); }; }
 function coverOf(e,cls){
   const fb=`data-e="${e.item.e}"`; /* 图片加载失败时，封面显示这一集物品的 emoji */
   if(e.thumb) return `<div class="cover c1 ${cls||""}" ${fb}><img src="${esc(e.thumb)}" alt="" loading="lazy" onerror="this.remove()"></div>`;
@@ -1843,20 +1954,22 @@ function learn(k){
   $("next").onclick=()=>endOfGroup?learnCheck(k-(k%LG),k,()=>learn(k+1)):learn(k+1);
   $("skip").onclick=chaseStart; $("back").onclick=()=>k===0?intro():learn(k-1); }
 function learnCheck(a,b,next){ const grp=LV.slice(a,b+1); if(grp.length<3) return next();
-  const r=rng(E.key+"lc"+a), qs=shuf(grp,r).slice(0,2); let i=0;
+  const r=rng(E.key+"lc"+a), qs=shuf(grp,r).slice(0,2), lcSt={}; let i=0;
   const q=()=>{ if(i>=qs.length) return next(); const v=qs[i], listen=i===1;
     const opts=shuf([v,...shuf(grp.filter(x=>x!==v&&zkey(x.zh)!==zkey(v.zh)),r).slice(0,3)],r);
     $("gapLbl").textContent=`小测 ${i+1}/${qs.length}`;
     stage.innerHTML=`${bubble("Lisa",listen?"Was heißt das?":"Wie sagt man das?",listen?"听原声，选中文意思":"这个用德语怎么说？")}
       <div class="q">${listen?`<button id="lsp" class="spk" style="position:static;width:72px;height:72px;font-size:30px;margin:0 auto" aria-label="再听一遍">🔊</button>`:`${pic(v)}<div class="zh">${esc(v.zh)}</div>`}</div>
       <div class="opts">${opts.map(o=>`<button class="opt" data-a="${esc(o.id)}">${esc(listen?o.zh:o.ans)}</button>`).join("")}</div><div id="fb"></div>`;
-    if(listen){ $("lsp").onclick=()=>play(v); play(v); } fxSync();
+    if(listen){ $("lsp").onclick=()=>play(v); play(v); } fxSync(); qaSet(lcSt,()=>{ i++; q(); });
+    let first=true;
     stage.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{ const ok=btn.dataset.a===v.id;
-      stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===v.id) x.classList.add("right"); else if(x===btn) x.classList.add("wrong"); });
-      if(ok) cheer(); else { stumble(); runWrong(v); }
+      if(!ok){ if(first){ first=false; runWrong(v); } missPick(btn); return; }
+      stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x===btn) x.classList.add("right"); });
+      cheer();
       let adv=false; const go=()=>{ if(adv) return; adv=true; i++; q(); };
-      $("fb").innerHTML=wordCard(v,ok?'<div class="ok">✓</div>':'<div class="bad">✗ 再看一眼</div>',{noPic:!listen,noZh:!listen})+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`;
-      $("sp").onclick=()=>play(v); $("go").onclick=go; fxSync(); autoNext(go,cb=>play(v,cb),ok); }); };
+      $("fb").innerHTML=wordCard(v,okHead(first,""),{noPic:!listen,noZh:!listen})+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`;
+      $("sp").onclick=()=>play(v); $("go").onclick=go; fxSync(); autoNext(go,cb=>play(v,cb),true); }); };
   q(); }
 
 /* ---------- 场景 1：赶路（限时选择） ---------- */
@@ -1885,22 +1998,28 @@ function chase(){
   if(q.type==="v"){ const v=q.v; prompt=`${pic(v)}<div class="zh">${esc(v.zh)}</div><div class="hint">用德语怎么说？</div>`; ans=v.ans; opts=rot([v,...distractors(v,3)].map(o=>o.ans),G.n); }
   else { prompt=`<div class="hint">${q.who?esc(q.who)+" 说":"台词里少了一个词"}</div><div class="cloze">${esc(q.t).replace("___","<u>&nbsp;</u>")}</div>`; ans=q.a; opts=rot(q.o.slice(),G.n); }
   stage.innerHTML=`<div class="q">${prompt}</div><div class="opts">${opts.map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div><div class="tap" id="cnt">${G.n-G.seg*G.segSize+1}/${G.end-G.seg*G.segSize}</div>`;
-  const t0=Date.now();
-  const answer=(picked)=>{ stopTimer(); const ok=picked===ans; G.n++;
-    stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===ans) x.classList.add("right"); else if(x.dataset.a===picked) x.classList.add("wrong"); });
-    if(ok){ G.streak++; G.score+=10; let step=G.step;
-      const fast=(Date.now()-t0)<(S.hard?2000:3000);
-      if(fast){ step=Math.round(step*1.3); G.score+=5; }
-      if(G.streak>=3){ step=Math.round(step*1.5); combo("⚡ 连击 ×"+G.streak); } else combo(fast?"⚡ 秒答":"+1");
-      cheer(); G.nico=Math.min(G.taxi-4,G.nico+step); }
-    else { G.streak=0; G.lives-= S.hard?G.max:1; hearts(Math.max(0,G.lives),G.max); G.taxi=Math.min(88,G.taxi+5); combo("💨"); stumble(); EP().cf=false; if(q.type==="v") markWrong(q.v); else save(); }
+  const t0=Date.now(); let first=true, done=false; const v=q.type==="v"?q.v:null;
+  const finish=(ok,head)=>{ done=true; stopTimer(); G.n++;
+    stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===ans) x.classList.add("right"); });
     setScene(G.nico,G.taxi,true);
     let adv=false; const go=()=>{ if(adv) return; adv=true; if(G.lives<=0) return lose("心用完了，没追上…",retry); if(G.nico>=G.taxi-5) return chaseSegDone(); chase(); };
-    const v=q.type==="v"?q.v:null;
-    $("cnt").insertAdjacentHTML("beforebegin",`${v?wordCard(v,ok?'<div class="ok">✓ 答对了</div>':(picked===null?'<div class="bad">⏱ 超时了</div>':'<div class="bad">✗ 不对</div>'),{noPic:true,noZh:true}):`<div class="card">${ok?'<div class="ok">✓</div>':'<div class="bad">✗ 应该是 '+esc(q.a)+'</div>'}${!ok&&whyOf(q)?`<div class="note">💡 ${esc(whyOf(q))}</div>`:""}<div class="word" style="font-size:22px">${esc(q.t.replace("___",q.a))}</div></div>`}<div class="row"><button class="primary" id="go">${G.lives<=0?"…":G.nico>=G.taxi-5?"到了！":"继续 ›"}</button></div>`);
+    $("cnt").insertAdjacentHTML("beforebegin",`${v?wordCard(v,head,{noPic:true,noZh:true}):`<div class="card">${head}${!ok&&whyOf(q)?`<div class="note">💡 ${esc(whyOf(q))}</div>`:""}<div class="word" style="font-size:22px">${esc(q.t.replace("___",q.a))}</div></div>`}<div class="row"><button class="primary" id="go">${G.lives<=0?"…":G.nico>=G.taxi-5?"到了！":"继续 ›"}</button></div>`);
     if(v) $("sp").onclick=()=>play(v);
     $("go").onclick=go; autoNext(go,cb=>v?play(v,cb):speakThen(q.t.replace("___",q.a),cb),ok&&G.lives>0); };
-  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(b.dataset.a));
+  const hurt=()=>{ G.streak=0; G.lives-= S.hard?G.max:1; hearts(Math.max(0,G.lives),G.max); G.taxi=Math.min(88,G.taxi+5); combo("💨"); EP().cf=false;
+    if(first){ first=false; if(v) markWrong(v); else save(); } setScene(G.nico,G.taxi,true); };
+  /* 选错：扣心、抖一下，继续选，直到选对；心扣光或超时才亮出答案 */
+  const answer=(picked,btn)=>{ if(done) return;
+    if(picked===null){ hurt(); stumble(); return finish(false,'<div class="bad">⏱ 超时了</div>'); }
+    if(picked!==ans){ hurt(); missPick(btn); if(G.lives<=0) finish(false,'<div class="bad">心用完了</div>'); return; }
+    G.score+=first?10:5; let step=G.step;
+    if(first){ G.streak++; const fast=(Date.now()-t0)<(S.hard?2000:3000);
+      if(fast){ step=Math.round(step*1.3); G.score+=5; }
+      if(G.streak>=3){ step=Math.round(step*1.5); combo("⚡ 连击 ×"+G.streak); } else combo(fast?"⚡ 秒答":"+1"); }
+    else { step=Math.round(step/2); combo("✓"); }
+    cheer(); G.nico=Math.min(G.taxi-4,G.nico+step); finish(true,okHead(first,first?"答对了":"")); };
+  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(b.dataset.a,b));
+  qaSet(G,()=>{ answer(null); const g=$("go"); if(g) g.click(); });
   timer(S.hard?5:10,()=>answer(null));
 }
 /* 站点休息：一站结束，进度已存，可以回地图，也可以继续下一站 */
@@ -1931,7 +2050,7 @@ function tilesFor(v){ const core=v.ans.replace(/^(der|die|das) /,"").replace(/\s
   /* 确定性打乱 */
   for(let i=tiles.length-1;i>0;i--){ const j=(VOCAB.indexOf(v)*31+i*17)%(i+1); [tiles[i],tiles[j]]=[tiles[j],tiles[i]]; }
   return {mode,need,tiles,core}; }
-function sms(){ if(M.n>=M.qs.length) return smsWin(); const v=M.qs[M.n]; prog("sms",M.n);
+function sms(){ if(M.n>=M.qs.length) return smsWin(); const v=M.qs[M.n]; prog("sms",M.n); M.miss=0;
   const T=tilesFor(v); let art=null, picked=[];
   const sent=M.qs.slice(0,M.n).map(x=>`<div class="msg me">${esc(x.ans)}</div>`).join("");
   const modeHint={syl:"按顺序点音节块",word:"把单词按顺序排好",letter:"按顺序点字母"}[T.mode];
@@ -1947,12 +2066,14 @@ function sms(){ if(M.n>=M.qs.length) return smsWin(); const v=M.qs[M.n]; prog("s
   $("undo").onclick=()=>{ const last=picked.pop(); if(last){ const el=stage.querySelector(`.tile[data-i="${last.i}"]`); if(el) el.classList.remove("used"); } else if(art){ art=null; stage.querySelectorAll(".arts .opt").forEach(y=>y.classList.remove("right")); } render(); };
   const grade=()=>{ if(v.g&&!art){ toast("先选冠词"); return; } if(!picked.length){ toast("先把词拼出来"); return; }
     const typed=(art?art+" ":"")+picked.map(x=>x.t).join(T.mode==="word"?" ":""); const r=checkTyped(typed,v); const ok=r==="ok";
-    if(ok){ if(!M.states[M.n]){ M.right++; ftSet("sms",v.id); } M.states[M.n]="ok"; combo("📨"); cheer(); $("fb").innerHTML=wordCard(v,'<div class="ok">✓ 发送成功</div>'+(v.pl?'<div class="note">（只有复数）</div>':""),{noPic:true,noZh:true}); $("sp").onclick=()=>play(v); $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile,.arts .opt").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; M.n++; prog("smsR",M.right); sms(); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一条 ›</button></div>`); $("go").onclick=go; autoNext(go,cb=>play(v,cb),true); }
-    else { if(!M.states[M.n]){ M.states[M.n]="bad"; markWrong(v); }
-      const artWrong=v.g&&art!==v.g;
-      $("fb").innerHTML=wordCard(v,`<div class="ans"><s>${esc(typed)}</s></div><div class="bad">${artWrong?"冠词不对，看颜色：应该是 "+v.g:"顺序不对，照着正确写法再拼一遍"}</div>${v.pl?'<div class="note">（只有复数）</div>':""}`,{noPic:true,noZh:true}); $("sp").onclick=()=>play(v); play(v);
+    if(ok){ const first=M.states[M.n]!=="bad"; if(!M.states[M.n]){ M.right++; ftSet("sms",v.id); } M.states[M.n]=M.states[M.n]||"ok"; combo("📨"); cheer(); $("fb").innerHTML=wordCard(v,okHead(first,"发送成功")+(v.pl?'<div class="note">（只有复数）</div>':""),{noPic:true,noZh:true}); $("sp").onclick=()=>play(v); $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile,.arts .opt").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; M.n++; prog("smsR",M.right); sms(); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一条 ›</button></div>`); $("go").onclick=go; autoNext(go,cb=>play(v,cb),true); }
+    else { if(!M.states[M.n]){ M.states[M.n]="bad"; markWrong(v); } M.miss=(M.miss||0)+1;
+      const artWrong=v.g&&art!==v.g, w=v.ans.replace(/^(der|die|das) /,"");
+      shake($("built")); stumble();
+      $("fb").innerHTML=`<div class="card"><div class="bad">${artWrong?"Falsch! 冠词不对，再选一次":"Falsch! 再拼一次"}</div>${M.miss>=3?`<div class="note">提示：${v.g?esc(v.g)+" ":""}${esc(w.slice(0,1))}…</div>`:""}</div>`;
       picked=[]; art=null; stage.querySelectorAll(".tile").forEach(y=>y.classList.remove("used")); stage.querySelectorAll(".arts .opt").forEach(y=>y.classList.remove("right")); render(); } };
-  $("chk").onclick=grade; }
+  $("chk").onclick=grade;
+  qaSet(M,()=>{ if(!M.states[M.n]){ M.states[M.n]="bad"; markWrong(v); } $("fb").innerHTML=wordCard(v,'<div class="bad">跳过了</div>',{noPic:true,noZh:true}); qaSnap(); M.n++; prog("smsR",M.right); sms(); }); }
 function smsWin(){ sceneDone("sms"); prog("sms",0); setScene(60,70,false,"📱"); $("gapLbl").textContent="写完了"; const nf=flowNext("sms");
   stage.innerHTML=`${bubble("Emma","Fertig!",`${M.right}/${M.qs.length} 条一次拼对。接下来：${esc(nf.name)}`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">${esc(nf.name)} ›</button></div>`;
   $("go").onclick=nf.go; $("back").onclick=()=>episode(E.key); }
@@ -1969,7 +2090,8 @@ function radio(){ if(R.n>=R.qs.length) return radioWin(); const v=R.qs[R.n]; pro
   const grade=()=>{ const r=checkTyped(inp.value,v); if(r==="empty"){ inp.focus(); return; } const ok=r==="ok";
     if(ok){ if(!R.states[R.n]){ R.right++; ftSet("radio",v.id); } R.states[R.n]="ok"; combo("📻"); cheer(); $("fb").innerHTML=wordCard(v,'<div class="ok">✓ 听对了</div>'); $("sp").onclick=()=>play(v); inp.disabled=true; $("chk").classList.add("hidden"); let adv=false; const go=()=>{ if(adv) return; adv=true; R.n++; prog("radioR",R.right); radio(); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一条 ›</button></div>`); $("go").onclick=go; autoNext(go,cb=>play(v,cb),true); }
     else { if(!R.states[R.n]){ R.states[R.n]="bad"; markWrong(v); } $("fb").innerHTML=wordCard(v,`<div class="ans"><s>${esc(inp.value)}</s></div><div class="bad">${r==="article"?"冠词呢？听清楚 der / die / das":"再听一遍，照着正确写法打出来"}</div>`); $("sp").onclick=()=>play(v); play(v); inp.value=""; inp.focus(); } };
-  $("chk").onclick=grade; inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); grade(); } }); }
+  $("chk").onclick=grade; inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); grade(); } });
+  qaSet(R,()=>{ if(!R.states[R.n]){ R.states[R.n]="bad"; markWrong(v); } $("fb").innerHTML=wordCard(v,'<div class="bad">跳过了</div>'); qaSnap(); R.n++; prog("radioR",R.right); radio(); }); }
 function radioWin(){ sceneDone("radio"); prog("radio",0);
   flowNext("radio",`${R.right}/${R.qs.length} 条一次听对。`).go(); }
 
@@ -1996,62 +2118,80 @@ function gFull(it){ if(it.t==="order") return it.a; if(it.t==="sort") return "";
   let done=false; return it.s.split(" ").map(w=>{ if(done) return w; const c=gTok(w); if(c===it.bad){ done=true; return w.replace(c,it.a); } return w; }).join(" "); }
 const gSay=it=>{ if(it.say) return it.say; const f=gFull(it); return /[\u4e00-\u9fff]/.test(f)?String(it.a||""):f; };   /* 题干是中文情景时只读答案 */
 function gRecord(it,ok){ IX.pts=IX.pts||{}; const r=IX.pts[it.p]||(IX.pts[it.p]=[0,0]); r[1]++; if(ok) r[0]++; if(!ok){ IX.gmiss=IX.gmiss||[]; IX.gmiss.push(it.id); } }
-/* 每道语法题都写明：考哪个语法点 + 这题要你做什么；点“考点”能展开规则 */
+/* 每道语法题都写明：考哪个语法点 + 这题要你做什么。有黑板时写在黑板上（点黑板展开规则），面板里不再重复；Boss 没有黑板，照旧写在面板里 */
 function gTask(it){ return ({pick:"选出空格里正确的形式",type:it.say?"听一听，把听到的写出来":"在空格里写出正确的形式",trans:"按箭头的要求改写这句话",fix:"句子里有一个错：先点错的词，再选改法",order:"把词按正确语序排成一句",sort:it.q||"把每个词分到正确的类别"})[it.t]||""; }
-function gHead(it,body){ const pt=IX.uk?pointOf(IX.uk,it.p):null;
-  return `${dots(IX.n,IX.qs.length,IX.states)}<div class="g-focus">${pt?`<button class="g-tag" id="gpt" type="button">考点：${esc(pt.title)}${pt.rule?" ▾":""}</button>`:""}<div class="g-task">${esc(gTask(it))}</div>${pt&&pt.rule?`<div class="g-rule" id="grule" hidden>${esc(pt.rule)}</div>`:""}</div>${body}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`; }
-document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("#gpt"); if(!b) return; const r=$("grule"); if(!r) return; r.hidden=!r.hidden; b.textContent=b.textContent.replace(/[▾▴]$/,r.hidden?"▾":"▴"); });
+function gHead(it,body){ const pt=IX.uk?pointOf(IX.uk,it.p):null, rule=pt&&pt.rule?`<div class="g-rule" id="grule" hidden>${esc(pt.rule)}</div>`:"";
+  const head=IX.boss?`<div class="g-focus">${pt?`<button class="g-tag" id="gpt" type="button">考点：${esc(pt.title)}${pt.rule?" ▾":""}</button>`:""}<div class="g-task">${esc(gTask(it))}</div>${rule}</div>`:rule;
+  return `${dots(IX.n,IX.qs.length,IX.states)}${head}${body}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`; }
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("#gpt,#sceneFx .fx-board.rule"); if(!b) return; const r=$("grule"); if(!r) return; r.hidden=!r.hidden;
+  const t=b.id==="gpt"?b:b.querySelector("b"); if(t) t.innerHTML=t.innerHTML.replace(/[▾▴]$/,r.hidden?"▾":"▴"); });
 function gPrompt(it){ if(!it.say) return; const s=()=>speakThen(it.say,null,{rate:.75}); const b=$("gsp"); if(b) b.onclick=s; s(); }
-function gDone(it,ok,why){ if(IX.done===IX.n) return; gRecord(it,ok);
+function gDone(it,ok,why,got){ if(IX.done===IX.n) return; gRecord(it,ok);
   stage.querySelectorAll(".opt,.tile,#chk,#ans,.keys button").forEach(x=>x.disabled=true);
   const full=gFull(it);
-  $("fb").innerHTML=`<div class="card" style="text-align:left">${ok?'<div class="ok">✓ 对了</div>':`<div class="bad">✗ ${why||""}</div>`}${full?`<div class="word" style="font-size:20px">${esc(full)}</div>`:""}${it.zh?`<div class="zh">${esc(it.zh)}</div>`:""}<div class="note">${esc(it.why)}</div></div>`;
-  interNext(ok,gSay(it)); }
+  $("fb").innerHTML=`<div class="card" style="text-align:left">${ok||got?okHead(ok):`<div class="bad">${why||""}</div>`}${full?`<div class="word" style="font-size:20px">${esc(full)}</div>`:""}<div class="note">${esc(it.why)}</div></div>`;
+  interNext(ok,gSay(it),null,got); }
 const gCloze=q=>esc(q).replace("___",'<u class="g-blank">&nbsp;</u>');
-function gPick(it,lead){ const r=rng(it.id+"|"+(IX.seed||0)), opts=shuf([it.a,...it.o],r), long=opts.some(o=>o.length>12);
-  stage.innerHTML=gHead(it,`<div class="q">${lead||""}<div class="cloze">${gCloze(it.q)}</div>${it.zh?`<div class="zh">${esc(it.zh)}</div>`:""}</div>
+function gPick(it,lead){ const r=rng(it.id+"|"+(IX.seed||0)), opts=shuf([it.a,...it.o],r), long=opts.some(o=>o.length>12); let first=true;
+  stage.innerHTML=gHead(it,`<div class="q">${lead||""}<div class="cloze">${gCloze(it.q)}</div>${it.zh?`<div class="zh zhq">${esc(it.zh)}</div>`:""}</div>
     <div class="opts${long?" stack":opts.length===3?" three":""}">${opts.map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div>`);
   $("back").onclick=ixBack;
-  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const ok=b.dataset.a===it.a;
-    stage.querySelectorAll(".opt").forEach(x=>{ if(x.dataset.a===it.a) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); });
-    gDone(it,ok,`应该是 ${esc(it.a)}`); }); }
-function gType(it){
-  stage.innerHTML=gHead(it,`<div class="q">${it.say?`<button class="spk" id="gsp" style="position:static;width:64px;height:64px;font-size:28px;margin:0 auto 6px" aria-label="再听">🔊</button>`:""}<div class="cloze">${gCloze(it.q)}</div>${it.hint?`<div class="hint">（${esc(it.hint)}）</div>`:""}${it.zh?`<div class="zh">${esc(it.zh)}</div>`:""}</div>
+  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ if(IX.done===IX.n) return;
+    if(b.dataset.a!==it.a){ first=false; return missPick(b); }
+    b.classList.add("right"); gDone(it,first,"",true); }); }
+function gType(it){ let first=true, n=0;
+  stage.innerHTML=gHead(it,`<div class="q">${it.say?`<button class="spk" id="gsp" style="position:static;width:64px;height:64px;font-size:28px;margin:0 auto 6px" aria-label="再听">🔊</button>`:""}<div class="cloze">${gCloze(it.q)}</div>${it.hint?`<div class="hint">（${esc(it.hint)}）</div>`:""}${it.zh?`<div class="zh zhq">${esc(it.zh)}</div>`:""}</div>
     ${typedBox()}<div class="row"><button class="primary" id="chk">提交</button></div>`);
   $("back").onclick=ixBack; const inp=wireKeys(); gPrompt(it);
   const grade=()=>{ if($("chk").disabled) return; if(!norm(inp.value)) return inp.focus();
-    const ok=[it.a,...(it.alt||[])].some(a=>checkTyped(inp.value,{ans:a})==="ok"); gDone(it,ok,`应该是 ${esc(it.a)}`); };
+    const ok=[it.a,...(it.alt||[])].some(a=>checkTyped(inp.value,{ans:a})==="ok");
+    if(!ok){ first=false; n++; return missType(inp,it.a,n,$("fb")); }
+    gDone(it,first,"",true); };
   $("chk").onclick=grade; inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); grade(); } }); }
+/* 改错：点错词 → 抖一下「Falsch!」，可以接着找；找对了 → 划掉它，下面出「它应该改成：」；改法选错同样抖、再选；
+   选对 → 整句合成改好的一句、四周飘星星，中文写在句子下面；反馈卡只留讲解。中途错过就不算一次做对 */
+function gSparkle(el){ for(let k=0;k<20;k++){ const s=document.createElement("i"), a=k/20*Math.PI*2+Math.random()*.4, d=70+Math.random()*60;
+    s.className="g-sp"; s.textContent=k%3?"✦":"★"; s.style.setProperty("--dx",Math.cos(a)*d*1.6+"px"); s.style.setProperty("--dy",Math.sin(a)*d+"px"); s.style.animationDelay=Math.random()*.2+"s"; el.appendChild(s); }
+  setTimeout(()=>el.querySelectorAll(".g-sp").forEach(x=>x.remove()),1600); }
 function gFix(it){ const words=it.s.split(" "), bad=words.findIndex(w=>gTok(w)===it.bad); let step=1, first=true;
-  stage.innerHTML=gHead(it,`<div class="q"><div class="hint">这句话里有一个错误。先点出错的词</div><div class="g-fix" id="gfx">${words.map((w,i)=>`<button class="tile" data-i="${i}">${esc(w)}</button>`).join("")}</div></div><div id="gfo"></div>`);
+  stage.innerHTML=gHead(it,`<div class="q"><div class="hint" id="gfh">句子里有一个错，点出来</div><div class="g-fix" id="gfx">${words.map((w,i)=>`<button class="tile" data-i="${i}">${esc(w)}</button>`).join("")}</div></div><div id="gfo"></div>`);
   $("back").onclick=ixBack;
-  stage.querySelectorAll("#gfx .tile").forEach(b=>b.onclick=()=>{ if(step!==1) return; step=2; const i=+b.dataset.i;
-    stage.querySelectorAll("#gfx .tile").forEach(x=>x.disabled=true);
-    stage.querySelector(`#gfx .tile[data-i="${bad}"]`).classList.add("wrong");
-    if(i!==bad){ first=false; b.classList.add("nope"); stumble(); }
+  const shake=x=>{ x.classList.remove("nope"); void x.offsetWidth; x.classList.add("nope"); };
+  const say=(t,err)=>{ const h=$("gfh"); if(!h) return; h.textContent=t; h.classList.toggle("g-err",!!err); if(err) shake(h); };
+  const miss=(x,t)=>{ first=false; shake(x); x.disabled=true; x.classList.add("g-no"); stumble(); say(t,true); };
+  stage.querySelectorAll("#gfx .tile").forEach(b=>b.onclick=()=>{ if(step!==1||IX.done===IX.n) return; const i=+b.dataset.i;
+    if(i!==bad) return miss(b,"Falsch! 选错了，再找找");
+    step=2; stage.querySelectorAll("#gfx .tile").forEach(x=>{ x.disabled=true; }); b.classList.add("wrong"); say("找到了！它应该改成：");
     const opts=shuf([it.a,...it.o],rng(it.id+"fix"));
-    $("gfo").innerHTML=`<div class="hint" style="margin:8px 0 4px">${first?"找对了！":`错的是「${esc(it.bad)}」。`}它应该改成：</div><div class="opts three">${opts.map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
-    $("gfo").querySelectorAll(".opt").forEach(o=>o.onclick=()=>{ const ok=o.dataset.a===it.a;
-      $("gfo").querySelectorAll(".opt").forEach(x=>{ if(x.dataset.a===it.a) x.classList.add("right"); else if(x===o) x.classList.add("wrong"); });
-      gDone(it,ok&&first,!first?`错的是「${esc(it.bad)}」，应该改成 ${esc(it.a)}`:`应该改成 ${esc(it.a)}`); }); }); }
+    $("gfo").innerHTML=`<div class="opts three">${opts.map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+    $("gfo").querySelectorAll(".opt").forEach(o=>o.onclick=()=>{ if(IX.done===IX.n) return;
+      if(o.dataset.a!==it.a) return miss(o,"Falsch! 选错了，再选一次");
+      const fx=$("gfx"), h=$("gfh"); if(h) h.remove(); $("gfo").innerHTML="";
+      fx.innerHTML=`<div class="g-done">${words.map((w,j)=>j===bad?`<b>${esc(w.replace(gTok(w),it.a))}</b>`:esc(w)).join(" ")}</div>`;
+      if(it.zh) fx.insertAdjacentHTML("afterend",`<div class="zh">${esc(it.zh)}</div>`);
+      gSparkle(fx.firstElementChild); gRecord(it,first);
+      $("fb").innerHTML=`<div class="card" style="text-align:left">${first?'<div class="ok">✓ 对了</div>':'<div class="ok">✓ 改对了 <small style="color:var(--muted);font-weight:600">· 中途错过，不计分</small></div>'}${it.why?`<div class="note">${esc(it.why)}</div>`:""}</div>`;
+      interNext(first,gSay(it)); }); }); }
 function gOrder(it){ const acc=[it.a,...(it.alt||[])].map(s=>gToks(s).map(w=>w.toLowerCase()));
   let order=shuf(it.tiles.map((t,i)=>({t,i})),rng(it.id+"ord"+(IX.seed||0))); if(order.every((x,i)=>x.i===i)) order=order.slice(1).concat(order[0]);
   const built=[]; let miss=0;
   stage.innerHTML=gHead(it,`<div class="q">${it.zh?`<div class="zh">${esc(it.zh)}</div>`:""}<div class="hint">按正确语序点词</div></div><div class="built" id="built"><span class="tap">…</span></div><div class="tiles" id="tiles">${order.map(x=>`<button class="tile" data-t="${esc(x.t)}">${esc(x.t)}</button>`).join("")}</div>`);
   $("back").onclick=ixBack;
   stage.querySelectorAll("#tiles .tile").forEach(b=>b.onclick=()=>{ if(b.disabled) return; const w=b.dataset.t.toLowerCase(), pos=built.length, pre=built.map(x=>x.toLowerCase()).join(" ");
-    if(!acc.some(t=>t.slice(0,pos).join(" ")===pre&&t[pos]===w)){ miss++; b.classList.remove("nope"); void b.offsetWidth; b.classList.add("nope"); if(miss===1) stumble(); return; }
+    if(!acc.some(t=>t.slice(0,pos).join(" ")===pre&&t[pos]===w)){ miss++; falsch(b); if(miss===1) stumble(); return; }
     b.disabled=true; b.classList.add("used"); built.push(b.dataset.t); $("built").textContent=built.join(" ");
-    if(built.length===it.tiles.length) gDone(it,miss===0,`点错 ${miss} 次`); }); }
+    if(built.length===it.tiles.length) gDone(it,miss===0,"",true); }); }
 function gSort(it){ const items=shuf(it.items,rng(it.id+"sort"+(IX.seed||0))); let k=0, miss=0;
   stage.innerHTML=gHead(it,`<div class="q"><div class="hint">${esc(it.q||"分类")}：先看高亮的词，再点它属于哪一类</div><div class="g-chips">${items.map((x,i)=>`<span class="g-chip${i===0?" on":""}" data-i="${i}">${esc(x.w)}</span>`).join("")}</div></div>
     <div class="opts${it.cats.length===3?" three":""}" id="gcats">${it.cats.map((c,i)=>`<button class="opt ${["der","die","das"].includes(c)?c:""}" data-c="${i}">${esc(c)}</button>`).join("")}</div>`);
   $("back").onclick=ixBack;
   stage.querySelectorAll("#gcats .opt").forEach(b=>b.onclick=()=>{ if(k>=items.length) return; const x=items[k], ok=+b.dataset.c===x.c, chip=stage.querySelector(`.g-chip[data-i="${k}"]`);
-    chip.classList.remove("on"); chip.classList.add(ok?"ok":"bad"); chip.textContent=`${x.w} → ${it.cats[x.c]}`; if(ok) cheer(); else { miss++; stumble(); }
-    k++; const nx=stage.querySelector(`.g-chip[data-i="${k}"]`); if(nx) nx.classList.add("on"); else gDone(it,miss===0,`分错 ${miss} 个`); }); }
+    if(!ok){ miss++; falsch(b); stumble(); return; }
+    chip.classList.remove("on"); chip.classList.add("ok"); chip.textContent=`${x.w} → ${it.cats[x.c]}`; cheer();
+    k++; const nx=stage.querySelector(`.g-chip[data-i="${k}"]`); if(nx) nx.classList.add("on"); else gDone(it,miss===0,"",true); }); }
 function gramQ(it){ if(IX.boss) SM="boss"; const pt=IX.uk?pointOf(IX.uk,it.p):null;
-  if(!IX.bt0){ IX.bt0=IX.bt||"Grammatik"; } interBoard(pt?esc(pt.title):IX.bt0,esc(gTask(it)));
+  if(!IX.bt0){ IX.bt0=IX.bt||"Grammatik"; } interBoard(pt?esc(pt.title)+(pt.rule&&!IX.boss?" ▾":""):IX.bt0,esc(gTask(it)));
+  const fb=document.querySelector("#sceneFx .fx-board"); if(fb) fb.classList.toggle("rule",!!(pt&&pt.rule&&!IX.boss));
   return ({pick:gPick,type:gType,trans:x=>gPick(x,`<div class="g-src">${esc(x.src)}</div><div class="g-cue">↓ ${esc(x.cue)}</div>`),fix:gFix,order:gOrder,sort:gSort})[it.t](it); }
 /* 本集语法小练习：小课堂之后马上做；没有题的集直接跳过 */
 function gramStart(next){ leaveScene(); const B=gramEp(E); if(!B||!B.items||!B.items.length) return next();
@@ -2059,7 +2199,7 @@ function gramStart(next){ leaveScene(); const B=gramEp(E); if(!B||!B.items||!B.i
   IX={slot:"g",kind:"gram",uk,seed:ep.gplays,qs:shuf(B.items,rng(E.key+"g"+ep.gplays)),n:0,right:0,states:[],next,bt:"Grammatik",bs:pts.map(p=>esc(p.title)).join(" · "),diary:[],pts:{}};
   setScene(60,70,false); $("gapLbl").textContent="语法小练习"; hearts(null);
   stage.innerHTML=`${bubble("Lisa","Kurz üben!",`刚讲的语法马上用一用：${IX.bs}。${IX.qs.length} 题，每题都有讲解。`)}
-    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="peek">先逛逛看题</button><button class="primary" id="go">开始</button></div><div class="tap">小练习的首答正确率会算进 ⭐2</div>`;
+    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="peek">看题</button><button class="primary" id="go">开始</button></div><div class="tap">小练习的首答正确率会算进 ⭐2</div>`;
   $("back").onclick=()=>episode(E.key); $("peek").onclick=ixPeek; $("go").onclick=interQ; }
 /* 语法 Boss：本集 4 题 + 本单元前面几集 2 题，限时；答对 70% 过关，全对记 b3 */
 function gBossStart(){ leaveScene(); const uk=unitKeyOf(E), mine=(gramEp(E)||{}).items||[];
@@ -2193,27 +2333,35 @@ function bossQ(){ const b=B.b; if(B.n>=B.qs.length){ if(B.right>=b.need&&B.right
   else if(b.type==="pick"){ body=`<div class="q"><div class="num">${esc(it.q)}</div></div><div class="opts">${rot(it.o.slice(),B.n).map(o=>`<button class="opt" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div>`; ans=it.a; }
   else { body=`<div class="q"><div class="hint">${b.who==="Radio"?"广播说":esc(b.who)+" 说"}</div><div class="cloze">${esc(it.say)}</div><button id="sp" style="margin-top:6px">🔊 再听</button><div class="num" id="dial" style="font-size:36px;min-height:48px;letter-spacing:4px">&nbsp;</div></div><div class="pad">${["1","2","3","4","5","6","7","8","9","⌫","0","✓"].map(d=>`<button data-d="${d}">${d}</button>`).join("")}</div>`; ans=it.a; }
   stage.innerHTML=`${dots(B.n,B.qs.length,B.states)}${body}`;
-  const finishQ=(picked)=>{ stopTimer(); const ok=picked===ans; if(ok) B.right++; B.states[B.n]=ok?"ok":"bad"; B.n++;
-    stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===ans) x.classList.add("right"); else if(x.dataset.a===picked) x.classList.add("wrong"); });
-    stage.querySelectorAll(".pad button").forEach(x=>x.disabled=true);
+  const pv=b.type==="gender"?it:b.type==="pick"?LV.find(x=>x.ans===it.a):null; let first=true, done=false, nMiss=0;
+  const firstMiss=()=>{ if(!first) return; first=false; B.states[B.n]="bad"; if(pv) markWrong(pv); };
+  /* 选错：抖一下继续选（计时不停），不亮出错的；时间到才揭晓正确答案 */
+  const pick=(picked,btn)=>{ if(done) return; if(picked===ans) return finishQ(picked); firstMiss(); nMiss++;
+    if(btn) return missPick(btn);
+    shake($("dial")); stumble(); $("dial").innerHTML=`<span style="color:#D2553F;font-size:20px;letter-spacing:0">Falsch! 再输一次${nMiss>=3?`（以 ${esc(String(ans)[0])} 开头）`:""}</span>`; };
+  const finishQ=(picked)=>{ if(done) return; done=true; stopTimer(); const got=picked===ans, ok=got&&first; if(ok) B.right++; B.states[B.n]=ok?"ok":"bad"; B.n++;
+    if(!got&&first&&pv) markWrong(pv);
+    stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===ans) x.classList.add("right"); });
+    stage.querySelectorAll(".pad button").forEach(x=>x.disabled=true); if(b.type==="dial") $("dial").textContent=String(ans);
     let adv=false; const go=()=>{ if(adv) return; adv=true; bossQ(); };
+    const head=got?`✓ 对${first?"":'<span class="mut"> · 第一次没对，不计分</span>'}`:"⏱ 时间到，答案是 ";
     let fb="";
-    if(b.type==="sort") fb=`<div class="tap">${ok?"✓ 对":"✗ 应该是 "+(it.k==="formal"?"Sie 正式":"du 非正式")}${/Herr|Frau/.test(it.t)?"（Herr/Frau + 姓 → 正式）":/\bdu\b|dir|dein|Tschüss|Mach/.test(it.t)?"（du/dir/dein、Tschüss、Mach’s gut → 非正式）":/\bSie\b|Ihnen|Ihr/.test(it.t)?"（Sie/Ihnen/Ihre → 正式）":""}</div>`;
-    else if(b.type==="gender") fb=wordCard(it,ok?'<div class="ok">✓</div>':'<div class="bad">✗</div>',{noPic:true,noZh:true});
-    else if(b.type==="pick"||b.type==="cloze") fb=`<div class="tap">${ok?"✓ 对":"✗ 应该是 "+esc(it.a)}</div>${!ok&&b.type==="cloze"&&whyOf(it)?`<div class="note">💡 ${esc(whyOf(it))}</div>`:""}`;
-    else fb=`<div class="tap">${ok?"✓ 对":"✗ 应该是 "+esc(it.a)}</div>`;
+    if(b.type==="sort") fb=`<div class="tap">${head}${got?"":(it.k==="formal"?"Sie 正式":"du 非正式")}${/Herr|Frau/.test(it.t)?"（Herr/Frau + 姓 → 正式）":/\bdu\b|dir|dein|Tschüss|Mach/.test(it.t)?"（du/dir/dein、Tschüss、Mach’s gut → 非正式）":/\bSie\b|Ihnen|Ihr/.test(it.t)?"（Sie/Ihnen/Ihre → 正式）":""}</div>`;
+    else if(b.type==="gender") fb=wordCard(it,got?okHead(first,"对"):'<div class="bad">⏱ 时间到</div>',{noPic:true,noZh:true});
+    else if(b.type==="pick"||b.type==="cloze") fb=`<div class="tap">${head}${got?"":esc(it.a)}</div>${!first&&b.type==="cloze"&&whyOf(it)?`<div class="note">💡 ${esc(whyOf(it))}</div>`:""}`;
+    else fb=`<div class="tap">${head}${got?"":esc(it.a)}</div>`;
     stage.insertAdjacentHTML("beforeend",fb+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go;
-    const pv=b.type==="gender"?it:b.type==="pick"?LV.find(x=>x.ans===it.a):null;
-    if(!ok&&pv) markWrong(pv);
     if(b.type==="gender") $("sp").onclick=()=>play(it);
-    autoNext(go,cb=>pv?play(pv,cb):speakThen(b.type==="sort"?it.t:b.type==="cloze"?it.t.replace("___",it.a):b.type==="pick"?it.a:it.say,cb),ok);
-    combo(ok?"✓":"✗"); if(ok) cheer(); else stumble(); };
+    autoNext(go,cb=>pv?play(pv,cb):speakThen(b.type==="sort"?it.t:b.type==="cloze"?it.t.replace("___",it.a):b.type==="pick"?it.a:it.say,cb),got);
+    combo(got?"✓":"✗"); if(got) cheer(); else stumble(); };
+  qaSet(B,()=>{ finishQ(null); const g=$("go"); if(g) g.click(); });
   if(b.type==="dial"){ let d="", started=false; const n=String(it.a).length, sec=S.hard?4+n:8+n*2;
-    /* 先完整读完号码再开始倒计时；按满位数自动提交 */
-    const go=()=>{ if(started||B.qs[B.n]!==it) return; started=true; timer(sec,()=>finishQ(d||null)); };
+    /* 先完整读完号码再开始倒计时；按满位数自动提交，错了清空重输 */
+    const go=()=>{ if(started||B.qs[B.n]!==it) return; started=true; timer(sec,()=>finishQ(d===ans?d:null)); };
+    const sub=()=>{ const v=d; d=""; pick(v); };
     const say=cb=>speakThen(it.say,cb,{rate:.8}); $("sp").onclick=()=>say(); stopTimer(); const tb=$("tbar"); if(tb) tb.style.width="100%"; say(go); setTimeout(go,Math.max(4000,it.say.length*160));
-    stage.querySelectorAll(".pad button").forEach(x=>x.onclick=()=>{ const k=x.dataset.d; if(k==="⌫") d=d.slice(0,-1); else if(k==="✓"){ if(d) finishQ(d); return; } else if(d.length<n+2) d+=k; $("dial").textContent=d||" "; if(d.length===n&&k!=="⌫") setTimeout(()=>{ if(B.qs[B.n]===it&&d.length===n) finishQ(d); },350); }); }
-  else { stage.querySelectorAll(".opt").forEach(x=>x.onclick=()=>finishQ(x.dataset.a)); timer(B.sec,()=>finishQ(null)); } }
+    stage.querySelectorAll(".pad button").forEach(x=>x.onclick=()=>{ if(done) return; const k=x.dataset.d; if(k==="⌫") d=d.slice(0,-1); else if(k==="✓"){ if(d) sub(); return; } else if(d.length<n+2) d+=k; $("dial").textContent=d||" "; if(d.length===n&&k!=="⌫") setTimeout(()=>{ if(B.qs[B.n]===it&&d.length===n) sub(); },350); }); }
+  else { stage.querySelectorAll(".opt").forEach(x=>x.onclick=()=>pick(x.dataset.a,x)); timer(B.sec,()=>finishQ(null)); } }
 
 function win(){ stopTimer(); settleRun(); const ep=EP(), before=starsOf(E); ep.won=true; ep.plays=(ep.plays||0)+1; if(S.hard) ep.s3=true; sceneDone("boss"); if(!S.items.includes(E.key)) S.items.push(E.key); save(); setScene(60,70,false,E.item.e); $("gapLbl").textContent="拿到了！";
   const runW=RUN.key===E.key?[...RUN.wrong].map(V).filter(Boolean):[]; RUN={key:null,wrong:new Set()};
@@ -2280,16 +2428,20 @@ function diary(){ leaveScene(); let qs=dueList().slice(0,40); if(!qs.length){ to
       <div class="q">${listen?`<button id="sp" class="spk" style="position:static;width:72px;height:72px;font-size:30px;margin:0 auto">🔊</button>`:`${pic(v)}<div class="zh">${esc(v.zh)}</div>`}</div>
       <div class="opts">${opts.map(o=>`<button class="opt" data-a="${esc(o.id)}">${esc(listen?o.zh:o.ans)}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
     $("back").onclick=home; if(listen){ $("sp").onclick=()=>play(v); play(v); }
-    stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const ok=b.dataset.a===v.id; stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===v.id) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); });
-      const e=S.mist[m.key]; if(ok){ got++; e.box=Math.min(5,(e.box||0)+1); if(e.box>=5){ e.done=true; } else e.due=addDays(GAP[e.box]); cheer(); } else { e.box=m.guest?Math.max(1,(e.box||0)-2):0; e.due=addDays(1); e.wrong++; stumble(); missed.push(v); } save();
+    const e=S.mist[m.key]; let first=true;
+    const penal=()=>{ if(!first) return; first=false; e.box=m.guest?Math.max(1,(e.box||0)-2):0; e.due=addDays(1); e.wrong++; missed.push(v); save(); };
+    stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ if(b.dataset.a!==v.id){ penal(); return missPick(b); }
+      stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x===b) x.classList.add("right"); });
+      if(first){ got++; e.box=Math.min(5,(e.box||0)+1); if(e.box>=5){ e.done=true; } else e.due=addDays(GAP[e.box]); save(); } cheer();
       let adv=false; const go=()=>{ if(adv) return; adv=true; n++; step(); };
-      $("fb").innerHTML=wordCard(v,ok?`<div class="ok">✓${e.done?" 掌握了！":` 第 ${e.box}/5 次`}</div>`:'<div class="bad">✗ 明天再来一次</div>',{noPic:!listen,noZh:!listen})+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`; $("sp").onclick=()=>play(v); $("go").onclick=go;
-      autoNext(go,cb=>play(v,cb),ok); }); }; intro(); }
+      $("fb").innerHTML=wordCard(v,first?`<div class="ok">✓${e.done?" 掌握了！":` 第 ${e.box}/5 次`}</div>`:okHead(false,"选对了")+'<div class="note">明天再来一次</div>',{noPic:!listen,noZh:!listen})+`<div class="row"><button class="primary" id="go">继续 ›</button></div>`; $("sp").onclick=()=>play(v); $("go").onclick=go;
+      autoNext(go,cb=>play(v,cb),true); });
+    qaSet(qs,()=>{ penal(); n++; step(); }); }; intro(); }
 
 /* ---------- 场景 4：对话（用词块拼出回答） ---------- */
 let K=null;
 function talkStart(){ if(!E.talk||!E.talk.length){ sceneDone("talk"); return boss(); } K={qs:E.talk,n:0,right:0,states:[],tries:0}; setScene(60,70,false,"💬"); $("gapLbl").textContent="对话";
-  stage.innerHTML=`${bubble("Lisa","Jetzt du!",`轮到你说了。角色问一句，你用词块拼出回答；拼错两次会显示答案。${E.talk.length} 轮。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button><button class="primary" id="go">开始对话</button></div>`;
+  stage.innerHTML=`${bubble("Lisa","Jetzt du!",`轮到你说了。角色问一句，你用词块拼出回答；拼错了清空重来，错 3 次会提示第一个词。${E.talk.length} 轮。`)}<div class="row"><button class="ghost" id="back">‹ 返回</button><button class="primary" id="go">开始对话</button></div>`;
   $("go").onclick=talk; $("back").onclick=()=>episode(E.key); }
 function talk(){ if(K.n>=K.qs.length) return talkWin(); const d=K.qs[K.n]; K.tries=0;
   const need=d.a.split(/\s+/); const others=K.qs.filter(x=>x!==d).flatMap(x=>x.a.split(/\s+/)).filter(w=>!need.includes(w)); const extra=[others[(K.n*3)%others.length],others[(K.n*5+2)%others.length]].filter((x,i,a)=>x&&a.indexOf(x)===i);
@@ -2304,10 +2456,12 @@ function talk(){ if(K.n>=K.qs.length) return talkWin(); const d=K.qs[K.n]; K.tri
   stage.querySelectorAll(".tile").forEach(x=>x.onclick=()=>{ x.classList.add("used"); picked.push({t:x.textContent,i:x.dataset.i}); render(); });
   $("undo").onclick=()=>{ const last=picked.pop(); if(last){ const el=stage.querySelector(`.tile[data-i="${last.i}"]`); if(el) el.classList.remove("used"); } render(); };
   const grade=()=>{ if(!picked.length){ toast("先把回答拼出来"); return; } const said=picked.map(x=>x.t).join(" "); const ok=norm(said)===norm(d.a);
-    if(ok){ K.right++; if(!K.states[K.n]) K.states[K.n]="ok"; combo("💬"); cheer(); $("fb").innerHTML=`<div class="card"><div class="ok">✓ 说对了</div><div class="word" style="font-size:22px">${esc(d.a)}</div><div class="zh">${esc(d.azh)}</div></div>`; $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; K.n++; talk(); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一轮 ›</button></div>`); $("go").onclick=go; autoNext(go,c=>speakThen(d.a,c),true); }
-    else { K.tries++; K.states[K.n]="bad"; stumble(); picked=[]; stage.querySelectorAll(".tile").forEach(y=>y.classList.remove("used")); render();
-      $("fb").innerHTML=`<div class="card"><div class="ans"><s>${esc(said)}</s></div><div class="bad">${K.tries>=2?"正确说法是：":"再试一次。"}</div>${K.tries>=2?`<div class="word" style="font-size:22px">${esc(d.a)}</div>`:""}</div>`; if(K.tries>=2) speakThen(d.a); } };
-  $("chk").onclick=grade; }
+    if(ok){ const first=!K.states[K.n]; if(first){ K.right++; K.states[K.n]="ok"; } combo("💬"); cheer(); $("fb").innerHTML=`<div class="card">${okHead(first,"说对了")}<div class="word" style="font-size:22px">${esc(d.a)}</div><div class="zh">${esc(d.azh)}</div></div>`; $("chk").classList.add("hidden"); $("undo").classList.add("hidden"); stage.querySelectorAll(".tile").forEach(y=>y.disabled=true); let adv=false; const go=()=>{ if(adv) return; adv=true; K.n++; talk(); }; $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">下一轮 ›</button></div>`); $("go").onclick=go; autoNext(go,c=>speakThen(d.a,c),true); }
+    else { K.tries++; K.states[K.n]="bad"; shake($("built")); stumble(); picked=[]; stage.querySelectorAll(".tile").forEach(y=>y.classList.remove("used")); render();
+      $("fb").innerHTML=`<div class="card"><div class="bad">Falsch! 再说一次</div>${K.tries>=3?'<div class="note">提示：先点跳动的那个词</div>':""}</div>`;
+      if(K.tries>=3){ const w=[...stage.querySelectorAll(".tile")].find(y=>y.textContent===need[0]); if(w){ w.classList.remove("hintme"); void w.offsetWidth; w.classList.add("hintme"); } } } };
+  $("chk").onclick=grade;
+  qaSet(K,()=>{ K.states[K.n]="bad"; $("fb").innerHTML=`<div class="card"><div class="bad">跳过了</div><div class="word" style="font-size:22px">${esc(d.a)}</div><div class="zh">${esc(d.azh)}</div></div>`; qaSnap(); K.n++; talk(); }); }
 function talkWin(){ sceneDone("talk"); setScene(60,70,false); $("gapLbl").textContent="说完了";
   stage.innerHTML=`${bubble("Lisa","Sehr gut! Jetzt der Boss.",`${K.right}/${K.qs.length} 轮一次说对。最后一关：Boss。`)}<div class="row"><button class="ghost" id="back">‹ 场景</button><button class="primary" id="go">去打 Boss ›</button></div>`;
   $("go").onclick=()=>flowNext("talk").go(); $("back").onclick=()=>episode(E.key); }
@@ -2335,8 +2489,8 @@ function wortQ(it){ const tg=new Set(it.tg), hit=new Set(); let miss=0; const wh
   stage.querySelectorAll(".tile").forEach(b=>b.onclick=()=>{ if(hit.size>=tg.size) return; const i=+b.dataset.i; if(hit.has(i)) return;
     if(tg.has(i)){ hit.add(i); b.classList.add("hit"); interBoard(`Finde alle ${it.k==="art"?"Artikel":"Nomen"}`,`${esc(it.zh)}<br>${hit.size>=tg.size?"找齐了":`还差 ${tg.size-hit.size} 个`}`);
       if(hit.size>=tg.size){ const ok=miss===0; stage.querySelectorAll(".tile").forEach(x=>x.disabled=true);
-        $("fb").innerHTML=`<div class="card">${ok?`<div class="ok">✓ 全部找到，一次没点错</div>`:`<div class="bad">点错 ${miss} 次，这句不算一次对</div>`}<div class="word" style="font-size:20px">${it.raw.map((t,j)=>tg.has(j)?`<u>${esc(t)}</u>`:esc(t)).join(" ")}</div><div class="zh">${esc(it.zh)}</div>${it.k==="noun"?(()=>{ const odd=it.odd||[]; return odd.length?`<div class="note">为什么：${odd.map(esc).join("、")} 首字母大写、在句中当名词用（地名、人名，或动词 / 形容词名词化，如 das Wiedersehen、alles Gute），所以也算名词。</div>`:""; })():""}</div>`; interNext(ok,it.de); } }
-    else { miss++; b.classList.remove("nope"); void b.offsetWidth; b.classList.add("nope"); if(miss===1) stumble();
+        $("fb").innerHTML=`<div class="card">${okHead(ok,"全部找到")}<div class="word" style="font-size:20px">${it.raw.map((t,j)=>tg.has(j)?`<u>${esc(t)}</u>`:esc(t)).join(" ")}</div><div class="zh">${esc(it.zh)}</div>${it.k==="noun"?(()=>{ const odd=it.odd||[]; return odd.length?`<div class="note">为什么：${odd.map(esc).join("、")} 首字母大写、在句中当名词用（地名、人名，或动词 / 形容词名词化，如 das Wiedersehen、alles Gute），所以也算名词。</div>`:""; })():""}</div>`; interNext(ok,it.de,null,true); } }
+    else { miss++; falsch(b); if(miss===1) stumble();
       if(miss>=2) stage.querySelectorAll(".tile").forEach(x=>{ if(tg.has(+x.dataset.i)&&!hit.has(+x.dataset.i)){ x.classList.remove("hintme"); void x.offsetWidth; x.classList.add("hintme"); } }); } }); }
 /* Nico 的日记：每集一篇真实日记（content/diary_*.json）。空格填本集的语法形式（三选一），加粗的是口语表达，点开有解释 */
 const SLANG={"hä": {"std": "Wie bitte?", "zh": "啊？什么？", "note": "熟人之间用；对陌生人说 Wie bitte?"}, "nix": {"std": "nichts", "zh": "什么都（没）", "note": "口语缩略，写作时用 nichts"}, "echt": {"std": "wirklich", "zh": "真的", "note": "日常口语，非常常用"}, "echt jetzt": {"std": "Wirklich?", "zh": "真的假的？", "note": "表示吃惊，朋友之间说"}, "voll": {"std": "sehr", "zh": "超级、特别", "note": "年轻人口语，如 voll gut；正式场合别用"}, "cool": {"std": "toll / super", "zh": "酷、很棒", "note": "来自英语，德国人也常说"}, "mist": {"std": "Oh nein!", "zh": "糟糕！", "note": "口语，朋友之间常说，不算粗话"}, "so ein mist": {"std": "Wie ärgerlich!", "zh": "真倒霉！", "note": "口语，表达懊恼"}, "keine ahnung": {"std": "Ich weiß es nicht.", "zh": "不知道 / 完全没概念", "note": "非常常用；对上级可以说 Das weiß ich leider nicht."}, "süß": {"std": "niedlich", "zh": "好可爱", "note": "说小孩、小动物、小东西"}, "na also": {"std": "Siehst du, es geht doch!", "zh": "这不就行了嘛！", "note": "事情终于成功时说"}, "total nervig": {"std": "sehr ärgerlich", "zh": "烦死了", "note": "口语；total 在这里 = sehr"}, "spinnt": {"std": "ist verrückt / macht Unsinn", "zh": "在犯傻、在胡闹", "note": "说熟人开玩笑地“犯傻”；说陌生人很不客气"}, "quatsch": {"std": "Unsinn!", "zh": "胡说！瞎扯！", "note": "口语，熟人之间"}, "sauer": {"std": "verärgert / wütend", "zh": "生气的", "note": "口语；字面意思是“酸的”"}, "spinnst du": {"std": "Sind Sie verrückt?", "zh": "你疯了吗？", "note": "很不客气，认得就好，别随便对人说"}, "langsam aber sicher": {"std": "Schritt für Schritt", "zh": "慢慢来，但很稳", "note": "常用固定说法"}, "super idee": {"std": "Gute Idee!", "zh": "好主意！", "note": "口语"}, "ciao": {"std": "Tschüss!", "zh": "拜拜", "note": "从意大利语借来的告别语，熟人之间用"}, "total kaputt": {"std": "sehr müde", "zh": "累坏了", "note": "口语；kaputt 本义是“坏了”"}, "krass": {"std": "unglaublich", "zh": "太厉害了 / 太夸张了", "note": "年轻人口语，可褒可贬"}, "daumen drücken": {"std": "Viel Glück!", "zh": "祈祷好运吧", "note": "固定说法，字面是“按住大拇指”"}, "na ja": {"std": "Es geht so. / Hm, okay.", "zh": "嗯……还行吧 / 好吧", "note": "表示勉强、犹豫或不太满意，日常非常常用"}};
@@ -2362,18 +2516,19 @@ function tageQ(it){ IX.diary=IX.diary||[]; IX.slang=IX.slang||new Set(); const g
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="card tg-book"><div class="tg-h">Liebes Tagebuch …</div>${IX.diary.join("")}${ctxHTML}<div class="tg-l cur" id="tgCur">${diaryHTML(it.line,false)}</div></div>
     <div class="q"><div class="hint">${g.hint?`${esc(g.hint)}：`:""}空格里填哪个？</div></div><div class="opts three" id="tops">${it.o.map(w=>`<button class="opt" data-w="${esc(w)}">${esc(w)}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
   $("back").onclick=ixBack; slBind(stage); interBoard("Liebes Tagebuch",g.hint?esc(g.hint):"填空");
-  stage.querySelectorAll("#tops .opt").forEach(b=>b.onclick=()=>{ const ok=b.dataset.w===g.a; if(!ok) stumble();
-    stage.querySelectorAll("#tops .opt").forEach(y=>{ y.disabled=true; if(y.dataset.w===g.a) y.classList.add("right"); else if(y===b) y.classList.add("wrong"); });
+  let first=true;
+  stage.querySelectorAll("#tops .opt").forEach(b=>b.onclick=()=>{ if(IX.done===IX.n) return; if(b.dataset.w!==g.a){ first=false; return missPick(b); } const ok=first;
+    stage.querySelectorAll("#tops .opt").forEach(y=>{ y.disabled=true; if(y===b) y.classList.add("right"); });
     $("tgCur").innerHTML=diaryHTML(it.line); slBind(stage);
     const tail=last?(it.tail||[]):[];
     [...(it.ctx||[]),it.line,...tail].forEach(l=>(l.de.match(/\*\*(.+?)\*\*/g)||[]).forEach(m=>IX.slang.add(m.replace(/\*\*/g,"").replace(/[!?.,…]+$/,""))));
     IX.diary.push(...(it.ctx||[]).map(l=>`<div class="tg-l">${diaryHTML(l)}</div>`),`<div class="tg-l">${diaryHTML(it.line)}</div>`);
     tail.forEach(l=>IX.diary.push(`<div class="tg-l">${diaryHTML(l)}</div>`));
-    $("fb").innerHTML=`<div class="card">${ok?`<div class="ok">✓ ${esc(g.a)}</div>`:`<div class="bad">✗ 是 ${esc(g.a)}</div>`}<div class="word" style="font-size:19px">${diaryHTML(it.line)}</div><div class="zh">${esc(it.line.zh)}</div>
+    $("fb").innerHTML=`<div class="card">${okHead(ok,esc(g.a))}<div class="word" style="font-size:19px">${diaryHTML(it.line)}</div><div class="zh">${esc(it.line.zh)}</div>
       ${tail.map(l=>`<div class="tg-l">${diaryHTML(l)}</div><div class="zh">${esc(l.zh)}</div>`).join("")}
       ${last&&IX.slang.size?`<div class="note">本篇口语：${[...IX.slang].map(esc).join(" · ")}（点加粗的词看解释）</div>`:""}${last?`<div class="row"><button id="readAll">读整篇</button></div>`:""}</div>`;
     slBind($("fb")); const rd=$("readAll"); if(rd) rd.onclick=ev=>{ ev.stopPropagation(); sayLines(diaryAll(E)); };
-    interNext(ok,diaryPlain(it.line)); }); }
+    interNext(ok,diaryPlain(it.line),null,true); }); }
 function satzItems(e,slot){ const p=(e.gen&&e.gen.satz)||[], half=Math.min(5,Math.floor(p.length/2));
   return slot==="b"&&p.length>=8?p.slice(5,10):p.slice(0,Math.max(half,Math.min(5,p.length))); }
 const HOURW=h=>h===1?"eins":ONES[h];
@@ -2402,7 +2557,7 @@ const INTER_INFO={
 function inter(slot,next){ stopTimer(); const kind=interPlan(E)[slot], qs=({satz:()=>satzItems(E,slot),zahl:()=>zahlItems(E),wort:()=>wortItems(E),tage:()=>tageItems(E)})[kind](), I=INTER_INFO[kind];
   if(!qs.length) return next();
   IX={slot,kind,qs,n:0,right:0,states:[],next,bt:I.bt,bs:I.bs,diary:[]}; setScene(60,70,false); $("gapLbl").textContent=INTER_NAME[kind]; hearts(null);
-  stage.innerHTML=`${bubble("Lisa",I.hi,I.d(qs.length))}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="peek">先逛逛看题</button><button class="primary" id="go">开始</button></div><div class="tap">插曲的首答正确率会算进 ⭐2</div>`;
+  stage.innerHTML=`${bubble("Lisa",I.hi,I.d(qs.length))}<div class="row"><button class="ghost" id="back">‹ 场景</button><button id="peek">看题</button><button class="primary" id="go">开始</button></div><div class="tap">插曲的首答正确率会算进 ⭐2</div>`;
   $("back").onclick=()=>episode(E.key); $("peek").onclick=ixPeek; $("go").onclick=interQ; }
 /* ---------- 整段听：先只听不看字，再答题，最后看原文 ---------- */
 function hoerenItems(e){
@@ -2423,7 +2578,7 @@ function hoerenStart(next){ stopTimer(); const H=hoerenItems(E); if(H.qs.length<
   stage.innerHTML=`${bubble("Lisa","Hör gut zu!",`这一集的对话，先只听声音、不看字。点上面的播放听全文，点某一句可以单独重听。然后答 ${H.qs.length} 道题，最后再看原文。`)}
     <div class="chat-tools"><button class="primary" id="hxPlay">播放全文</button>${spdUI()}</div>
     <div class="chat"><div class="chat-list hx" id="hxList">${H.lines.map((d,i)=>`<div class="dialog cmsg${side[i]?" me":""}${i>0&&H.lines[i-1].w===d.w?" same":""}" data-i="${i}"><div class="av" data-w="${esc(d.w)}">${avHTML(d.w)}</div><div class="bub"><div class="who">${esc(d.w)}</div><span class="hx-bar" style="width:${Math.min(200,36+d.de.length*3)}px"></span></div></div>`).join("")}</div></div>
-    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="peek">先逛逛看题</button><button class="primary" id="go">开始答题 ›</button></div>`;
+    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="peek">看题</button><button class="primary" id="go">答题 ›</button></div>`;
   const list=$("hxList"); let tok=0;
   const playing=()=>tok&&tok===sayLines.t;
   const clear=()=>list.querySelectorAll(".now").forEach(x=>x.classList.remove("now"));
@@ -2435,7 +2590,7 @@ function hoerenStart(next){ stopTimer(); const H=hoerenItems(E); if(H.qs.length<
   /* 点哪一句就重播哪一句 */
   list.addEventListener("click",e=>{ const el=e.target.closest(".cmsg[data-i]"); if(!el) return; stopAll(); el.classList.add("now"); const d=H.lines[+el.dataset.i]; sayAs(d.w,d.de,hxRate(),()=>el.classList.remove("now")); });
   $("back").onclick=()=>{ stopAll(); episode(E.key); }; $("peek").onclick=()=>{ stopAll(); ixPeek(); }; $("go").onclick=()=>{ stopAll(); interQ(); }; }
-/* 先逛逛看题：把这一项的题目列一遍，只看不答、不计分；看完可以开始答题，也可以这项先不做、接着往下走 */
+/* 看题：把这一项的题目列一遍，只看不答、不计分；看完可以答题，也可以先不做、接着往下走 */
 function ixPeekLine(it,k){ const plain=s=>esc(String(s||"").replace(/<[^>]+>/g,""));
   if(k==="gram"){ const pt=IX.uk?pointOf(IX.uk,it.p):null;
     const body=it.t==="order"?plain(it.zh):it.t==="fix"?plain(it.s):it.t==="sort"?(it.items||[]).map(x=>esc(x.w)).join(" · "):it.t==="trans"?`${plain(it.src)} → ${plain(it.cue)}`:plain(it.q).replace("___","_____");
@@ -2445,22 +2600,26 @@ function ixPeekLine(it,k){ const plain=s=>esc(String(s||"").replace(/<[^>]+>/g,"
     hwer:()=>["谁说的","听一句台词，选出是谁说的"],hluecke:()=>["听写填空",hxGap(esc(it.d.de),esc(it.a),"_____")],hordnen:()=>["排顺序",`听 ${it.ds.length} 句，按听到的顺序点出来`],hrf:()=>["对还是错",plain(it.q.de)]})[k];
   return f?f():[INTER_NAME[k]||"题目",""]; }
 function ixPeek(){ stopTimer(); const nx=IX.next;
-  stage.innerHTML=`${bubble("Lisa","Schau mal!",`先逛逛：这一项 ${IX.qs.length} 题，先看看都考什么，不用作答，也不计分。`)}
+  stage.innerHTML=`${bubble("Lisa","Schau mal!",`共 ${IX.qs.length} 题，只看不答，不计分。`)}
     <ol class="peek">${IX.qs.map(it=>{ const [a,b]=ixPeekLine(it,it.kind||IX.kind); return `<li><b>${esc(a)}</b>${b}</li>`; }).join("")}</ol>
-    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="pskip">这项先不做 ›</button><button class="primary" id="go">开始答题 ›</button></div>`;
+    <div class="row"><button class="ghost" id="back">‹ 返回</button><button id="pskip">先不做 ›</button><button class="primary" id="go">答题 ›</button></div>`;
   $("back").onclick=()=>episode(E.key); $("pskip").onclick=()=>nx?nx():episode(E.key); $("go").onclick=interQ; }
 const hxSpk=()=>`<button class="spk" id="sp" style="position:static;width:64px;height:64px;font-size:28px;margin:0 auto">🔊</button>`;
 function hwerQ(it){ const d=it.d, say=cb=>sayAs(d.w,d.de,IX.rate(),cb);
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">这句话是谁说的？</div>${hxSpk()}</div><div class="opts">${it.o.map(w=>`<button class="opt" data-w="${esc(w)}">${esc(w)}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
   $("sp").onclick=()=>say(); say(); $("back").onclick=ixBack; interBoard("Wer sagt das?","这句话是谁说的？");
-  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const ok=b.dataset.w===d.w;
-    stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.w===d.w) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); });
-    $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 对</div>':`<div class="bad">✗ 是 ${esc(d.w)} 说的</div>`}<div class="word" style="font-size:18px">${esc(d.de)}</div><div class="zh">${esc(d.zh)}</div></div>`; interNext(ok,say); }); }
+  let first=true;
+  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ if(IX.done===IX.n) return; if(b.dataset.w!==d.w){ first=false; return missPick(b); }
+    stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x===b) x.classList.add("right"); });
+    $("fb").innerHTML=`<div class="card">${okHead(first,`是 ${esc(d.w)} 说的`)}<div class="word" style="font-size:18px">${esc(d.de)}</div><div class="zh">${esc(d.zh)}</div></div>`; interNext(first,say,null,true); }); }
 function hlueckeQ(it){ const d=it.d, say=cb=>sayAs(d.w,d.de,IX.rate(),cb), gapped=hxGap(esc(d.de),esc(it.a),"<b>_____</b>");
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">听这一句，写出空着的词</div>${hxSpk()}<div class="word" style="font-size:19px;margin-top:8px">${gapped}</div></div>${typedBox()}<div class="row"><button class="primary" id="chk">提交</button></div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
   const inp=wireKeys(); $("sp").onclick=()=>say(); say(); $("back").onclick=ixBack; interBoard("Lückendiktat","听写填空");
-  const grade=()=>{ const r=checkTyped(inp.value,{ans:it.a}); if(r==="empty") return inp.focus(); const ok=r==="ok"; $("chk").disabled=true; inp.disabled=true;
-    $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 对</div>':`<div class="bad">✗ 是 ${esc(it.a)}</div>`}<div class="word" style="font-size:18px">${esc(d.de)}</div><div class="zh">${esc(d.zh)}</div></div>`; interNext(ok,say); };
+  let first=true, nm=0;
+  const grade=()=>{ if(inp.disabled) return; const r=checkTyped(inp.value,{ans:it.a}); if(r==="empty") return inp.focus();
+    if(r!=="ok"){ first=false; nm++; return missType(inp,it.a,nm,$("fb")); }
+    $("chk").disabled=true; inp.disabled=true;
+    $("fb").innerHTML=`<div class="card">${okHead(first,esc(it.a))}<div class="word" style="font-size:18px">${esc(d.de)}</div><div class="zh">${esc(d.zh)}</div></div>`; interNext(first,say,null,true); };
   $("chk").onclick=grade; inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); if(!inp.disabled) grade(); } }); }
 function hordnenQ(it){ const ds=it.ds, r=rng(E.key+"ord"+IX.n); let order=shuf(ds.map((d,i)=>({d,i})),r); if(order.every((x,i)=>x.i===i)) order=order.slice(1).concat(order[0]);
   let pos=0, miss=0; const sayAll=cb=>sayChain(ds,IX.rate(),250,cb);
@@ -2468,14 +2627,15 @@ function hordnenQ(it){ const ds=it.ds, r=rng(E.key+"ord"+IX.n); let order=shuf(d
   $("sp").onclick=()=>sayAll(); sayAll(); $("back").onclick=ixBack; interBoard("Reihenfolge","按听到的顺序点");
   stage.querySelectorAll("#ho .opt").forEach(b=>b.onclick=()=>{ if(pos>=ds.length) return; const i=+b.dataset.i;
     if(i===pos){ b.disabled=true; b.classList.add("right"); b.insertAdjacentHTML("afterbegin",`<b>${pos+1}.</b> `); pos++;
-      if(pos>=ds.length){ const ok=miss===0; $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 顺序全对</div>':`<div class="bad">点错 ${miss} 次</div>`}${ds.map(d=>`<div class="zh">${esc(d.w)}：${esc(d.zh)}</div>`).join("")}</div>`; interNext(ok,cb=>sayAll(cb)); } }
-    else { miss++; b.classList.remove("nope"); void b.offsetWidth; b.classList.add("nope"); if(miss===1) stumble(); } }); }
+      if(pos>=ds.length){ const ok=miss===0; $("fb").innerHTML=`<div class="card">${okHead(ok,"顺序全对")}${ds.map(d=>`<div class="zh">${esc(d.w)}：${esc(d.zh)}</div>`).join("")}</div>`; interNext(ok,cb=>sayAll(cb),null,true); } }
+    else { miss++; falsch(b); if(miss===1) stumble(); } }); }
 function hrfQ(it){ const q=it.q, again=()=>sayChain(IX.lines,IX.rate(),200);
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">根据刚才听到的对话，这句话对吗？</div><div class="word" style="font-size:20px">${esc(q.de)}</div></div><div class="opts"><button class="opt" data-a="1">richtig 对</button><button class="opt" data-a="0">falsch 错</button></div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button><button id="again">再听全文</button></div>`;
   $("back").onclick=ixBack; $("again").onclick=again; interBoard("Richtig oder falsch?","根据对话判断");
-  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const ok=(b.dataset.a==="1")===!!q.a; sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){}
-    stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if((x.dataset.a==="1")===!!q.a) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); });
-    $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 对</div>':`<div class="bad">✗ 应该是 ${q.a?"richtig":"falsch"}</div>`}<div class="zh">${esc(q.zh)}${q.why?`<br><small>${esc(q.why)}</small>`:""}</div></div>`; interNext(ok,cb=>speakThen(q.de,cb)); }); }
+  let first=true;
+  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ if(IX.done===IX.n) return; const ok=(b.dataset.a==="1")===!!q.a; if(!ok){ first=false; return missPick(b); } sayLines.t=(sayLines.t||0)+1; try{ speechSynthesis.cancel(); }catch(e){}
+    stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x===b) x.classList.add("right"); });
+    $("fb").innerHTML=`<div class="card">${okHead(first,q.a?"richtig":"falsch")}<div class="zh">${esc(q.zh)}${q.why?`<br><small>${esc(q.why)}</small>`:""}</div></div>`; interNext(first,cb=>speakThen(q.de,cb),null,true); }); }
 function interDone(){ const ep=EP(), acc=IX.qs.length?IX.right/IX.qs.length:1, k="i"+IX.slot; ep[k]=Math.max(ep[k]||0,acc); bumpStreak(); updateStars(E); save();
   $("gapLbl").textContent=IX.kind==="hoeren"?"整段听完成":IX.kind==="gram"?"小练习完成":"插曲完成"; const nx=IX.next, diary=IX.kind==="tage"?IX.diary.slice():null;
   const hx=IX.kind==="hoeren"?IX.lines:null, hxSide=hx?chatSides(hx):null;
@@ -2489,20 +2649,21 @@ function interQ(){ if(IX.n>=IX.qs.length) return IX.unit?unitDone():IX.boss?gBos
   $("gapLbl").textContent=`${IX.unit?"单元关卡 · ":IX.free?"自由练习 · ":""}${INTER_NAME[k]} ${IX.n+1}/${IX.qs.length}`;
   stage.classList.toggle("gq",k==="gram");
   const r=({satz:satzQ,zahl:zahlQ,wort:wortQ,tage:tageQ,art:artQ,hor:horQ,hwer:hwerQ,hluecke:hlueckeQ,hordnen:hordnenQ,hrf:hrfQ,gram:gramQ})[k](it);
+  qaSet(IX,()=>{ ixTimeout(it,k,"跳过了"); const g=$("go"); if(g) g.click(); });
   /* 听写题要先听完再作答，多给听的时间 */
   if(IX.timed&&IX_LIM[k]) timer(IX_LIM[k]+(k==="gram"&&it.say?Math.ceil(String(it.say).length/5)+4:0),()=>ixTimeout(it,k)); return r; }
-function interNext(ok,say,v){ if(IX.done===IX.n) return; IX.done=IX.n; stopTimer();
+function interNext(ok,say,v,got){ if(IX.done===IX.n) return; IX.done=IX.n; stopTimer(); const fine=ok||got;
   if(!IX.states[IX.n]){ IX.states[IX.n]=ok?"ok":"bad"; if(ok) IX.right++; }
   if(IX.free&&v){ freeSrs(v,ok); if(!ok) IX.miss.push(v); }
   let adv=false; const go=()=>{ if(adv) return; adv=true; IX.n++; interQ(); };
-  $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go; autoNext(go,typeof say==="function"?say:cb=>speakThen(say,cb),ok); combo(ok?"✓":"✗"); if(ok) cheer(); else stumble(); }
+  $("fb").insertAdjacentHTML("beforeend",`<div class="row"><button class="primary" id="go">继续 ›</button></div>`); $("go").onclick=go; autoNext(go,typeof say==="function"?say:cb=>speakThen(say,cb),fine); combo(fine?"✓":"✗"); if(fine) cheer(); else stumble(); }
 function ixBack(){ stopTimer(); if(IX&&IX.unit) return unitPage(IX.unit); if(IX&&IX.free) return freePage(); episode(E.key); }
 /* 挑战难度每题限时；时间到按答错算，亮出答案 */
 const IX_LIM={art:6,hor:20,satz:25,zahl:15,gram:20};
 function ixAnswer(it,k){ if(k==="gram") return {de:gFull(it)||it.a,zh:it.zh||"",say:gSay(it)}; if(k==="art"||k==="hor") return {de:it.v.ans,zh:it.v.zh,say:cb=>play(it.v,cb)}; if(k==="zahl") return {de:it.say,zh:"",say:it.say}; return {de:it.de,zh:it.zh,say:it.de}; }
-function ixTimeout(it,k){ if(!IX||IX.done===IX.n||IX.qs[IX.n]!==it||!$("fb")) return;
+function ixTimeout(it,k,lbl){ if(!IX||IX.done===IX.n||IX.qs[IX.n]!==it||!$("fb")) return;
   stage.querySelectorAll(".opt,.tile,#jump,#minus,#plus,#chk,#ans,.keys button").forEach(x=>x.disabled=true); const nl=$("nl"); if(nl) nl.style.pointerEvents="none";
-  const a=ixAnswer(it,k); $("fb").innerHTML=`<div class="card"><div class="bad">时间到</div><div class="word" style="font-size:22px">${esc(a.de)}</div>${a.zh?`<div class="zh">${esc(a.zh)}</div>`:""}</div>`;
+  const a=ixAnswer(it,k); $("fb").innerHTML=`<div class="card"><div class="bad">${lbl||"时间到"}</div><div class="word" style="font-size:22px">${esc(a.de)}</div>${a.zh?`<div class="zh">${esc(a.zh)}</div>`:""}</div>`;
   interNext(false,a.say,it.v); }
 function satzQ(it){ const words=it.de.split(" "), last=words.length-1, punct=(words[last].match(/[.!?]+$/)||[""])[0]; words[last]=words[last].slice(0,words[last].length-punct.length);
   const r=rng(it.de+IX.n); let order=shuf(words.map((t,i)=>({t,i})),r); if(order.every((x,i)=>x.i===i)&&words.length>1) order=order.slice(1).concat(order[0]);
@@ -2512,8 +2673,8 @@ function satzQ(it){ const words=it.de.split(" "), last=words.length-1, punct=(wo
   const built=()=>words.slice(0,pos).join(" ")+(pos===words.length?punct:"");
   stage.querySelectorAll(".tile").forEach(b=>b.onclick=()=>{ if(pos>=words.length) return;
     if(b.dataset.t===words[pos]){ b.classList.add("used"); pos++; $("built").innerHTML=`<span class="b">${esc(built())}</span>`; interBoard(esc(built()),esc(it.zh));
-      if(pos===words.length){ const ok=miss===0; $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 一次都没点错</div>':`<div class="bad">点错 ${miss} 次，这句不算一次对</div>`}<div class="word" style="font-size:22px">${esc(it.de)}</div><div class="zh">${esc(it.zh)}</div></div>`; interNext(ok,it.de); } }
-    else { miss++; b.classList.remove("nope"); void b.offsetWidth; b.classList.add("nope"); if(miss===1) stumble(); if(miss>=2){ const want=[...stage.querySelectorAll(".tile:not(.used)")].find(x=>x.dataset.t===words[pos]); if(want){ want.classList.remove("hintme"); void want.offsetWidth; want.classList.add("hintme"); } } } }); }
+      if(pos===words.length){ const ok=miss===0; $("fb").innerHTML=`<div class="card">${okHead(ok,"排对了")}<div class="word" style="font-size:22px">${esc(it.de)}</div><div class="zh">${esc(it.zh)}</div></div>`; interNext(ok,it.de,null,true); } }
+    else { miss++; falsch(b); if(miss===1) stumble(); if(miss>=2){ const want=[...stage.querySelectorAll(".tile:not(.used)")].find(x=>x.dataset.t===words[pos]); if(want){ want.classList.remove("hintme"); void want.offsetWidth; want.classList.add("hintme"); } } } }); }
 function zahlQ(it){ const say=()=>speakThen(it.say); let body;
   if(it.k==="num"){ const R=it.R, step=R<=20?1:10, ticks=Array.from({length:R/step+1},(_,i)=>i*step);
     body=`<div class="nl" id="nl"><div class="nl-line"></div>${ticks.map(t=>`<i style="left:${t/R*100}%" class="${t%(R<=12?3:R<=20?5:50)===0?"big":""}"></i>${t%(R<=12?3:R<=20?5:50)===0?`<em style="left:${t/R*100}%">${t}</em>`:""}`).join("")}<b class="nl-mk hidden" id="mk"></b></div><div class="nl-val" id="nv">点数轴</div><div class="row"><button id="minus" aria-label="减一">−</button><button class="primary" id="jump" disabled>跳！</button><button id="plus" aria-label="加一">＋</button></div>`; }
@@ -2523,13 +2684,18 @@ function zahlQ(it){ const say=()=>speakThen(it.say); let body;
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">${q}</div><button id="sp" style="margin-top:4px">🔊 再听</button></div>${body}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
   $("back").onclick=ixBack; $("sp").onclick=say; say(); interBoard("Hör zu",q);
   const ans=it.k==="time"?`${Math.floor(it.v/60)}:${String(it.v%60).padStart(2,"0")}`:it.k==="price"?priceStr(it.v):String(it.v);
-  const finish=picked=>{ const ok=picked===it.v; stage.querySelectorAll(".opt,#jump,#minus,#plus").forEach(x=>{ x.disabled=true; if(x.dataset.a==String(it.v)) x.classList.add("right"); else if(x.dataset.a==String(picked)) x.classList.add("wrong"); });
-    $("fb").innerHTML=`<div class="card">${ok?'<div class="ok">✓ 对</div>':`<div class="bad">✗ 应该是 ${esc(ans)}</div>`}<div class="word" style="font-size:22px">${esc(it.say)}</div>${it.k==="time"?`<div class="zh">${esc(ans)}</div>`:""}</div>`; interBoard(esc(ans),esc(it.say)); interNext(ok,it.say); };
-  if(it.k==="num"){ let val=null; const nl=$("nl"), mk=$("mk");
+  let first=true, nm=0;
+  const finish=(picked,btn)=>{ if(IX.done===IX.n) return; if(picked!==it.v){ first=false; nm++;
+      if(btn) return missPick(btn);
+      shake($("nl")); stumble(); $("mk").classList.add("hidden"); $("jump").disabled=true; $("nv").innerHTML=`<span style="color:#D2553F">Falsch! 再听一次${nm>=3?`（在 ${Math.floor(it.v/10)*10}–${Math.floor(it.v/10)*10+9} 之间）`:""}</span>`; reset(); setTimeout(say,500); return; }
+    stage.querySelectorAll(".opt,#jump,#minus,#plus").forEach(x=>{ x.disabled=true; if(x.dataset.a==String(it.v)) x.classList.add("right"); });
+    $("fb").innerHTML=`<div class="card">${okHead(first,"")}<div class="word" style="font-size:22px">${esc(it.say)}</div>${it.k==="time"?`<div class="zh">${esc(ans)}</div>`:""}</div>`; interBoard(esc(ans),esc(it.say)); interNext(first,it.say,null,true); };
+  let reset=()=>{};
+  if(it.k==="num"){ let val=null; const nl=$("nl"), mk=$("mk"); reset=()=>{ val=null; };
     const setV=v=>{ val=Math.max(0,Math.min(it.R,v)); mk.classList.remove("hidden"); mk.style.left=val/it.R*100+"%"; $("nv").textContent=val; $("jump").disabled=false; };
     nl.onclick=e=>{ const r=nl.getBoundingClientRect(); setV(Math.round((e.clientX-r.left)/r.width*it.R)); };
     $("minus").onclick=()=>setV((val==null?0:val)-1); $("plus").onclick=()=>setV((val==null?-1:val)+1); $("jump").onclick=()=>{ if(val!=null) finish(val); }; }
-  else stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>finish(+b.dataset.a)); }
+  else stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>finish(+b.dataset.a,b)); }
 
 /* ---------- 自由练习：不走剧情，自己挑级别、范围、题型、难度；不给星。到期的词练对了顺手往后排，练错的进错词本 ---------- */
 const FREE_K={art:"冠词",hor:"听力",satz:"排句子",zahl:"数字",mix:"混合"}, FREE_D={easy:"轻松",norm:"普通",hard:"挑战"}, FREE_N=15;
@@ -2583,17 +2749,20 @@ function freeDone(){ stopTimer(); bumpStreak(); save(); const c=IX.cfg, acc=IX.q
 function artQ(it){ const v=it.v, w=v.ans.replace(/^(der|die|das) /,"");
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q">${pic(v)}<div class="hint">${esc(v.zh)}</div><div class="cloze" style="font-size:28px;overflow-wrap:anywhere"><u></u> ${esc(w)}</div></div><div class="opts three">${["der","die","das"].map(a=>`<button class="opt ${a}" data-a="${a}">${a}</button>`).join("")}</div><div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
   $("back").onclick=ixBack; interBoard("Der, die oder das?",esc(v.zh));
-  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const ok=b.dataset.a===v.g; stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===v.g) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); });
-    $("fb").innerHTML=wordCard(v,ok?'<div class="ok">✓ 对</div>':`<div class="bad">✗ 是 ${esc(v.g)}</div>`,{noPic:true}); stage.querySelectorAll("#sp").forEach(x=>x.onclick=()=>play(v)); interBoard(esc(v.ans),esc(v.zh)); interNext(ok,cb=>play(v,cb),v); }); }
+  let first=true;
+  stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ if(IX.done===IX.n) return; if(b.dataset.a!==v.g){ first=false; return missPick(b); } stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x===b) x.classList.add("right"); });
+    $("fb").innerHTML=wordCard(v,okHead(first,""),{noPic:true}); stage.querySelectorAll("#sp").forEach(x=>x.onclick=()=>play(v)); interBoard(esc(v.ans),esc(v.zh)); interNext(first,cb=>play(v,cb),v,true); }); }
 function horQ(it){ const v=it.v, typed=!it.o;
   stage.innerHTML=`${dots(IX.n,IX.qs.length,IX.states)}<div class="q"><div class="hint">${typed?"听写：听到什么写什么，名词带冠词":"听原声，选中文意思"}</div><button id="sp" class="spk" style="position:static;width:72px;height:72px;font-size:30px;margin:0 auto">🔊</button></div>${typed?`${typedBox()}<div class="row"><button class="primary" id="chk">确定</button></div>`:`<div class="opts">${it.o.map(o=>`<button class="opt" data-a="${esc(o.id)}">${esc(o.zh)}</button>`).join("")}</div>`}<div id="fb"></div><div class="row"><button class="ghost" id="back">‹ 退出</button></div>`;
   $("back").onclick=ixBack; interBoard("Hör zu",typed?"听写 · 名词带冠词":"听原声，选中文意思"); $("sp").onclick=()=>play(v); play(v);
-  const fin=(ok,msg)=>{ $("fb").innerHTML=wordCard(v,msg); stage.querySelectorAll("#sp").forEach(x=>x.onclick=()=>play(v)); interBoard(esc(v.ans),esc(v.zh)); interNext(ok,cb=>play(v,cb),v); };
+  let first=true, nm=0;
+  const fin=msg=>{ $("fb").innerHTML=wordCard(v,msg); stage.querySelectorAll("#sp").forEach(x=>x.onclick=()=>play(v)); interBoard(esc(v.ans),esc(v.zh)); interNext(first,cb=>play(v,cb),v,true); };
   if(typed){ const inp=wireKeys(), chk=()=>{ if(inp.disabled) return; const r=checkTyped(inp.value,v); if(r==="empty"){ toast("先写点什么"); return; }
+      if(r!=="ok"){ first=false; nm++; missType(inp,v.ans,nm,$("fb")); if(r==="article") $("fb").querySelector(".bad").textContent="Falsch! 名词要带冠词，再写一次"; return; }
       inp.disabled=true; stage.querySelectorAll("#chk,.keys button").forEach(x=>x.disabled=true);
-      fin(r==="ok",r==="ok"?'<div class="ok">✓ 拼对了</div>':r==="article"?'<div class="bad">✗ 词对了，冠词没写</div>':`<div class="bad">✗ 你写的是 ${esc(inp.value)}</div>`); };
+      fin(okHead(first,"拼对了")); };
     $("chk").onclick=chk; inp.onkeydown=e=>{ if(e.key==="Enter") chk(); }; }
-  else stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const ok=b.dataset.a===v.id; stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x.dataset.a===v.id) x.classList.add("right"); else if(x===b) x.classList.add("wrong"); }); fin(ok,ok?'<div class="ok">✓ 对</div>':'<div class="bad">✗ 不是这个</div>'); }); }
+  else stage.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ if(IX.done===IX.n) return; if(b.dataset.a!==v.id){ first=false; return missPick(b); } stage.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(x===b) x.classList.add("right"); }); fin(okHead(first,"")); }); }
 
 const QS=new URLSearchParams(location.search), q=QS.get("ep"), lvq=QS.get("lv");
 if(q&&EPISODES.some(e=>e.key===q)) episode(q);
