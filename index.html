@@ -1238,11 +1238,13 @@ function immSync(bgOnly){ const on=immOn(); document.body.classList.toggle("imm"
 sceneBg.addEventListener("animationend",e=>{ if(e.animationName==="bgswap") sceneBg.classList.remove("swap"); });
 /* 环境音：进了哪栋楼就循环放那栋楼的声音（assets/audio/amb/<楼>.mp3，都是没有人声的轻底噪：窗外鸟叫、雨声、钟声、远处火车），地图和门口放清晨街道声；
    用 WebAudio 是因为 iPhone 上 <audio> 调不了音量。朗读时压低，电台 / 整段听时静音，切到后台暂停 */
-var AMB_IDS=new Set(["flughafen","cafe","wg","sprachschule","baeckerei","restaurant","bahnhof","supermarkt","fahrrad","boutique","park","arztpraxis","rathaus","street"]);
+var AMB_IDS=new Set(["flughafen","cafe","wg","sprachschule","baeckerei","restaurant","bahnhof","supermarkt","fahrrad","boutique","park","arztpraxis","rathaus","street","dusk"]);
 var AMB={ctx:null,cur:null,node:null,buf:{},vol:0};
 const ambOn=()=>!(S.pref&&S.pref.ambOff);
 function ambWant(){ if(!ambOn()||document.hidden||!document.body.classList.contains("imm")) return null;
-  if(SM==="radio"||SM==="splash"||(IX&&IX.kind==="hoeren"&&SM==="inter")) return null;
+  if(SM==="splash") return {id:"dusk",v:.28};   /* 开屏看夕阳：傍晚虫鸣鸟叫 */
+  if(SM==="lobby"){ const nx=nextPick(), b=nx&&buildingOfEp(nx); return b&&AMB_IDS.has(b.id)?{id:b.id,v:.3}:{id:"street",v:.25}; }   /* 第二页：当前关卡那栋楼的声音 */
+  if(SM==="radio"||(IX&&IX.kind==="hoeren"&&SM==="inter")) return null;
   const s=IMM_BG; if(!s) return null;
   if(s.bid) return AMB_IDS.has(s.bid)?{id:s.bid,v:.3}:null;
   if(s.inside&&s.art!=="door") return null;

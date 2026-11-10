@@ -19,3 +19,4 @@ CC0 (public domain) recordings from freesound.org. Attribution is not required b
 | amb/arztpraxis.mp3 | [small clock in room by Yuval](https://freesound.org/s/211192/) | Yuval | CC0 1.0 |
 | amb/rathaus.mp3 | [Room Tone with Bird Outside.m4a by ciccarelli](https://freesound.org/s/568943/) | ciccarelli | CC0 1.0 |
 | amb/street.mp3 | [Ambience - morning - window - city - calm - pigeon.wav by ValentinPetiteau](https://freesound.org/s/563546/) | ValentinPetiteau | CC0 1.0 |
+| amb/dusk.mp3 | [Crickets in a grass field and birds at the edge of a forest by crwurmbrand](https://freesound.org/s/740645/) | crwurmbrand | CC0 1.0 |
