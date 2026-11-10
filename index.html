@@ -732,6 +732,9 @@ body.imm .scene[data-art=diary] .fx-board{display:none}
 .opt.g-no,.tile.g-no{opacity:.4;border-color:var(--line);box-shadow:none}
 .fz{position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-style:normal;font:800 13px var(--display);color:#fff;background:#D2553F;border-radius:999px;padding:2px 9px;white-space:nowrap;pointer-events:none;animation:fz .9s ease-out forwards;z-index:3}
 @keyframes fz{0%{opacity:0;transform:translate(-50%,6px)}20%{opacity:1;transform:translate(-50%,-10px)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-26px)}}
+#musCue{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px;z-index:60;width:44px;height:44px;padding:0;border:none;border-radius:50%;background:rgba(255,255,255,.88);color:#3b3b4f;box-shadow:0 2px 10px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;animation:mcue 1.6s ease-in-out infinite}
+#musCue svg{width:22px;height:22px}
+@keyframes mcue{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.08)}}
 input.nope,.built.nope,.dial.nope,#dial.nope,.nl.nope{animation:nope .35s;border-color:#D2553F!important}
 .mut{color:var(--muted);font-weight:600;font-size:.82em}
 .g-done{position:relative;font-family:var(--display);font-size:22px;line-height:1.35;text-align:center;padding:10px 14px;border-radius:14px;background:var(--bubble);border:2px solid var(--ok);box-shadow:0 3px 0 var(--ok);animation:gjoin .5s ease-out}
@@ -1256,7 +1259,8 @@ function ambLoad(id){ const a=AMB.buf; if(a[id]) return a[id];
     .then(b=>new Promise((res,rej)=>AMB.ctx.decodeAudioData(b,res,rej))).catch(()=>{ delete a[id]; return null; });
   return a[id]; }
 function ambStopNode(n,t){ if(!n) return; const c=AMB.ctx, now=c.currentTime; try{ n.g.gain.cancelScheduledValues(now); n.g.gain.setValueAtTime(n.g.gain.value,now); n.g.gain.linearRampToValueAtTime(0,now+t); n.s.stop(now+t+.05); }catch(e){} }
-function ambSync(){ const c=AMB&&AMB.ctx; if(!c) return; const w=ambWant();
+function ambSync(){ const mc=$("musCue"); if(mc&&(SM!=="splash"||AMB.node||!ambOn())) mc.remove();
+  const c=AMB&&AMB.ctx; if(!c) return; const w=ambWant();
   if(!w){ if(AMB.node){ ambStopNode(AMB.node,.8); AMB.node=null; AMB.cur=null; } if(document.hidden&&c.state==="running") c.suspend().catch(()=>{}); return; }
   if(c.state!=="running") c.resume().catch(()=>{});
   let duck=false; try{ duck=!TAU.paused||speechSynthesis.speaking; }catch(e){}
@@ -1547,7 +1551,11 @@ function splash(){ leaveScene();
   const nx=nextPick();
   stage.innerHTML=`<i id="splashMark" hidden></i><div class="homerow"><button class="bigcont" id="spGo"><span class="t"><b>开始</b><span>${wonN()?`已通关 ${wonN()} 集`:"Nico 的柏林之旅"}</span></span><span class="pl">▶</span></button>
     <button class="ppbtn" id="wall" aria-label="护照"><span class="pp"><i>✦</i></span><b>护照</b><small>${wonN()}/${EPISODES.length}</small></button></div>`;
-  $("spGo").onclick=home; $("wall").onclick=()=>levelMap(nx?nx.lv:LEVELS[0].id,false,"splash"); railSync(); }
+  $("spGo").onclick=home; $("wall").onclick=()=>levelMap(nx?nx.lv:LEVELS[0].id,false,"splash"); railSync();
+  /* 浏览器不让网页自己出声：开屏放一个跳动的音符，点一下就响，响了就收起 */
+  if(ambOn()&&!AMB.node&&!$("musCue")){ const c=document.createElement("button"); c.id="musCue"; c.setAttribute("aria-label","开启音乐");
+    c.innerHTML=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 17.5V6.2l10-2.2v11.3a2.6 2.6 0 1 1-1.6-2.4V7.6L10.6 9.1v8.4A2.6 2.6 0 1 1 9 15.1z"/></svg>`;
+    c.onclick=()=>{ ambUnlock(); c.remove(); }; document.body.appendChild(c); } }
 /* ---------- 首页第二层：学习状态（继续 + 等级进度 + 功能图标） ---------- */
 function home(){ leaveScene();
   townHide(); stopTimer(); $("homebtn").classList.add("hidden"); E=null; DIARY=false; CUR_LV=null; BG_B=null; theme(3); target(); setScene(6,70,false); $("gapLbl").textContent="Nicos Abenteuer"; hearts(null);
