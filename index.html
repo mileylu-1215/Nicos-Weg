@@ -801,7 +801,7 @@ input.nope,.built.nope,.dial.nope,#dial.nope,.nl.nope{animation:nope .35s;border
   <div class="snav" id="snav"><button id="navUp" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span></span></button></div>
   <div class="lz" id="lz" role="group" aria-label="题目中文提示"><button type="button" data-v="de">DE</button><button type="button" data-v="zh">中</button></div>
   <button class="qa qp" id="qPrev" type="button" aria-label="回看上一题"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="qa qn" id="qNext" type="button" aria-label="下一题"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
-  <div class="tgl" id="tgl"><button id="tgAuto" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l7 6-7 6zM13 6l7 6-7 6z"/><path class="sl" d="M3 3l18 18"/></svg></button><button id="tgAmb" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5c3-3 6 3 9 0s6 3 9 0M3 15.5c3-3 6 3 9 0s6 3 9 0"/><path class="sl" d="M3 3l18 18"/></svg></button></div></div>
+  <div class="tgl" id="tgl"><button id="tgAuto" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l7 6-7 6zM13 6l7 6-7 6z"/><path class="sl" d="M3 3l18 18"/></svg></button><button id="tgAmb" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/><path class="sl" d="M3 3l18 18"/></svg></button></div></div>
 </div>
 <div id="town" hidden>
   <div id="townWorld"><div id="townMap">
@@ -1248,7 +1248,8 @@ var AMB={ctx:null,cur:null,node:null,buf:{},vol:0};
 const ambOn=()=>!(S.pref&&S.pref.ambOff);
 function ambWant(){ if(!ambOn()||document.hidden||!document.body.classList.contains("imm")) return null;
   if(SM==="splash"||SM==="lobby") return {id:"bgm",v:.35,music:1};
-  if(SM==="radio"||(IX&&IX.kind==="hoeren"&&SM==="inter")) return null;
+  if(SM==="radio"||SM==="boss"||(IX&&IX.kind==="hoeren"&&SM==="inter")) return null;
+  if(E&&NAVC.c==="act"&&!NAV_NOHOME.has(NAVC.a)&&(!/^(win|vn)$/.test(SM)||NAVC.a==="talk")) return null;   /* 做题时不放背景音乐，免得和朗读撞在一起 */
   const s=IMM_BG; if(!s) return null;
   const bb=(E&&(buildingOfEp(E)||{}).id)||s.bid||BG_B;   /* 进了某栋楼（本集任何页面）就放这栋楼的音乐 */
   if(BGM_OF[bb]) return {id:BGM_OF[bb],v:.28,music:1};
@@ -1338,9 +1339,9 @@ function lzSync(){ const de=!!(S.pref&&S.pref.qNoZh); document.body.classList.to
 $("lz").onclick=e=>{ const x=e.target.closest("button"); if(!x) return; S.pref=S.pref||{}; S.pref.qNoZh=x.dataset.v==="de"; save(); lzSync(); };
 function tglSync(){ const a=$("tgAuto"), m=$("tgAmb"), au=!manualNext(), am=ambOn();
   a.classList.toggle("off",!au); a.setAttribute("aria-pressed",String(au)); a.setAttribute("aria-label",au?"答对后自动下一题：开":"答对后自动下一题：关"); a.title=a.getAttribute("aria-label");
-  m.classList.toggle("off",!am); m.setAttribute("aria-pressed",String(am)); m.setAttribute("aria-label",am?"环境音：开":"环境音：关"); m.title=m.getAttribute("aria-label"); }
+  m.classList.toggle("off",!am); m.setAttribute("aria-pressed",String(am)); m.setAttribute("aria-label",am?"背景音乐：开":"背景音乐：关"); m.title=m.getAttribute("aria-label"); }
 $("tgAuto").onclick=()=>{ if(RMQ.matches) return toast("系统开了「减少动态效果」，答对后一律手点"); S.pref=S.pref||{}; S.pref.manualNext=!S.pref.manualNext; save(); tglSync(); toast(manualNext()?"答对后：手点下一题":"答对后：自动下一题"); };
-$("tgAmb").onclick=()=>{ S.pref=S.pref||{}; S.pref.ambOff=!S.pref.ambOff; save(); tglSync(); ambUnlock(); ambSync(); toast(ambOn()?"环境音：开":"环境音：关"); };
+$("tgAmb").onclick=()=>{ S.pref=S.pref||{}; S.pref.ambOff=!S.pref.ambOff; save(); tglSync(); ambUnlock(); ambSync(); toast(ambOn()?"背景音乐：开":"背景音乐：关"); };
 const radioInCar=()=>{ if(!E) return false; const st=String(sceneText("radio")[0]||""), ic=st.split(/\s+/)[0]||""; return /📻|🚕|🚖/.test(ic)||/出租车|电台|收音机/.test(st); };
 function fxSync(){ const fx=$("sceneFx"), m=SM;
   if(scene.dataset.m!==m){ scene.dataset.m=m; sceneBg.dataset.m=m;
